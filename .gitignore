@@ -1,0 +1,2 @@
+# Ignore Node.js dependencies (all subdirectories)
+node_modules/
