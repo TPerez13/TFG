@@ -1,0 +1,17 @@
+{
+  "name": "@muchasvidas/shared",
+  "version": "1.0.0",
+  "description": "Tipos y DTOs compartidos para MuchaVida.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "npx tsc -p tsconfig.json",
+    "build:watch": "npx tsc -p tsconfig.json --watch"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}

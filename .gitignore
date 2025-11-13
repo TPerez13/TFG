@@ -1,2 +1,11 @@
-# Ignore Node.js dependencies (all subdirectories)
+# Dependencies
 node_modules/
+
+# Build output
+dist/
+backend/dist/
+packages/shared/dist/
+
+# Environment files
+.env
+backend/.env

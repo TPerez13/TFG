@@ -1,55 +1,46 @@
-## Muchas Vidas (TypeScript + PostgreSQL)
+## Muchas Vidas (Monorepo)
 
-Esqueleto minimalista de una API Express en TypeScript con autenticación básica contra PostgreSQL. Incluye `docker-compose` para levantar la base de datos y un usuario predefinido (`usuario` / `password`).
+Repo unificado con la API Express (TypeScript + PostgreSQL), la app móvil Expo y un paquete de tipos compartidos.
+
+### Estructura
+- `backend/`: API Express con PostgreSQL.
+- `mobile-react-native/`: app Expo/React Native.
+- `packages/shared/`: DTOs y tipos comunes (`@muchasvidas/shared`).
+- `database/`: scripts para inicializar la base de datos usada por Docker.
 
 ### Requisitos previos
-- Node.js 18+ y npm.
+- Node.js 18+ con npm >= 8 (soporte para workspaces).
 - Docker + Docker Compose.
 
 ### Instalación
 ```bash
 npm install
 ```
+> El paso anterior instala todas las dependencias de los workspaces y compila `packages/shared` (se ejecuta en `postinstall`).
 
 ### Variables de entorno
-Duplica `.env.example` a `.env` y ajusta valores si lo necesitas. El valor por defecto de `DATABASE_URL` coincide con el servicio definido en `docker-compose.yml`.
-
-### Levantar PostgreSQL
 ```bash
-docker-compose up -d
+cp backend/.env.example backend/.env
 ```
-Esto crea la base de datos `muchasvidas` con la tabla `users` y un usuario por defecto.
+Los valores por defecto enlazan con el servicio de PostgreSQL definido en `docker-compose.yml`.
 
-### Ejecución en desarrollo
-```bash
-npm run dev
-```
-La API escuchará (por defecto) en `http://localhost:3000`.
-
-### Endpoints principales
-- `POST /api/login`  
-  Cuerpo esperado:
-  ```json
-  {
-    "username": "usuario",
-    "password": "password"
-  }
+### Servicios principales
+- **Base de datos**: `docker-compose up -d` levanta PostgreSQL con la tabla `users` y el usuario `usuario/password`.
+- **API (desarrollo)**: `npm run dev:backend` → http://localhost:3000
+- **API (build + start)**:
+  ```bash
+  npm run build --workspace backend
+  npm run start:backend
   ```
-  Respuesta exitosa:
-  ```json
-  {
-    "message": "Inicio de sesión correcto.",
-    "user": {
-      "id": 1,
-      "username": "usuario"
-    }
-  }
-  ```
+- **App móvil**: `npm run start:mobile` abre el bundler de Expo.
 
-- `GET /api/health` – Verificación rápida del estado del servicio.
+### Endpoints de referencia
+- `GET /api/health`: estado del servicio.
+- `POST /api/login` (ver `packages/shared` para el contrato `LoginRequest`/`LoginResponse`).
 
-### Construcción y ejecución en producción
+### Paquete compartido
+`@muchasvidas/shared` expone los DTOs usados tanto por el backend como por la app móvil. Modifica `packages/shared/src/index.ts` y ejecuta:
 ```bash
-npm run build
-npm start
+npm run build:shared
 ```
+para regenerar los tipos/JS distribuidos.

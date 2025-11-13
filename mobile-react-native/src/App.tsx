@@ -1,9 +1,18 @@
 import React, { useCallback, useState } from 'react';
 import { Button, Platform, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, View, TextInput } from 'react-native';
+import type { LoginRequest, LoginResponse } from '@muchasvidas/shared';
 
 const getBaseUrl = () => {
   if (Platform.OS === 'android') return 'http://10.0.2.2:3000';
   return 'http://localhost:3000';
+};
+
+const isLoginResponse = (payload: unknown): payload is LoginResponse => {
+  if (!payload || typeof payload !== 'object') {
+    return false;
+  }
+  const maybe = payload as Partial<LoginResponse>;
+  return typeof maybe.message === 'string' && typeof maybe.user?.id === 'number' && typeof maybe.user?.username === 'string';
 };
 
 export default function App() {
@@ -65,13 +74,26 @@ export default function App() {
           onPress={async () => {
             setLoginMsg('Enviando credenciales...');
             try {
+              const payload: LoginRequest = { username, password };
               const res = await fetch(`${getBaseUrl()}/api/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password }),
+                body: JSON.stringify(payload),
               });
-              const text = await res.text();
-              setLoginMsg(`${res.status} -> ${text}`);
+              const raw = await res.text();
+              let parsed: unknown = null;
+              try {
+                parsed = JSON.parse(raw);
+              } catch (_err) {
+                parsed = null;
+              }
+
+              if (res.ok && isLoginResponse(parsed)) {
+                setLoginMsg(`${res.status} -> ${parsed.message} (usuario: ${parsed.user.username})`);
+              } else {
+                const fallback = (parsed as { message?: string } | null)?.message ?? raw;
+                setLoginMsg(`${res.status} -> ${fallback}`);
+              }
             } catch (e: any) {
               setLoginMsg(`Error: ${e?.message ?? String(e)}`);
             }

@@ -1,6 +1,8 @@
+import path from "path";
 import dotenv from "dotenv";
 
-dotenv.config();
+const envPath = path.resolve(__dirname, "..", ".env");
+dotenv.config({ path: envPath });
 
 const port = Number(process.env.PORT || 3000);
 const databaseUrl = process.env.DATABASE_URL;

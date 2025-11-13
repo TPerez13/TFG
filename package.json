@@ -1,27 +1,25 @@
 {
-  "name": "muchas-vidas-ts",
+  "name": "muchasvidas",
   "version": "1.0.0",
-  "description": "Esqueleto básico de aplicación Node.js con TypeScript y PostgreSQL.",
-  "main": "dist/server.js",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "mobile-react-native",
+    "packages/*"
+  ],
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
-    "build": "tsc",
-    "start": "node dist/server.js"
+    "build": "npm --prefix backend run build && npm --prefix packages/shared run build",
+    "dev:backend": "npm --prefix backend run dev",
+    "start:backend": "npm --prefix backend run start",
+    "start:mobile": "npm --prefix mobile-react-native run start",
+    "typecheck:mobile": "npm --prefix mobile-react-native run typecheck",
+    "build:shared": "npm --prefix packages/shared run build",
+    "android": "expo run:android",
+    "ios": "expo run:ios"
   },
   "dependencies": {
-    "bcrypt": "^5.1.1",
-    "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
-    "express": "^4.19.2",
-    "pg": "^8.12.0"
-  },
-  "devDependencies": {
-    "@types/bcrypt": "^5.0.2",
-    "@types/cors": "^2.8.17",
-    "@types/express": "^4.17.21",
-    "@types/node": "^20.12.12",
-    "@types/pg": "^8.11.5",
-    "ts-node-dev": "^2.0.0",
-    "typescript": "^5.4.5"
+    "expo": "~54.0.23",
+    "react": "19.1.0",
+    "react-native": "0.81.5"
   }
 }
