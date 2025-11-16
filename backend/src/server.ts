@@ -30,3 +30,5 @@ async function bootstrap() {
 }
 
 bootstrap();
+ //En resumen: bootstrap arma el servidor; cors() abre el backend a clientes en otros orígenes;
+ //express.json() convierte los cuerpos JSON entrantes en objetos utilizables.

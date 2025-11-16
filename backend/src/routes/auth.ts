@@ -5,7 +5,13 @@ import { pool } from "../db";
 
 const authRouter = Router();
 
+//router.post(path, handler), handler -> funcion lambda [procesan la petición y envían la respuesta]
 authRouter.post("/login", async (req, res) => {
+  //operador de coalescencia nula Devuelve el operando de la derecha solo si el de la izquierda es null o undefined
+  //le dice al compilador que req.body (o {}) puede tener parte de las propiedades de LoginRequest
+  //Partial<T> es un helper de TypeScript que marca todas las propiedades de 
+  //T como opcionales. Aquí se usa solo para decirle al compilador “trata el body como algo que podría tener las
+  //props de LoginRequest, pero no asumas que estén todas”
   const { username, password } = (req.body ?? {}) as Partial<LoginRequest>;
 
   if (!username || !password) {
@@ -40,5 +46,14 @@ authRouter.post("/login", async (req, res) => {
     return res.status(500).json({ message: "Error interno del servidor." });
   }
 });
-
+/*
+HTTP: el protocolo de transporte/solicitudes-respuestas
+ entre cliente y servidor (métodos como GET/POST, URLs, cabeceras, códigos de estado).
+JSON: el formato de texto usado para serializar datos
+ en esas peticiones/respuestas (objetos, arrays, strings, números).
+DTO: la definición de la forma/contrato de esos datos
+ en tu código (tipos/clases “planas” que describen qué campos lleva el JSON).
+  JSON viaja por HTTP; los DTOs aseguran que tu app encode/decodifique ese JSON
+   con la estructura acordada.
+*/
 export default authRouter;
