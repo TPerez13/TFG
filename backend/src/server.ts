@@ -1,8 +1,6 @@
-import express from "express";
-import cors from "cors";
 import { config } from "./config";
 import { verifyConnection } from "./db";
-import authRouter from "./routes/auth";
+import { createApp } from "./app";
 
 async function bootstrap() {
   try {
@@ -13,16 +11,7 @@ async function bootstrap() {
     process.exit(1);
   }
 
-  const app = express();
-
-  app.use(cors());
-  app.use(express.json());
-
-  app.get("/api/health", (_req, res) => {
-    res.json({ status: "ok" });
-  });
-
-  app.use("/api", authRouter);
+  const app = createApp();
 
   app.listen(config.port, () => {
     console.log(`Servidor escuchando en http://localhost:${config.port}`);
@@ -30,5 +19,4 @@ async function bootstrap() {
 }
 
 bootstrap();
- //En resumen: bootstrap arma el servidor; cors() abre el backend a clientes en otros orígenes;
- //express.json() convierte los cuerpos JSON entrantes en objetos utilizables.
+// bootstrap verifica la conexión a la base de datos y levanta la app configurada en createApp().
