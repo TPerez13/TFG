@@ -10,6 +10,23 @@ import { AppError } from "../utils/errors";
 import type { UserRecord } from "../model/userModel";
 import { createUser, findByEmail } from "../model/userModel";
 
+const DEFAULT_PREFERENCIAS: Record<string, unknown> = {
+  tema: "system",
+  idioma: "es",
+  notificaciones: {
+    habilitadas: true,
+    hidratacion: true,
+    nutricion: false,
+    ejercicio: false,
+    sueno: false,
+    meditacion: false,
+  },
+  quiet_hours: {
+    desde: "23:00",
+    hasta: "07:00",
+  },
+};
+
 const toIsoString = (value: unknown): string | undefined => {
   if (value instanceof Date) {
     return value.toISOString();
@@ -72,11 +89,12 @@ export async function register(payload: Partial<RegisterRequest>): Promise<Regis
   }
 
   const hash = await bcrypt.hash(password, 10);
+  // TODO: validar/normalizar preferencias cuando el contrato este definido.
   const user = await createUser({
     correo,
     nombre,
     hash_clave: hash,
-    preferencias: preferencias ?? null,
+    preferencias: preferencias ?? DEFAULT_PREFERENCIAS,
   });
 
   const response: RegisterResponse = {
