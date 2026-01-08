@@ -12,14 +12,88 @@ const formatDate = (value?: string) => {
   return parsed.toLocaleString();
 };
 
-const formatPreferences = (value?: Record<string, unknown> | string | null) => {
-  if (value === null || value === undefined) return 'N/A';
-  if (typeof value === 'string') return value;
-  try {
-    return JSON.stringify(value, null, 2);
-  } catch (_err) {
-    return 'N/A';
+type NotificationSettings = {
+  habilitadas?: boolean;
+  hidratacion?: boolean;
+  nutricion?: boolean;
+  ejercicio?: boolean;
+  sueno?: boolean;
+  meditacion?: boolean;
+};
+
+type Preferences = {
+  tema?: string;
+  idioma?: string;
+  quiet_hours?: {
+    desde?: string;
+    hasta?: string;
+  };
+  notificaciones?: NotificationSettings;
+};
+
+const formatBoolean = (value?: boolean) => {
+  if (value === true) return 'Si';
+  if (value === false) return 'No';
+  return 'N/A';
+};
+
+const normalizePreferences = (value?: Record<string, unknown> | string | null): Preferences | null => {
+  if (value === null || value === undefined) return null;
+
+  let raw: Record<string, unknown> | null = null;
+  if (typeof value === 'string') {
+    try {
+      raw = JSON.parse(value) as Record<string, unknown>;
+    } catch (_err) {
+      return null;
+    }
+  } else if (typeof value === 'object') {
+    raw = value;
   }
+
+  if (!raw) return null;
+
+  const tema = typeof raw.tema === 'string' ? raw.tema : undefined;
+  const idioma = typeof raw.idioma === 'string' ? raw.idioma : undefined;
+
+  let quiet_hours: Preferences['quiet_hours'];
+  if (raw.quiet_hours && typeof raw.quiet_hours === 'object') {
+    const quietRaw = raw.quiet_hours as Record<string, unknown>;
+    const desde = typeof quietRaw.desde === 'string' ? quietRaw.desde : undefined;
+    const hasta = typeof quietRaw.hasta === 'string' ? quietRaw.hasta : undefined;
+    if (desde || hasta) {
+      quiet_hours = { desde, hasta };
+    }
+  }
+
+  let notificaciones: NotificationSettings | undefined;
+  if (raw.notificaciones && typeof raw.notificaciones === 'object') {
+    const notifRaw = raw.notificaciones as Record<string, unknown>;
+    const getBool = (key: keyof NotificationSettings) =>
+      typeof notifRaw[key] === 'boolean' ? (notifRaw[key] as boolean) : undefined;
+
+    notificaciones = {
+      habilitadas: getBool('habilitadas'),
+      hidratacion: getBool('hidratacion'),
+      nutricion: getBool('nutricion'),
+      ejercicio: getBool('ejercicio'),
+      sueno: getBool('sueno'),
+      meditacion: getBool('meditacion'),
+    };
+
+    if (Object.values(notificaciones).every((value) => value === undefined)) {
+      notificaciones = undefined;
+    }
+  }
+
+  if (!tema && !idioma && !quiet_hours && !notificaciones) return null;
+
+  return {
+    tema,
+    idioma,
+    quiet_hours,
+    notificaciones,
+  };
 };
 
 export default function FeedScreen({ route, navigation }: FeedScreenProps) {
@@ -29,8 +103,21 @@ export default function FeedScreen({ route, navigation }: FeedScreenProps) {
   const username = user.username;
   const email = user.correo ?? 'N/A';
   const createdAt = formatDate(user.f_creacion);
-  const preferencesText = formatPreferences(user.preferencias);
+  const preferences = normalizePreferences(user.preferencias);
   const greetingName = user.nombre ?? user.username ?? 'Usuario';
+  const quietHours = preferences?.quiet_hours;
+  const quietHoursText =
+    quietHours?.desde || quietHours?.hasta
+      ? `${quietHours?.desde ?? '--:--'} - ${quietHours?.hasta ?? '--:--'}`
+      : 'N/A';
+  const notificationItems: Array<{ key: keyof NotificationSettings; label: string }> = [
+    { key: 'habilitadas', label: 'Habilitadas' },
+    { key: 'hidratacion', label: 'Hidratacion' },
+    { key: 'nutricion', label: 'Nutricion' },
+    { key: 'ejercicio', label: 'Ejercicio' },
+    { key: 'sueno', label: 'Sueno' },
+    { key: 'meditacion', label: 'Meditacion' },
+  ];
 
   return (
     <SafeAreaView style={styles.container}>
@@ -72,7 +159,47 @@ export default function FeedScreen({ route, navigation }: FeedScreenProps) {
         </View>
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Preferencias</Text>
-          <Text style={styles.preferences}>{preferencesText}</Text>
+          {preferences ? (
+            <>
+              <View style={styles.row}>
+                <Text style={styles.label}>Tema</Text>
+                <Text style={styles.value}>{preferences.tema ?? 'N/A'}</Text>
+              </View>
+              <View style={styles.row}>
+                <Text style={styles.label}>Idioma</Text>
+                <Text style={styles.value}>{preferences.idioma ?? 'N/A'}</Text>
+              </View>
+              <View style={styles.row}>
+                <Text style={styles.label}>Quiet hours</Text>
+                <Text style={styles.value}>{quietHoursText}</Text>
+              </View>
+              <View style={styles.sectionDivider} />
+              <Text style={styles.sectionTitle}>Notificaciones</Text>
+              {preferences.notificaciones ? (
+                notificationItems.map((item) => {
+                  const status = preferences.notificaciones?.[item.key];
+                  return (
+                    <View key={item.key} style={styles.row}>
+                      <Text style={styles.label}>{item.label}</Text>
+                      <Text
+                        style={[
+                          styles.value,
+                          status === true ? styles.valueOn : null,
+                          status === false ? styles.valueOff : null,
+                        ]}
+                      >
+                        {formatBoolean(status)}
+                      </Text>
+                    </View>
+                  );
+                })
+              ) : (
+                <Text style={styles.emptyText}>Sin datos de notificaciones</Text>
+              )}
+            </>
+          ) : (
+            <Text style={styles.emptyText}>Sin preferencias</Text>
+          )}
         </View>
         <Pressable
           style={({ pressed }) => [
@@ -176,10 +303,27 @@ const styles = StyleSheet.create({
     textAlign: 'right',
     maxWidth: '65%',
   },
-  preferences: {
+  valueOn: {
+    color: '#9be7c4',
+  },
+  valueOff: {
+    color: '#f3a4a4',
+  },
+  sectionDivider: {
+    height: 1,
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    marginVertical: 12,
+  },
+  sectionTitle: {
+    fontSize: 11,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+    color: '#8d86b1',
+    marginBottom: 8,
+  },
+  emptyText: {
     fontSize: 13,
-    lineHeight: 18,
-    color: '#f6f2ff',
+    color: '#b9b2db',
   },
   logoutButton: {
     backgroundColor: '#c6b6ff',
