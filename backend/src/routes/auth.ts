@@ -3,7 +3,8 @@ import * as authController from "../controllers/authController";
 
 const authRouter = Router();
 
-// Rutas de autenticación: se limitan a mapear URL -> controlador.
+// Rutas de autenticacion: se limitan a mapear URL -> controlador.
 authRouter.post("/login", authController.login);
+authRouter.post("/register", authController.register);
 
 export default authRouter;

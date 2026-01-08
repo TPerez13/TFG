@@ -1,21 +1,41 @@
 import { pool } from "../db";
 
 export interface UserRecord {
-  id: number;
-  username: string;
-  password_hash: string;
+  id_usuario: number;
+  correo: string;
+  nombre: string;
+  hash_clave: string;
+  preferencias: Record<string, unknown> | null;
+  f_creacion: string | Date;
 }
 
-// Acceso a datos: busca un usuario por username; devuelve null si no existe.
-export async function findByUsername(username: string): Promise<UserRecord | null> {
+export interface CreateUserInput {
+  correo: string;
+  nombre: string;
+  hash_clave: string;
+  preferencias: Record<string, unknown> | null;
+}
+
+// Acceso a datos: busca un usuario por correo; devuelve null si no existe.
+export async function findByEmail(correo: string): Promise<UserRecord | null> {
   const result = await pool.query<UserRecord>(
-    "SELECT id, username, password_hash FROM users WHERE username = $1",
-    [username]
+    "SELECT id_usuario, correo, nombre, hash_clave, preferencias, f_creacion FROM usuario WHERE correo = $1",
+    [correo]
   );
 
   if (result.rowCount === 0) {
     return null;
   }
+
+  return result.rows[0];
+}
+
+// Crea un usuario con hash de contrasena y devuelve el registro completo.
+export async function createUser(input: CreateUserInput): Promise<UserRecord> {
+  const result = await pool.query<UserRecord>(
+    "INSERT INTO usuario (correo, nombre, hash_clave, preferencias) VALUES ($1, $2, $3, $4) RETURNING id_usuario, correo, nombre, hash_clave, preferencias, f_creacion",
+    [input.correo, input.nombre, input.hash_clave, input.preferencias]
+  );
 
   return result.rows[0];
 }
