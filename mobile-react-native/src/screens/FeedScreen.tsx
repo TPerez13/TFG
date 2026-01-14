@@ -1,3 +1,4 @@
+// Pantalla de feed con detalles del usuario.
 import React from 'react';
 import { Pressable, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';

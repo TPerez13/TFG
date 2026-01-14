@@ -1,8 +1,14 @@
+// Pantalla de inicio de sesion y registro.
 import React, { useState } from 'react';
-import { Platform, Pressable, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Platform, Pressable, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { LoginRequest, LoginResponse, RegisterRequest, RegisterResponse } from '@muchasvidas/shared';
 import type { RootStackParamList } from '../navigation/types';
+import { Screen } from '../components/layout/Screen';
+import { Button } from '../components/ui/Button';
+import { Input } from '../components/ui/Input';
+import { baseStyles } from '../theme/components';
+import { colors, fontSizes, radius, spacing } from '../theme/tokens';
 
 type LoginScreenProps = NativeStackScreenProps<RootStackParamList, 'Login'>;
 
@@ -107,13 +113,13 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
   */
 
   return (
-    <SafeAreaView style={styles.container}>
+    <Screen>
       <StatusBar barStyle="light-content" />
       <View pointerEvents="none" style={styles.background}>
         <View style={styles.glowTop} />
         <View style={styles.glowBottom} />
       </View>
-      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+      <ScrollView contentContainerStyle={baseStyles.content} keyboardShouldPersistTaps="handled">
         <View style={styles.header}>
           <View style={styles.logoEnvelope}>
             <View style={styles.envelopeTop} />
@@ -139,79 +145,59 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
 
         <View style={{ height: 32 }} />
         */}
-        <View style={styles.form}>
+        <View style={baseStyles.card}>
           {isSignUp ? (
-            <View style={styles.inputRow}>
-              <Text style={styles.inputIcon}>#</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Nombre"
-                placeholderTextColor="#a7a0c8"
-                autoCapitalize="words"
-                value={nombre}
-                onChangeText={setNombre}
-              />
-            </View>
+            <Input
+              icon="#"
+              placeholder="Nombre"
+              autoCapitalize="words"
+              value={nombre}
+              onChangeText={setNombre}
+            />
           ) : null}
-          <View style={styles.inputRow}>
-            <Text style={styles.inputIcon}>@</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Correo"
-              placeholderTextColor="#a7a0c8"
-              autoCapitalize="none"
-              keyboardType="email-address"
-              value={correo}
-              onChangeText={setCorreo}
-            />
-          </View>
-          <View style={styles.inputRow}>
-            <Text style={styles.inputIcon}>*</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Password"
-              placeholderTextColor="#a7a0c8"
-              autoCapitalize="none"
-              secureTextEntry={!showPassword}
-              value={password}
-              onChangeText={setPassword}
-            />
-            <Pressable
-              style={styles.toggleButton}
-              onPress={() => setShowPassword((current) => !current)}
-            >
-              <Text style={styles.toggleText}>{showPassword ? 'Ocultar' : 'Ver'}</Text>
-            </Pressable>
-          </View>
-          {isSignUp ? (
-            <View style={styles.inputRow}>
-              <Text style={styles.inputIcon}>*</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Confirm password"
-                placeholderTextColor="#a7a0c8"
-                autoCapitalize="none"
-                secureTextEntry={!showConfirmPassword}
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-              />
+          <Input
+            icon="@"
+            placeholder="Correo"
+            autoCapitalize="none"
+            keyboardType="email-address"
+            value={correo}
+            onChangeText={setCorreo}
+          />
+          <Input
+            icon="*"
+            placeholder="Password"
+            autoCapitalize="none"
+            secureTextEntry={!showPassword}
+            value={password}
+            onChangeText={setPassword}
+            right={(
               <Pressable
                 style={styles.toggleButton}
-                onPress={() => setShowConfirmPassword((current) => !current)}
+                onPress={() => setShowPassword((current) => !current)}
               >
-                <Text style={styles.toggleText}>{showConfirmPassword ? 'Ocultar' : 'Ver'}</Text>
+                <Text style={styles.toggleText}>{showPassword ? 'Ocultar' : 'Ver'}</Text>
               </Pressable>
-            </View>
+            )}
+          />
+          {isSignUp ? (
+            <Input
+              icon="*"
+              placeholder="Confirm password"
+              autoCapitalize="none"
+              secureTextEntry={!showConfirmPassword}
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              right={(
+                <Pressable
+                  style={styles.toggleButton}
+                  onPress={() => setShowConfirmPassword((current) => !current)}
+                >
+                  <Text style={styles.toggleText}>{showConfirmPassword ? 'Ocultar' : 'Ver'}</Text>
+                </Pressable>
+              )}
+            />
           ) : null}
-          <Pressable
-            style={({ pressed }) => [
-              styles.primaryButton,
-              pressed ? styles.primaryButtonPressed : null,
-            ]}
-            onPress={handleAuth}
-          >
-            <Text style={styles.primaryButtonText}>{isSignUp ? 'Sign up' : 'Sign in'}</Text>
-          </Pressable>
+          <Button title={isSignUp ? 'Sign up' : 'Sign in'} onPress={handleAuth} />
           {!isSignUp ? (
             <Pressable style={styles.helpLink}>
               <Text style={styles.helpText}>Cannot access your account?</Text>
@@ -233,21 +219,11 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
           </Pressable>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#0b0b10',
-  },
-  content: {
-    padding: 24,
-    paddingTop: 48,
-    paddingBottom: 60,
-    alignItems: 'center',
-  },
   background: {
     position: 'absolute',
     top: 0,
@@ -260,7 +236,7 @@ const styles = StyleSheet.create({
     width: 320,
     height: 320,
     borderRadius: 160,
-    backgroundColor: '#3a2a68',
+    backgroundColor: colors.glowTop,
     opacity: 0.45,
     top: -160,
     left: -80,
@@ -270,28 +246,28 @@ const styles = StyleSheet.create({
     width: 360,
     height: 360,
     borderRadius: 180,
-    backgroundColor: '#6a3f78',
+    backgroundColor: colors.glowBottom,
     opacity: 0.35,
     bottom: -180,
     right: -120,
   },
   header: {
     alignItems: 'center',
-    marginBottom: 32,
+    marginBottom: spacing.xxxl,
   },
   subtitle: {
-    marginTop: 10,
-    fontSize: 13,
+    marginTop: spacing.sm,
+    fontSize: fontSizes.md,
     letterSpacing: 1,
     textTransform: 'uppercase',
-    color: '#b9b2db',
+    color: colors.textMuted,
   },
   logoEnvelope: {
     width: 96,
     height: 72,
-    borderRadius: 10,
+    borderRadius: radius.sm,
     borderWidth: 2,
-    borderColor: '#e6ddff',
+    borderColor: colors.outline,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -301,13 +277,13 @@ const styles = StyleSheet.create({
     right: 10,
     top: 16,
     height: 2,
-    backgroundColor: '#e6ddff',
+    backgroundColor: colors.outline,
   },
   envelopeLeft: {
     position: 'absolute',
     width: 52,
     height: 2,
-    backgroundColor: '#e6ddff',
+    backgroundColor: colors.outline,
     left: 6,
     bottom: 18,
     transform: [{ rotate: '28deg' }],
@@ -316,124 +292,79 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 52,
     height: 2,
-    backgroundColor: '#e6ddff',
+    backgroundColor: colors.outline,
     right: 6,
     bottom: 18,
     transform: [{ rotate: '-28deg' }],
   },
   tabs: {
     flexDirection: 'row',
-    gap: 20,
-    marginTop: 18,
+    gap: spacing.xl,
+    marginTop: spacing.lgPlus,
   },
   tabText: {
-    fontSize: 12,
+    fontSize: fontSizes.sm,
     letterSpacing: 2,
     textTransform: 'uppercase',
-    color: '#8d86b1',
-    paddingBottom: 6,
+    color: colors.textSubtle,
+    paddingBottom: spacing.xs,
   },
   tabActive: {
-    color: '#f6f2ff',
+    color: colors.textPrimary,
     borderBottomWidth: 2,
-    borderBottomColor: '#f6f2ff',
-  },
-  form: {
-    width: '100%',
-    backgroundColor: 'rgba(255,255,255,0.04)',
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
-    padding: 20,
-  },
-  inputRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.18)',
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    marginBottom: 16,
-  },
-  inputIcon: {
-    width: 22,
-    textAlign: 'center',
-    color: '#d4caff',
-    fontSize: 16,
-  },
-  input: {
-    flex: 1,
-    fontSize: 16,
-    color: '#f6f2ff',
-    paddingVertical: 0,
+    borderBottomColor: colors.textPrimary,
   },
   toggleButton: {
     paddingHorizontal: 8,
     paddingVertical: 4,
   },
   toggleText: {
-    fontSize: 12,
-    color: '#cfc4ff',
+    fontSize: fontSizes.sm,
+    color: colors.textAccent,
     letterSpacing: 0.4,
   },
-  primaryButton: {
-    backgroundColor: '#c6b6ff',
-    borderRadius: 12,
-    paddingVertical: 12,
-    alignItems: 'center',
-    marginTop: 2,
-  },
-  primaryButtonPressed: {
-    opacity: 0.85,
-  },
-  primaryButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1a1324',
-  },
   helpLink: {
-    marginTop: 12,
+    marginTop: spacing.md,
     alignItems: 'center',
   },
   helpText: {
-    fontSize: 12,
-    color: '#b9b2db',
+    fontSize: fontSizes.sm,
+    color: colors.textMuted,
   },
   status: {
-    marginTop: 12,
-    fontSize: 12,
-    color: '#b9b2db',
+    marginTop: spacing.md,
+    fontSize: fontSizes.sm,
+    color: colors.textMuted,
     textAlign: 'center',
   },
   dividerRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
-    marginTop: 24,
-    marginBottom: 16,
+    gap: spacing.sm,
+    marginTop: spacing.xxl,
+    marginBottom: spacing.lg,
   },
   dividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: 'rgba(255,255,255,0.14)',
+    backgroundColor: colors.divider,
   },
   dividerText: {
-    fontSize: 11,
+    fontSize: fontSizes.xs,
     letterSpacing: 1,
     textTransform: 'uppercase',
-    color: '#8d86b1',
+    color: colors.textSubtle,
   },
   socialRow: {
     flexDirection: 'row',
-    gap: 14,
+    gap: spacing.mdPlus,
   },
   socialButton: {
     width: 56,
     height: 44,
-    borderRadius: 12,
+    borderRadius: radius.md,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.18)',
+    borderColor: colors.borderSubtle,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -441,8 +372,8 @@ const styles = StyleSheet.create({
     opacity: 0.75,
   },
   socialText: {
-    fontSize: 18,
-    color: '#f6f2ff',
+    fontSize: fontSizes.lg,
+    color: colors.textPrimary,
     fontWeight: '600',
   },
 });
