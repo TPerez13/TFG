@@ -82,7 +82,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
       if (res.ok && isAuthResponse(parsed)) {
         const displayName = parsed.user.nombre ?? parsed.user.correo ?? parsed.user.username ?? 'usuario';
         setAuthMsg(`${res.status} -> ${parsed.message} (user: ${displayName})`);
-        navigation.replace('Feed', { user: parsed.user });
+        navigation.replace('Habits', { user: parsed.user });
       } else {
         const fallback = (parsed as { message?: string } | null)?.message ?? raw;
         setAuthMsg(`${res.status} -> ${fallback}`);

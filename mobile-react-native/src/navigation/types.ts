@@ -10,5 +10,6 @@ export type FeedUser = {
 
 export type RootStackParamList = {
   Login: undefined;
+  Habits: { user: FeedUser };
   Feed: { user: FeedUser };
 };

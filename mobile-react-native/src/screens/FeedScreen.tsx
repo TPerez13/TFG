@@ -211,6 +211,15 @@ export default function FeedScreen({ route, navigation }: FeedScreenProps) {
         >
           <Text style={styles.logoutText}>Salir</Text>
         </Pressable>
+        <Pressable
+          style={({ pressed }) => [
+            styles.habitsButton,
+            pressed ? styles.habitsButtonPressed : null,
+          ]}
+          onPress={() => navigation.navigate('Habits', { user })}
+        >
+          <Text style={styles.habitsText}>Volver a mis habitos</Text>
+        </Pressable>
       </ScrollView>
     </SafeAreaView>
   );
@@ -340,5 +349,22 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '600',
     color: '#1a1324',
+  },
+  habitsButton: {
+    marginTop: 12,
+    borderRadius: 12,
+    paddingVertical: 12,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.22)',
+    backgroundColor: 'rgba(255,255,255,0.08)',
+  },
+  habitsButtonPressed: {
+    opacity: 0.8,
+  },
+  habitsText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#f6f2ff',
   },
 });
