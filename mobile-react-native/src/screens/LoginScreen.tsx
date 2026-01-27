@@ -1,21 +1,18 @@
 // Pantalla de inicio de sesion y registro.
 import React, { useState } from 'react';
-import { Platform, Pressable, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
+import type { ImageSourcePropType } from 'react-native';
+import { Image, Pressable, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { LoginRequest, LoginResponse, RegisterRequest, RegisterResponse } from '@muchasvidas/shared';
 import type { RootStackParamList } from '../navigation/types';
 import { Screen } from '../components/layout/Screen';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
+import { apiFetch, setAuthToken } from '../services/api';
 import { baseStyles } from '../theme/components';
-import { colors, fontSizes, radius, spacing } from '../theme/tokens';
+import { colors, fontSizes, spacing } from '../theme/tokens';
 
 type LoginScreenProps = NativeStackScreenProps<RootStackParamList, 'Login'>;
-
-const getBaseUrl = () => {
-  if (Platform.OS === 'android') return 'http://10.0.2.2:3000';
-  return 'http://localhost:3000';
-};
 
 type AuthResponse = LoginResponse | RegisterResponse;
 
@@ -27,6 +24,8 @@ const isAuthResponse = (payload: unknown): payload is AuthResponse => {
   const user = maybe.user as Partial<AuthResponse['user']> | undefined;
   return typeof maybe.message === 'string' && typeof user?.id === 'number';
 };
+
+const logoSource: ImageSourcePropType | null = null;
 
 export default function LoginScreen({ navigation }: LoginScreenProps) {
   // const [status, setStatus] = useState<string>('Press the button to test');
@@ -66,7 +65,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
       const payload: LoginRequest | RegisterRequest = isSignUp
         ? { correo, nombre, password }
         : { correo, password };
-      const res = await fetch(`${getBaseUrl()}/api/${endpoint}`, {
+      const res = await apiFetch(`/${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -82,7 +81,10 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
       if (res.ok && isAuthResponse(parsed)) {
         const displayName = parsed.user.nombre ?? parsed.user.correo ?? parsed.user.username ?? 'usuario';
         setAuthMsg(`${res.status} -> ${parsed.message} (user: ${displayName})`);
-        navigation.replace('Habits', { user: parsed.user });
+        if (parsed.token) {
+          setAuthToken(parsed.token);
+        }
+        navigation.replace('PanelDiario', { user: parsed.user, token: parsed.token });
       } else {
         const fallback = (parsed as { message?: string } | null)?.message ?? raw;
         setAuthMsg(`${res.status} -> ${fallback}`);
@@ -114,222 +116,213 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
 
   return (
     <Screen>
-      <StatusBar barStyle="light-content" />
-      <View pointerEvents="none" style={styles.background}>
-        <View style={styles.glowTop} />
-        <View style={styles.glowBottom} />
-      </View>
-      <ScrollView contentContainerStyle={baseStyles.content} keyboardShouldPersistTaps="handled">
+      <StatusBar barStyle="dark-content" />
+      <ScrollView
+        contentContainerStyle={[baseStyles.content, styles.content]}
+        keyboardShouldPersistTaps="handled"
+      >
         <View style={styles.header}>
-          <View style={styles.logoEnvelope}>
-            <View style={styles.envelopeTop} />
-            <View style={styles.envelopeLeft} />
-            <View style={styles.envelopeRight} />
+          <View style={styles.logoWrap}>
+            {logoSource ? (
+              <Image source={logoSource} style={styles.logoImage} resizeMode="contain" />
+            ) : (
+              <View style={styles.logoFallback}>
+                <Text style={styles.logoFallbackText}>MV</Text>
+              </View>
+            )}
           </View>
-          <View style={styles.tabs}>
-            <Pressable onPress={() => switchMode('signin')}>
-              <Text style={[styles.tabText, mode === 'signin' ? styles.tabActive : null]}>Sign in</Text>
-            </Pressable>
-            <Pressable onPress={() => switchMode('signup')}>
-              <Text style={[styles.tabText, mode === 'signup' ? styles.tabActive : null]}>Sign up</Text>
-            </Pressable>
-          </View>
-          <Text style={styles.subtitle}>{isSignUp ? 'Create your account' : 'Access your account'}</Text>
+          <Text style={styles.title}>{isSignUp ? 'Crear cuenta' : 'Iniciar Sesion'}</Text>
+          <Text style={styles.subtitle}>
+            {isSignUp
+              ? 'Crea tu cuenta para continuar tu camino hacia el bienestar.'
+              : 'Bienvenido de nuevo. Continua con tu camino hacia el bienestar.'}
+          </Text>
         </View>
-        {/*
-        <Text style={styles.title}>Muchas Vidas - Health</Text>
-        <View style={{ height: 12 }} />
-        <Button title="Test /api/health" onPress={checkHealth} />
-        <View style={{ height: 16 }} />
-        <Text selectable style={styles.status}>{status}</Text>
 
-        <View style={{ height: 32 }} />
-        */}
-        <View style={baseStyles.card}>
+        <View style={styles.form}>
           {isSignUp ? (
-            <Input
-              icon="#"
-              placeholder="Nombre"
-              autoCapitalize="words"
-              value={nombre}
-              onChangeText={setNombre}
-            />
+            <>
+              <Text style={styles.label}>Nombre</Text>
+              <Input
+                placeholder="Tu nombre"
+                autoCapitalize="words"
+                value={nombre}
+                onChangeText={setNombre}
+              />
+            </>
           ) : null}
+          <Text style={styles.label}>Correo Electronico</Text>
           <Input
-            icon="@"
-            placeholder="Correo"
+            placeholder="nombre@ejemplo.com"
             autoCapitalize="none"
             keyboardType="email-address"
             value={correo}
             onChangeText={setCorreo}
           />
+          <Text style={styles.label}>Contrasena</Text>
           <Input
-            icon="*"
-            placeholder="Password"
+            placeholder="Tu contrasena"
             autoCapitalize="none"
             secureTextEntry={!showPassword}
             value={password}
             onChangeText={setPassword}
             right={(
               <Pressable
-                style={styles.toggleButton}
+                style={styles.eyeButton}
                 onPress={() => setShowPassword((current) => !current)}
               >
-                <Text style={styles.toggleText}>{showPassword ? 'Ocultar' : 'Ver'}</Text>
+                <View style={[styles.eyeOuter, showPassword ? styles.eyeOuterActive : null]}>
+                  <View style={[styles.eyePupil, showPassword ? styles.eyePupilActive : null]} />
+                </View>
               </Pressable>
             )}
           />
           {isSignUp ? (
-            <Input
-              icon="*"
-              placeholder="Confirm password"
-              autoCapitalize="none"
-              secureTextEntry={!showConfirmPassword}
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-              right={(
-                <Pressable
-                  style={styles.toggleButton}
-                  onPress={() => setShowConfirmPassword((current) => !current)}
-                >
-                  <Text style={styles.toggleText}>{showConfirmPassword ? 'Ocultar' : 'Ver'}</Text>
-                </Pressable>
-              )}
-            />
+            <>
+              <Text style={styles.label}>Confirmar contrasena</Text>
+              <Input
+                placeholder="Repite tu contrasena"
+                autoCapitalize="none"
+                secureTextEntry={!showConfirmPassword}
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                right={(
+                  <Pressable
+                    style={styles.eyeButton}
+                    onPress={() => setShowConfirmPassword((current) => !current)}
+                  >
+                    <View style={[styles.eyeOuter, showConfirmPassword ? styles.eyeOuterActive : null]}>
+                      <View style={[styles.eyePupil, showConfirmPassword ? styles.eyePupilActive : null]} />
+                    </View>
+                  </Pressable>
+                )}
+              />
+            </>
           ) : null}
-          <Button title={isSignUp ? 'Sign up' : 'Sign in'} onPress={handleAuth} />
           {!isSignUp ? (
-            <Pressable style={styles.helpLink}>
-              <Text style={styles.helpText}>Cannot access your account?</Text>
+            <Pressable style={styles.forgotLink}>
+              <Text style={styles.forgotText}>Olvidaste tu contrasena?</Text>
             </Pressable>
           ) : null}
-          <Text selectable style={styles.status}>{authMsg}</Text>
+          <Button
+            title={isSignUp ? 'Crear cuenta ->' : 'Entrar ->'}
+            onPress={handleAuth}
+            style={styles.primaryButton}
+          />
+          {authMsg ? (
+            <Text selectable style={styles.status}>{authMsg}</Text>
+          ) : null}
         </View>
+
         <View style={styles.dividerRow}>
           <View style={styles.dividerLine} />
-          <Text style={styles.dividerText}>{isSignUp ? 'Or sign up with' : 'Or sign in with'}</Text>
+          <View style={styles.dividerDot} />
           <View style={styles.dividerLine} />
         </View>
-        <View style={styles.socialRow}>
-          <Pressable style={({ pressed }) => [styles.socialButton, pressed ? styles.socialButtonPressed : null]}>
-            <Text style={styles.socialText}>f</Text>
-          </Pressable>
-          <Pressable style={({ pressed }) => [styles.socialButton, pressed ? styles.socialButtonPressed : null]}>
-            <Text style={styles.socialText}>g</Text>
-          </Pressable>
-        </View>
+        <Text style={styles.footerText}>
+          {isSignUp ? 'Ya tienes una cuenta?' : 'No tienes una cuenta?'}
+        </Text>
+        <Button
+          title={isSignUp ? 'Iniciar sesion' : 'Crear cuenta'}
+          onPress={() => switchMode(isSignUp ? 'signin' : 'signup')}
+          variant="outline"
+          style={styles.secondaryButton}
+        />
       </ScrollView>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  background: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-  },
-  glowTop: {
-    position: 'absolute',
-    width: 320,
-    height: 320,
-    borderRadius: 160,
-    backgroundColor: colors.glowTop,
-    opacity: 0.45,
-    top: -160,
-    left: -80,
-  },
-  glowBottom: {
-    position: 'absolute',
-    width: 360,
-    height: 360,
-    borderRadius: 180,
-    backgroundColor: colors.glowBottom,
-    opacity: 0.35,
-    bottom: -180,
-    right: -120,
+  content: {
+    flexGrow: 1,
   },
   header: {
     alignItems: 'center',
-    marginBottom: spacing.xxxl,
+    marginBottom: spacing.xxl,
   },
   subtitle: {
     marginTop: spacing.sm,
-    fontSize: fontSizes.md,
-    letterSpacing: 1,
-    textTransform: 'uppercase',
+    fontSize: fontSizes.base,
     color: colors.textMuted,
+    textAlign: 'center',
+    lineHeight: 22,
+    maxWidth: 280,
   },
-  logoEnvelope: {
+  logoWrap: {
     width: 96,
-    height: 72,
-    borderRadius: radius.sm,
-    borderWidth: 2,
-    borderColor: colors.outline,
+    height: 96,
+    borderRadius: 48,
+    backgroundColor: colors.brandSoft,
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: spacing.lg,
   },
-  envelopeTop: {
-    position: 'absolute',
-    left: 10,
-    right: 10,
-    top: 16,
-    height: 2,
-    backgroundColor: colors.outline,
-  },
-  envelopeLeft: {
-    position: 'absolute',
+  logoImage: {
     width: 52,
-    height: 2,
-    backgroundColor: colors.outline,
-    left: 6,
-    bottom: 18,
-    transform: [{ rotate: '28deg' }],
+    height: 52,
   },
-  envelopeRight: {
-    position: 'absolute',
+  logoFallback: {
     width: 52,
-    height: 2,
-    backgroundColor: colors.outline,
-    right: 6,
-    bottom: 18,
-    transform: [{ rotate: '-28deg' }],
+    height: 52,
+    borderRadius: 26,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.accent,
   },
-  tabs: {
-    flexDirection: 'row',
-    gap: spacing.xl,
-    marginTop: spacing.lgPlus,
+  logoFallbackText: {
+    fontSize: fontSizes.lg,
+    fontWeight: '700',
+    color: colors.textOnAccent,
   },
-  tabText: {
-    fontSize: fontSizes.sm,
-    letterSpacing: 2,
-    textTransform: 'uppercase',
-    color: colors.textSubtle,
-    paddingBottom: spacing.xs,
-  },
-  tabActive: {
+  title: {
+    fontSize: 28,
+    fontWeight: '700',
     color: colors.textPrimary,
-    borderBottomWidth: 2,
-    borderBottomColor: colors.textPrimary,
+    textAlign: 'center',
   },
-  toggleButton: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+  form: {
+    width: '100%',
   },
-  toggleText: {
-    fontSize: fontSizes.sm,
-    color: colors.textAccent,
-    letterSpacing: 0.4,
+  label: {
+    fontSize: fontSizes.base,
+    fontWeight: '600',
+    color: colors.textPrimary,
+    marginBottom: spacing.sm,
   },
-  helpLink: {
+  eyeButton: {
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+  },
+  eyeOuter: {
+    width: 22,
+    height: 14,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: colors.textAccent,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  eyeOuterActive: {
+    borderColor: colors.textPrimary,
+  },
+  eyePupil: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: colors.textAccent,
+  },
+  eyePupilActive: {
+    backgroundColor: colors.textPrimary,
+  },
+  forgotLink: {
     marginTop: spacing.md,
     alignItems: 'center',
   },
-  helpText: {
+  forgotText: {
     fontSize: fontSizes.sm,
-    color: colors.textMuted,
+    color: colors.textAccent,
+    fontWeight: '600',
   },
   status: {
     marginTop: spacing.md,
@@ -340,40 +333,34 @@ const styles = StyleSheet.create({
   dividerRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.sm,
     marginTop: spacing.xxl,
-    marginBottom: spacing.lg,
+    marginBottom: spacing.md,
   },
   dividerLine: {
     flex: 1,
     height: 1,
     backgroundColor: colors.divider,
   },
-  dividerText: {
-    fontSize: fontSizes.xs,
-    letterSpacing: 1,
-    textTransform: 'uppercase',
-    color: colors.textSubtle,
+  dividerDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    borderWidth: 2,
+    borderColor: colors.textAccent,
+    marginHorizontal: spacing.sm,
   },
-  socialRow: {
-    flexDirection: 'row',
-    gap: spacing.mdPlus,
+  footerText: {
+    fontSize: fontSizes.sm,
+    color: colors.textMuted,
+    textAlign: 'center',
+    marginBottom: spacing.md,
   },
-  socialButton: {
-    width: 56,
-    height: 44,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    borderColor: colors.borderSubtle,
-    alignItems: 'center',
-    justifyContent: 'center',
+  primaryButton: {
+    width: '100%',
+    marginTop: spacing.lg,
   },
-  socialButtonPressed: {
-    opacity: 0.75,
-  },
-  socialText: {
-    fontSize: fontSizes.lg,
-    color: colors.textPrimary,
-    fontWeight: '600',
+  secondaryButton: {
+    width: '100%',
+    marginTop: spacing.sm,
   },
 });
