@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
 import authRouter from "./routes/auth";
+import habitsRouter from "./routes/habits";
+import usersRouter from "./routes/users";
 import { errorHandler } from "./middleware/errorHandler";
 
 export function createApp() {
@@ -16,6 +18,8 @@ export function createApp() {
 
   // Prefijo común para los endpoints públicos/privados de la API.
   app.use("/api", authRouter);
+  app.use("/api", usersRouter);
+  app.use("/api", habitsRouter);
 
   // Manejo de errores centralizado al final del pipeline.
   app.use(errorHandler);

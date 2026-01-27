@@ -10,7 +10,7 @@ export const baseStyles = StyleSheet.create({
     paddingHorizontal: spacing.xxl,
     paddingTop: spacing.contentTop,
     paddingBottom: spacing.contentBottom,
-    alignItems: 'center',
+    alignItems: 'stretch',
   },
   card: {
     width: '100%',
@@ -19,5 +19,10 @@ export const baseStyles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.surfaceBorder,
     padding: spacing.xl,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.06,
+    shadowRadius: 18,
+    elevation: 3,
   },
 });

@@ -7,6 +7,7 @@ import type {
   UserSummary,
 } from "@muchasvidas/shared";
 import { AppError } from "../utils/errors";
+import { signAccessToken } from "../utils/jwt";
 import type { UserRecord } from "../model/userModel";
 import { createUser, findByEmail } from "../model/userModel";
 
@@ -69,6 +70,7 @@ export async function login(payload: Partial<LoginRequest>): Promise<LoginRespon
   const response: LoginResponse = {
     message: "Inicio de sesion correcto.",
     user: toUserSummary(user),
+    token: signAccessToken(user.id_usuario),
   };
 
   return response;
@@ -100,6 +102,7 @@ export async function register(payload: Partial<RegisterRequest>): Promise<Regis
   const response: RegisterResponse = {
     message: "Registro correcto.",
     user: toUserSummary(user),
+    token: signAccessToken(user.id_usuario),
   };
 
   return response;

@@ -98,14 +98,14 @@ const normalizePreferences = (value?: Record<string, unknown> | string | null): 
 };
 
 export default function FeedScreen({ route, navigation }: FeedScreenProps) {
-  const { user } = route.params;
-  const userId = user.id ?? user.id_usuario;
-  const name = user.nombre ?? user.username ?? 'N/A';
-  const username = user.username;
-  const email = user.correo ?? 'N/A';
-  const createdAt = formatDate(user.f_creacion);
-  const preferences = normalizePreferences(user.preferencias);
-  const greetingName = user.nombre ?? user.username ?? 'Usuario';
+  const user = route.params?.user;
+  const userId = user?.id ?? (user as { id_usuario?: number } | undefined)?.id_usuario;
+  const name = user?.nombre ?? user?.username ?? 'N/A';
+  const username = user?.username;
+  const email = user?.correo ?? 'N/A';
+  const createdAt = formatDate(user?.f_creacion);
+  const preferences = normalizePreferences(user?.preferencias ?? null);
+  const greetingName = user?.nombre ?? user?.username ?? 'Usuario';
   const quietHours = preferences?.quiet_hours;
   const quietHoursText =
     quietHours?.desde || quietHours?.hasta
@@ -216,7 +216,7 @@ export default function FeedScreen({ route, navigation }: FeedScreenProps) {
             styles.habitsButton,
             pressed ? styles.habitsButtonPressed : null,
           ]}
-          onPress={() => navigation.navigate('Habits', { user })}
+          onPress={() => navigation.navigate('Habits', { user, token: route.params?.token })}
         >
           <Text style={styles.habitsText}>Volver a mis habitos</Text>
         </Pressable>

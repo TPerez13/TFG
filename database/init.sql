@@ -23,6 +23,15 @@ VALUES (
 )
 ON CONFLICT (correo) DO NOTHING;
 
+INSERT INTO usuario (correo, nombre, hash_clave, preferencias)
+VALUES (
+  'pablo',
+  'pablo',
+  '$2a$10$3g.TssYwxUf7760a.TWb8.y02H85x0iwsRnmZQXmXaIvtFAIp3.MW',
+  NULL
+)
+ON CONFLICT (correo) DO NOTHING;
+
 -- =========================
 -- TABLA: TIPO_HABITO (catálogo)
 -- =========================

@@ -6,6 +6,7 @@ import type { RootStackParamList } from './navigation/types';
 import FeedScreen from './screens/FeedScreen';
 import HabitsScreen from './screens/HabitsScreen';
 import LoginScreen from './screens/LoginScreen';
+import PanelDiarioScreen from './screens/PanelDiarioScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -14,6 +15,7 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="PanelDiario" component={PanelDiarioScreen} />
         <Stack.Screen name="Habits" component={HabitsScreen} />
         <Stack.Screen name="Feed" component={FeedScreen} />
       </Stack.Navigator>

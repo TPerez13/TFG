@@ -11,11 +11,12 @@ type HabitsScreenProps = NativeStackScreenProps<RootStackParamList, 'Habits'>;
 const habits = ['Nutrition', 'Exercise', 'Meditation', 'Dream', 'Hydration'];
 
 export default function HabitsScreen({ navigation, route }: HabitsScreenProps) {
-  const { user } = route.params;
+  const user = route.params?.user;
+  const token = route.params?.token;
 
   return (
     <Screen>
-      <StatusBar barStyle="light-content" />
+      <StatusBar barStyle="dark-content" />
       <View pointerEvents="none" style={styles.background}>
         <View style={styles.glowTop} />
         <View style={styles.glowBottom} />
@@ -34,7 +35,7 @@ export default function HabitsScreen({ navigation, route }: HabitsScreenProps) {
         <Pressable
           accessibilityLabel="Perfil"
           style={({ pressed }) => [styles.navButton, pressed ? styles.navButtonPressed : null]}
-          onPress={() => navigation.navigate('Feed', { user })}
+          onPress={() => navigation.navigate('Feed', { user, token })}
         >
           <View style={styles.userIcon}>
             <View style={styles.userHead} />
