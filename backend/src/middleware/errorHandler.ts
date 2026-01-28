@@ -1,7 +1,10 @@
 import type { Request, Response, NextFunction } from "express";
 import { AppError } from "../utils/errors";
 
-// Middleware centralizado: traduce errores conocidos en respuestas HTTP y loguea el resto.
+/**
+ * Centralized error middleware.
+ * Translates domain errors into HTTP responses and logs unexpected failures.
+ */
 export function errorHandler(
   err: unknown,
   _req: Request,

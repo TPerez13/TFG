@@ -1,3 +1,7 @@
+/**
+ * Application-level error with an HTTP status code.
+ * Used to propagate domain errors to the HTTP layer.
+ */
 export class AppError extends Error {
   statusCode: number;
 

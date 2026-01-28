@@ -25,16 +25,23 @@ const toHabitEntry = (record: HabitEntryRecord): HabitEntry => ({
   notas: record.notas ?? null,
 });
 
+/**
+ * GET /api/habits/entries?from=...&to=...
+ * Returns habit entries for the authenticated user within a date-time range.
+ * The response includes { entries } sorted by registration date.
+ */
 export async function listEntries(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     const authReq = req as AuthRequest;
     const userId = authReq.userId;
+    console.log("[HABITS] /habits/entries userId:", userId ?? "missing");
     if (!userId) {
       throw new AppError("Token invalido.", 401);
     }
 
     const from = typeof req.query.from === "string" ? req.query.from : undefined;
     const to = typeof req.query.to === "string" ? req.query.to : undefined;
+    console.log("[HABITS] range:", { from, to });
     if (!from || !to) {
       throw new AppError("from y to son requeridos.", 400);
     }

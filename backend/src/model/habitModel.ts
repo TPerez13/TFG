@@ -1,5 +1,9 @@
 import { pool } from "../db";
 
+/**
+ * Habit entry row representation as stored in the database.
+ * Mirrors registro_habito columns and their semantics.
+ */
 export interface HabitEntryRecord {
   id_registro_habito: number;
   id_usuario: number;
@@ -10,6 +14,10 @@ export interface HabitEntryRecord {
   notas: string | null;
 }
 
+/**
+ * Lists habit entries for a user within a date-time range.
+ * Side effects: database read.
+ */
 export async function listEntriesForUser(
   userId: number,
   from: string,

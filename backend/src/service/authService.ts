@@ -46,7 +46,11 @@ const toUserSummary = (user: UserRecord): UserSummary => ({
   f_creacion: toIsoString(user.f_creacion),
 });
 
-// Logica de negocio de autenticacion: valida input, busca usuario y compara el hash de contrasena.
+/**
+ * Business logic for user authentication.
+ * Validates input, queries the user repository and compares password hashes.
+ * Side effects: database reads.
+ */
 export async function login(payload: Partial<LoginRequest>): Promise<LoginResponse> {
   const { correo, username, password } = payload || {};
   const identifier = correo ?? username;
@@ -76,7 +80,11 @@ export async function login(payload: Partial<LoginRequest>): Promise<LoginRespon
   return response;
 }
 
-// Registro de usuario: valida input, evita duplicados y almacena el hash.
+/**
+ * Business logic for user registration.
+ * Validates input, enforces uniqueness and stores the password hash.
+ * Side effects: database reads and writes.
+ */
 export async function register(payload: Partial<RegisterRequest>): Promise<RegisterResponse> {
   const { correo, nombre, password, preferencias } = payload || {};
 
@@ -91,7 +99,7 @@ export async function register(payload: Partial<RegisterRequest>): Promise<Regis
   }
 
   const hash = await bcrypt.hash(password, 10);
-  // TODO: validar/normalizar preferencias cuando el contrato este definido.
+  // TODO: validate/normalize preferences when the contract is defined.
   const user = await createUser({
     correo,
     nombre,

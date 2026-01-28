@@ -2,6 +2,11 @@ import { config } from "./config";
 import { verifyConnection } from "./db";
 import { createApp } from "./app";
 
+/**
+ * Bootstraps the HTTP server.
+ * Loads configuration, verifies the database connection, creates the Express app
+ * and starts listening on the configured port.
+ */
 async function bootstrap() {
   try {
     await verifyConnection();
@@ -19,4 +24,3 @@ async function bootstrap() {
 }
 
 bootstrap();
-// bootstrap verifica la conexión a la base de datos y levanta la app configurada en createApp().

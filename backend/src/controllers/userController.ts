@@ -23,9 +23,15 @@ const toUserSummary = (user: UserRecord): UserSummary => ({
   f_creacion: toIsoString(user.f_creacion),
 });
 
+/**
+ * GET /api/users/me
+ * Returns the authenticated user's summary.
+ * Requires a valid Bearer token and replies with { user } on success.
+ */
 export async function getMe(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
   try {
     const userId = req.userId;
+    console.log("[USERS] /users/me userId:", userId ?? "missing");
     if (!userId) {
       throw new AppError("Token invalido.", 401);
     }
