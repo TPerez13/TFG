@@ -12,6 +12,7 @@ export function errorHandler(
   _next: NextFunction
 ): Response | void {
   if (err instanceof AppError) {
+    console.error(`[ERROR] ${err.statusCode} - ${err.message}`);
     return res.status(err.statusCode).json({ message: err.message });
   }
 

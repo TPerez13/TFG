@@ -37,6 +37,7 @@ export async function getMe(req: AuthRequest, res: Response, next: NextFunction)
     }
 
     const user = await findById(userId);
+    console.log("[USERS] findById result:", user ? "found" : "null");
     if (!user) {
       throw new AppError("Usuario no encontrado.", 404);
     }

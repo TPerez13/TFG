@@ -9,6 +9,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import Svg, { Circle, G } from 'react-native-svg';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/types';
 import { Screen } from '../components/layout/Screen';
@@ -42,46 +43,36 @@ const ProgressRing = ({ progress }: { progress: number }) => {
   const size = 180;
   const strokeWidth = 14;
   const clamped = Math.max(0, Math.min(1, progress));
-  const rightRotation = clamped <= 0.5 ? clamped * 360 : 180;
-  const leftRotation = clamped <= 0.5 ? 0 : (clamped - 0.5) * 360;
+  const radius = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const dashOffset = circumference * (1 - clamped);
   const innerSize = size - strokeWidth * 2;
 
   return (
     <View style={[styles.ringContainer, { width: size, height: size }]}>
-      <View
-        style={[
-          styles.ringTrack,
-          { width: size, height: size, borderRadius: size / 2, borderWidth: strokeWidth },
-        ]}
-      />
-      <View style={[styles.ringHalf, { width: size / 2, height: size, left: 0 }]}>
-        <View
-          style={[
-            styles.ringProgress,
-            {
-              width: size,
-              height: size,
-              borderRadius: size / 2,
-              borderWidth: strokeWidth,
-              transform: [{ rotateZ: `${leftRotation}deg` }],
-            },
-          ]}
-        />
-      </View>
-      <View style={[styles.ringHalf, { width: size / 2, height: size, right: 0 }]}>
-        <View
-          style={[
-            styles.ringProgress,
-            {
-              width: size,
-              height: size,
-              borderRadius: size / 2,
-              borderWidth: strokeWidth,
-              transform: [{ rotateZ: `${rightRotation}deg` }],
-            },
-          ]}
-        />
-      </View>
+      <Svg width={size} height={size} style={styles.ringSvg}>
+        <G rotation="-90" origin={`${size / 2}, ${size / 2}`}>
+          <Circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            stroke={colors.surfaceBorder}
+            strokeWidth={strokeWidth}
+            fill="none"
+          />
+          <Circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            stroke={colors.accent}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeDasharray={`${circumference} ${circumference}`}
+            strokeDashoffset={dashOffset}
+            fill="none"
+          />
+        </G>
+      </Svg>
       <View
         style={[
           styles.ringInner,
@@ -376,23 +367,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  ringTrack: {
+  ringSvg: {
     position: 'absolute',
-    borderColor: colors.surfaceBorder,
-  },
-  ringHalf: {
-    position: 'absolute',
-    overflow: 'hidden',
-    top: 0,
-  },
-  ringProgress: {
-    position: 'absolute',
-    borderColor: colors.accent,
   },
   ringInner: {
     position: 'absolute',
     backgroundColor: colors.bg,
-    borderRadius: radius.lg,
   },
   ringLabel: {
     position: 'absolute',
