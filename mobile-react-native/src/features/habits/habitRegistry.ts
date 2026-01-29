@@ -29,7 +29,7 @@ export const habitRegistry: HabitDefinition[] = [
     unit: 'vasos',
     accentColor: '#2d7ff9',
     softColor: '#eaf3ff',
-    action: { label: 'Anadir vaso +', intent: 'quick', routeName: 'Habits' },
+    action: { label: 'Anadir vaso +', intent: 'quick', routeName: 'HabitosTab' },
     formatSummary: (current, target) => `${current} de ${target} vasos`,
   },
   {
@@ -41,7 +41,7 @@ export const habitRegistry: HabitDefinition[] = [
     unit: 'min',
     accentColor: '#f07f2f',
     softColor: '#fff1e6',
-    action: { label: 'Comenzar', intent: 'navigate', routeName: 'Habits' },
+    action: { label: 'Comenzar', intent: 'navigate', routeName: 'HabitosTab' },
     formatSummary: (current, target) =>
       current > 0 ? `${current} de ${target} min` : `Meta: ${target} minutos`,
   },

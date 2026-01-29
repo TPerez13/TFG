@@ -4,15 +4,16 @@ import type { ImageSourcePropType } from 'react-native';
 import { Image, Pressable, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { LoginRequest, LoginResponse, RegisterRequest, RegisterResponse } from '@muchasvidas/shared';
-import type { RootStackParamList } from '../navigation/types';
+import type { AuthStackParamList } from '../navigation/types';
 import { Screen } from '../components/layout/Screen';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
-import { apiFetch, setAuthToken } from '../services/api';
+import { apiFetch } from '../services/api';
+import { useAuth } from '../navigation/AuthContext';
 import { baseStyles } from '../theme/components';
 import { colors, fontSizes, spacing } from '../theme/tokens';
 
-type LoginScreenProps = NativeStackScreenProps<RootStackParamList, 'Login'>;
+type LoginScreenProps = NativeStackScreenProps<AuthStackParamList, 'Login'>;
 
 type AuthResponse = LoginResponse | RegisterResponse;
 
@@ -29,6 +30,7 @@ const logoSource: ImageSourcePropType | null = null;
 
 export default function LoginScreen({ navigation }: LoginScreenProps) {
   // const [status, setStatus] = useState<string>('Press the button to test');
+  const { signIn } = useAuth();
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [nombre, setNombre] = useState<string>('');
   const [correo, setCorreo] = useState<string>('');
@@ -82,9 +84,10 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
         const displayName = parsed.user.nombre ?? parsed.user.correo ?? parsed.user.username ?? 'usuario';
         setAuthMsg(`${res.status} -> ${parsed.message} (user: ${displayName})`);
         if (parsed.token) {
-          setAuthToken(parsed.token);
+          await signIn(parsed.token);
+        } else {
+          setAuthMsg('Login correcto, pero no se recibio token.');
         }
-        navigation.replace('PanelDiario', { user: parsed.user, token: parsed.token });
       } else {
         const fallback = (parsed as { message?: string } | null)?.message ?? raw;
         setAuthMsg(`${res.status} -> ${fallback}`);

@@ -12,11 +12,13 @@
   },
   "dependencies": {
     "@muchasvidas/shared": "1.0.0",
+    "@react-native-async-storage/async-storage": "2.2.0",
+    "@react-navigation/bottom-tabs": "^7.10.1",
     "expo": "~54.0.0",
     "expo-status-bar": "~3.0.8",
     "react": "19.1.0",
     "react-native": "0.81.5",
-    "react-native-svg": "15.7.1"
+    "react-native-svg": "15.12.1"
   },
   "devDependencies": {
     "@types/react": "~19.1.4",

@@ -11,16 +11,16 @@ import {
 } from 'react-native';
 import Svg, { Circle, G } from 'react-native-svg';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type { RootStackParamList } from '../navigation/types';
+import type { HomeStackParamList } from '../navigation/types';
 import { Screen } from '../components/layout/Screen';
 import { HabitCard } from '../components/HabitCard';
 import { habitRegistry } from '../features/habits/habitRegistry';
-import { apiFetch, setAuthToken } from '../services/api';
+import { apiFetch } from '../services/api';
 import type { HabitEntry, User } from '../types/models';
 import { baseStyles } from '../theme/components';
-import { colors, fontSizes, radius, spacing } from '../theme/tokens';
+import { colors, fontSizes, spacing } from '../theme/tokens';
 
-type PanelDiarioScreenProps = NativeStackScreenProps<RootStackParamList, 'PanelDiario'>;
+type PanelDiarioScreenProps = NativeStackScreenProps<HomeStackParamList, 'PanelDiario'>;
 
 type HabitState = {
   id: string;
@@ -91,17 +91,11 @@ const ProgressRing = ({ progress }: { progress: number }) => {
   );
 };
 
-export default function PanelDiarioScreen({ navigation, route }: PanelDiarioScreenProps) {
-  const [user, setUser] = useState<User | null>(route.params?.user ?? null);
+export default function PanelDiarioScreen({ navigation }: PanelDiarioScreenProps) {
+  const [user, setUser] = useState<User | null>(null);
   const [entries, setEntries] = useState<HabitEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (route.params?.token) {
-      setAuthToken(route.params.token);
-    }
-  }, [route.params?.token]);
 
   const loadDashboard = useCallback(async () => {
     setLoading(true);
@@ -180,11 +174,11 @@ export default function PanelDiarioScreen({ navigation, route }: PanelDiarioScre
     if (!habit?.action) return;
 
     if (habit.action.intent === 'navigate' && habit.action.routeName) {
-      const userParam = user ?? undefined;
-      navigation.navigate(
-        habit.action.routeName as never,
-        { user: userParam, token: route.params?.token } as never
-      );
+      const parent = navigation.getParent();
+      if (parent) {
+        parent.navigate(habit.action.routeName as never);
+        return;
+      }
       return;
     }
 

@@ -1,19 +1,16 @@
 // Pantalla principal de habitos.
 import React from 'react';
-import { Pressable, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { StatusBar, StyleSheet, Text, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Screen } from '../components/layout/Screen';
-import type { RootStackParamList } from '../navigation/types';
-import { colors, radius, spacing } from '../theme/tokens';
+import type { HabitsStackParamList } from '../navigation/types';
+import { colors, spacing } from '../theme/tokens';
 
-type HabitsScreenProps = NativeStackScreenProps<RootStackParamList, 'Habits'>;
+type HabitsScreenProps = NativeStackScreenProps<HabitsStackParamList, 'Habits'>;
 
 const habits = ['Nutrition', 'Exercise', 'Meditation', 'Dream', 'Hydration'];
 
-export default function HabitsScreen({ navigation, route }: HabitsScreenProps) {
-  const user = route.params?.user;
-  const token = route.params?.token;
-
+export default function HabitsScreen({}: HabitsScreenProps) {
   return (
     <Screen>
       <StatusBar barStyle="dark-content" />
@@ -30,27 +27,6 @@ export default function HabitsScreen({ navigation, route }: HabitsScreenProps) {
             </Text>
           ))}
         </View>
-      </View>
-      <View style={styles.navBar}>
-        <Pressable
-          accessibilityLabel="Perfil"
-          style={({ pressed }) => [styles.navButton, pressed ? styles.navButtonPressed : null]}
-          onPress={() => navigation.navigate('Feed', { user, token })}
-        >
-          <View style={styles.userIcon}>
-            <View style={styles.userHead} />
-            <View style={styles.userBody} />
-          </View>
-        </Pressable>
-        <Pressable
-          accessibilityLabel="Ideas"
-          style={({ pressed }) => [styles.navButton, pressed ? styles.navButtonPressed : null]}
-        >
-          <View style={styles.bulbIcon}>
-            <View style={styles.bulbGlass} />
-            <View style={styles.bulbBase} />
-          </View>
-        </Pressable>
       </View>
     </Screen>
   );
@@ -106,68 +82,5 @@ const styles = StyleSheet.create({
     fontSize: 22,
     color: colors.textMuted,
     letterSpacing: 0.4,
-  },
-  navBar: {
-    position: 'absolute',
-    left: spacing.xxxl,
-    right: spacing.xxxl,
-    bottom: spacing.xxl,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  navButton: {
-    width: 48,
-    height: 48,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    borderColor: colors.borderSubtle,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.surface,
-  },
-  navButtonPressed: {
-    opacity: 0.75,
-  },
-  userIcon: {
-    width: 22,
-    height: 22,
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-  },
-  userHead: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    borderWidth: 1.6,
-    borderColor: colors.icon,
-    marginBottom: 2,
-  },
-  userBody: {
-    width: 18,
-    height: 8,
-    borderRadius: 4,
-    borderWidth: 1.6,
-    borderColor: colors.icon,
-  },
-  bulbIcon: {
-    width: 22,
-    height: 24,
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-  bulbGlass: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    borderWidth: 1.6,
-    borderColor: colors.icon,
-  },
-  bulbBase: {
-    marginTop: 3,
-    width: 10,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: colors.icon,
   },
 });

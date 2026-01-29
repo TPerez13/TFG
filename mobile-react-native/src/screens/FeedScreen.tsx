@@ -2,9 +2,10 @@
 import React from 'react';
 import { Pressable, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type { RootStackParamList } from '../navigation/types';
+import type { ProfileStackParamList } from '../navigation/types';
+import { useAuth } from '../navigation/AuthContext';
 
-type FeedScreenProps = NativeStackScreenProps<RootStackParamList, 'Feed'>;
+type FeedScreenProps = NativeStackScreenProps<ProfileStackParamList, 'Feed'>;
 
 const formatDate = (value?: string) => {
   if (!value) return 'N/A';
@@ -98,6 +99,7 @@ const normalizePreferences = (value?: Record<string, unknown> | string | null): 
 };
 
 export default function FeedScreen({ route, navigation }: FeedScreenProps) {
+  const { signOut } = useAuth();
   const user = route.params?.user;
   const userId = user?.id ?? (user as { id_usuario?: number } | undefined)?.id_usuario;
   const name = user?.nombre ?? user?.username ?? 'N/A';
@@ -207,7 +209,7 @@ export default function FeedScreen({ route, navigation }: FeedScreenProps) {
             styles.logoutButton,
             pressed ? styles.logoutButtonPressed : null,
           ]}
-          onPress={() => navigation.replace('Login')}
+          onPress={() => signOut()}
         >
           <Text style={styles.logoutText}>Salir</Text>
         </Pressable>
@@ -216,7 +218,7 @@ export default function FeedScreen({ route, navigation }: FeedScreenProps) {
             styles.habitsButton,
             pressed ? styles.habitsButtonPressed : null,
           ]}
-          onPress={() => navigation.navigate('Habits', { user, token: route.params?.token })}
+          onPress={() => navigation.getParent()?.navigate('HabitosTab' as never)}
         >
           <Text style={styles.habitsText}>Volver a mis habitos</Text>
         </Pressable>
