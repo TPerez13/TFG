@@ -51,3 +51,39 @@ export type HabitSummary = {
   progreso: number;
   unidad?: string | null;
 };
+
+export type NotificationType = "REMINDER" | "ACHIEVEMENT" | "CHALLENGE" | "SYSTEM";
+
+export type Notification = {
+  id: number;
+  userId: number;
+  title: string;
+  body: string;
+  type: NotificationType;
+  read: boolean;
+  readAt?: string | null;
+  scheduledAt?: string | null;
+  sentAt?: string | null;
+  status?: string | null;
+  metadata?: Record<string, unknown> | null;
+  deepLink?: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type NotificationSettings = {
+  enabled: boolean;
+  reminders: boolean;
+  achievements: boolean;
+  challenges: boolean;
+  system: boolean;
+};
+
+export type NotificationListResponse = {
+  items: Notification[];
+  nextCursor: string | null;
+};
+
+export type NotificationUnreadCountResponse = {
+  count: number;
+};

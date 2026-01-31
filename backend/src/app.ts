@@ -3,6 +3,7 @@ import cors from "cors";
 import authRouter from "./routes/auth";
 import habitsRouter from "./routes/habits";
 import usersRouter from "./routes/users";
+import notificationsRouter from "./routes/notifications";
 import { errorHandler } from "./middleware/errorHandler";
 
 /**
@@ -27,6 +28,7 @@ export function createApp() {
   app.use("/api", authRouter);
   app.use("/api", usersRouter);
   app.use("/api", habitsRouter);
+  app.use("/api", notificationsRouter);
 
   app.use(errorHandler);
 

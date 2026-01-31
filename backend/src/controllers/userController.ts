@@ -2,7 +2,7 @@ import type { Response, NextFunction } from "express";
 import type { UserSummary } from "@muchasvidas/shared";
 import type { AuthRequest } from "../middleware/auth";
 import { AppError } from "../utils/errors";
-import { findById } from "../model/userModel";
+import { findById, updatePreferences } from "../model/userModel";
 import type { UserRecord } from "../model/userModel";
 
 const toIsoString = (value: unknown): string | undefined => {
@@ -43,6 +43,25 @@ export async function getMe(req: AuthRequest, res: Response, next: NextFunction)
     }
 
     res.json({ user: toUserSummary(user) });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function updateMe(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const userId = req.userId;
+    if (!userId) {
+      throw new AppError("Token invalido.", 401);
+    }
+
+    const preferences = (req.body as { preferencias?: Record<string, unknown> })?.preferencias;
+    if (!preferences || typeof preferences !== "object") {
+      throw new AppError("Preferencias invalidas.", 400);
+    }
+
+    const updated = await updatePreferences(userId, preferences);
+    res.json({ preferencias: updated });
   } catch (error) {
     next(error);
   }

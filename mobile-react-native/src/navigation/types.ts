@@ -20,6 +20,11 @@ export type ProgressStackParamList = {
 export type ProfileStackParamList = {
   Profile: undefined;
   Feed?: { user?: User } | undefined;
+  NotificationDetail: { notificationId: number };
+  NotificationSettings: undefined;
+  Privacy: undefined;
+  HelpSupport: undefined;
+  AboutApp: undefined;
 };
 
 export type AppTabParamList = {

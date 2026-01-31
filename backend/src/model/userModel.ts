@@ -24,6 +24,43 @@ export interface CreateUserInput {
   preferencias: Record<string, unknown> | null;
 }
 
+export async function updateNotificationSettings(
+  userId: number,
+  settings: Record<string, boolean>
+): Promise<Record<string, boolean>> {
+  const result = await pool.query<{ preferencias: Record<string, unknown> | null }>(
+    `UPDATE usuario
+        SET preferencias = jsonb_set(
+          COALESCE(preferencias, '{}'::jsonb),
+          '{notificationSettings}',
+          $2::jsonb,
+          true
+        )
+      WHERE id_usuario = $1
+      RETURNING preferencias`,
+    [userId, JSON.stringify(settings)]
+  );
+
+  const prefs = result.rows[0]?.preferencias ?? {};
+  const current = (prefs as { notificationSettings?: Record<string, boolean> }).notificationSettings;
+  return current ?? settings;
+}
+
+export async function updatePreferences(
+  userId: number,
+  preferences: Record<string, unknown>
+): Promise<Record<string, unknown>> {
+  const result = await pool.query<{ preferencias: Record<string, unknown> | null }>(
+    `UPDATE usuario
+        SET preferencias = COALESCE(preferencias, '{}'::jsonb) || $2::jsonb
+      WHERE id_usuario = $1
+      RETURNING preferencias`,
+    [userId, JSON.stringify(preferences)]
+  );
+
+  return result.rows[0]?.preferencias ?? preferences;
+}
+
 /**
  * Retrieves a user by primary key.
  * Side effects: database read.

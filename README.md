@@ -37,6 +37,12 @@ Los valores por defecto enlazan con el servicio de PostgreSQL definido en `docke
 ### Endpoints de referencia
 - `GET /api/health`: estado del servicio.
 - `POST /api/login` (ver `packages/shared` para el contrato `LoginRequest`/`LoginResponse`).
+- `GET /api/notifications`: listado paginado de notificaciones (auth).
+- `GET /api/notifications/unread-count`: contador de no leidas (auth).
+- `PATCH /api/notifications/:id/read`: marca leida/no leida (auth).
+- `PATCH /api/notifications/read-all`: marca todas como leidas (auth).
+- `DELETE /api/notifications/:id`: elimina notificacion (auth).
+- `PUT /api/notifications/settings`: guarda preferencias (auth).
 
 ### Paquete compartido
 `@muchasvidas/shared` expone los DTOs usados tanto por el backend como por la app móvil. Modifica `packages/shared/src/index.ts` y ejecuta:

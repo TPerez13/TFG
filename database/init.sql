@@ -155,10 +155,16 @@ CREATE TABLE IF NOT EXISTS notificacion (
   id_usuario      INT NOT NULL,
   titulo          TEXT NOT NULL,
   cuerpo          TEXT NOT NULL,
+  tipo            TEXT NOT NULL DEFAULT 'SYSTEM' CHECK (tipo IN ('REMINDER','ACHIEVEMENT','CHALLENGE','SYSTEM')),
+  leida           BOOLEAN NOT NULL DEFAULT FALSE,
+  f_leida         TIMESTAMPTZ,
   f_programada    TIMESTAMPTZ,
   f_envio         TIMESTAMPTZ,
   estado          TEXT NOT NULL CHECK (estado IN ('programada','enviada','fallida')),
   metadatos       JSONB,
+  deep_link       TEXT,
+  created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
   CONSTRAINT fk_notificacion_usuario
     FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE
 );
@@ -166,3 +172,24 @@ CREATE TABLE IF NOT EXISTS notificacion (
 -- Índice útil para planificaciones/consultas por usuario y fecha
 CREATE INDEX IF NOT EXISTS idx_notificacion_user_programada
   ON notificacion (id_usuario, f_programada);
+
+CREATE INDEX IF NOT EXISTS idx_notificacion_user_created
+  ON notificacion (id_usuario, created_at);
+
+CREATE TABLE IF NOT EXISTS user_device (
+  id_user_device SERIAL PRIMARY KEY,
+  id_usuario INT NOT NULL,
+  platform TEXT NOT NULL,
+  expo_push_token TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  last_seen_at TIMESTAMPTZ,
+  CONSTRAINT fk_user_device_usuario
+    FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE
+);
+
+ALTER TABLE notificacion ADD COLUMN IF NOT EXISTS tipo TEXT NOT NULL DEFAULT 'SYSTEM';
+ALTER TABLE notificacion ADD COLUMN IF NOT EXISTS leida BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE notificacion ADD COLUMN IF NOT EXISTS f_leida TIMESTAMPTZ;
+ALTER TABLE notificacion ADD COLUMN IF NOT EXISTS deep_link TEXT;
+ALTER TABLE notificacion ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ NOT NULL DEFAULT now();
+ALTER TABLE notificacion ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT now();

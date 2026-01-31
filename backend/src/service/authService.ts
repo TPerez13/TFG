@@ -26,6 +26,26 @@ const DEFAULT_PREFERENCIAS: Record<string, unknown> = {
     desde: "23:00",
     hasta: "07:00",
   },
+  notificaciones: {
+    enabled: true,
+    reminders: true,
+    achievements: true,
+    challenges: true,
+    system: true,
+    hydration: true,
+    nutrition: true,
+    exercise: true,
+    sleep: true,
+    gamification: true,
+    weeklyReport: false,
+    weeklyDay: "L",
+    weeklyTime: "08:00",
+    pushEnabled: true,
+    emailEnabled: false,
+    quietHoursEnabled: false,
+    quietFrom: "22:00",
+    quietTo: "07:00",
+  },
 };
 
 const toIsoString = (value: unknown): string | undefined => {
