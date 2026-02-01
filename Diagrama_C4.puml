@@ -1,0 +1,18 @@
+@startuml
+!include <C4/C4_Container>
+
+title Diagrama C4 - Nivel Contenedores (MuchasVidas)
+
+Person(user, "Usuario", "Persona que usa la app móvil")
+
+System_Boundary(system, "MuchasVidas") {
+Container(mobile, "Aplicación móvil", "React Native", "Cliente móvil para registro y seguimiento de hábitos")
+Container(api, "Backend API", "Node.js + Express", "API REST con lógica de negocio y autenticación")
+ContainerDb(db, "Base de datos", "PostgreSQL", "Persistencia de usuarios, hábitos, notificaciones y progreso")
+}
+
+Rel(user, mobile, "Usa", "Interacción UI")
+Rel(mobile, api, "Consume", "HTTPS/REST + JSON")
+Rel(api, db, "Lee/Escribe", "SQL")
+
+@enduml

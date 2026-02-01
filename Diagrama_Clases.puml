@@ -1,0 +1,216 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+' === Entidades de dominio ===
+class Usuario <<Entidad>> {
++id: int
++correo: string
++nombre: string
++hashClave: string
++preferencias: JSON
++fechaCreacion: DateTime
+}
+
+class TipoHabito <<Entidad>> {
++id: int
++nombre: string
++descripcion: string
+}
+
+class RegistroHabito <<Entidad>> {
++id: int
++fechaRegistro: DateTime
++valor: number
++unidad: string
++notas: string
+}
+
+class Recordatorio <<Entidad>> {
++id: int
++programacion: JSON
++activo: boolean
++fechaCreacion: DateTime
+}
+
+class Notificacion <<Entidad>> {
++id: int
++titulo: string
++cuerpo: string
++tipo: NotificationType
++leida: boolean
++fechaLeida: DateTime
++fechaProgramada: DateTime
++fechaEnvio: DateTime
++estado: string
++metadatos: JSON
++deepLink: string
++createdAt: DateTime
++updatedAt: DateTime
+}
+
+class Logro <<Entidad>> {
++id: int
++nombre: string
++descripcion: string
++criterio: JSON
++puntos: int
+}
+
+class UsuarioLogro <<Entidad>> {
++id: int
++fechaObtencion: DateTime
++puntos: int
+}
+
+class Reto <<Entidad>> {
++id: int
++nombre: string
++descripcion: string
++objetivo: JSON
++fechaInicio: DateTime
++fechaFin: DateTime
+}
+
+class UsuarioReto <<Entidad>> {
++id: int
++estado: string
++progreso: number
++fechaInscripcion: DateTime
+}
+
+class DispositivoUsuario <<Entidad>> {
++id: int
++plataforma: string
++expoPushToken: string
++createdAt: DateTime
++lastSeenAt: DateTime
+}
+
+enum NotificationType {
+REMINDER
+ACHIEVEMENT
+CHALLENGE
+SYSTEM
+}
+
+' === DTOs principales (API compartida) ===
+class UserSummary <<DTO>> {
++id: int
++correo: string
++nombre: string
++preferencias: JSON
++fechaCreacion: DateTime
+}
+
+class LoginRequest <<DTO>> {
++correo: string
++username: string
++password: string
+}
+
+class LoginResponse <<DTO>> {
++message: string
++token: string
++user: UserSummary
+}
+
+class RegisterRequest <<DTO>> {
++correo: string
++nombre: string
++password: string
++preferencias: JSON
+}
+
+class RegisterResponse <<DTO>> {
++message: string
++token: string
++user: UserSummary
+}
+
+class HabitEntry <<DTO>> {
++id: int
++userId: int
++habitTypeId: int
++fechaRegistro: DateTime
++valor: number
++unidad: string
++notas: string
+}
+
+class Notification <<DTO>> {
++id: int
++userId: int
++title: string
++body: string
++type: NotificationType
++read: boolean
++readAt: DateTime
++scheduledAt: DateTime
++sentAt: DateTime
++status: string
++metadata: JSON
++deepLink: string
++createdAt: DateTime
++updatedAt: DateTime
+}
+
+class NotificationListResponse <<DTO>> {
++items: Notification[*]
++nextCursor: string
+}
+
+class NotificationUnreadCountResponse <<DTO>> {
++count: int
+}
+
+class NotificationSettings <<DTO>> {
++enabled: boolean
++reminders: boolean
++achievements: boolean
++challenges: boolean
++system: boolean
+}
+
+' === Servicios de aplicacion ===
+class AuthService <<Servicio>> {
++login(payload: LoginRequest): LoginResponse
++register(payload: RegisterRequest): RegisterResponse
+}
+
+class NotificationService <<Servicio>> {
++createNotificationForUser(userId: int, type: NotificationType, title: string, body?: string): Notificacion
++seedNotificationsForUser(userId: int): void
+}
+
+' === Relaciones ===
+Usuario "1" -- "0.." RegistroHabito
+TipoHabito "1" o-- "0..*" RegistroHabito
+
+Usuario "1" -- "0.." Recordatorio
+TipoHabito "1" o-- "0..*" Recordatorio
+
+Usuario "1" -- "0.." Notificacion
+Usuario "1" -- "0.." UsuarioLogro
+Logro "1" o-- "0..*" UsuarioLogro
+
+Usuario "1" -- "0.." UsuarioReto
+Reto "1" o-- "0..*" UsuarioReto
+
+Usuario "1" -- "0.." DispositivoUsuario
+Usuario "1" o-- "0..1" NotificationSettings
+
+NotificationListResponse "1" o-- "0..*" Notification
+
+UserSummary ..> Usuario : mapea
+HabitEntry ..> RegistroHabito : mapea
+Notification ..> Notificacion : mapea
+
+AuthService ..> Usuario
+NotificationService ..> Notificacion
+NotificationService ..> NotificationType
+
+Notification ..> NotificationType
+Notificacion ..> NotificationType
+LoginResponse --> UserSummary
+RegisterResponse --> UserSummary
+@enduml
