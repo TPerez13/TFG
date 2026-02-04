@@ -12,7 +12,15 @@ type AuthContextValue = {
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 const STORAGE_KEY = 'auth_token';
+/**
+ * Lo mismo que esto:
+type Props = { children: React.ReactNode };
 
+export function AuthProvider(props: Props) {
+  const { children } = props;
+  ...
+}
+ */
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
