@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getMe, updateMe } from "../controllers/userController";
+import { getMe, updateMe, exportMe, deleteMe } from "../controllers/userController";
 import { requireAuth } from "../middleware/auth";
 
 /**
@@ -10,5 +10,7 @@ const router = Router();
 
 router.get("/users/me", requireAuth, getMe);
 router.put("/users/me", requireAuth, updateMe);
+router.get("/users/me/export", requireAuth, exportMe);
+router.delete("/users/me", requireAuth, deleteMe);
 
 export default router;

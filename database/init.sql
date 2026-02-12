@@ -193,3 +193,16 @@ ALTER TABLE notificacion ADD COLUMN IF NOT EXISTS f_leida TIMESTAMPTZ;
 ALTER TABLE notificacion ADD COLUMN IF NOT EXISTS deep_link TEXT;
 ALTER TABLE notificacion ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ NOT NULL DEFAULT now();
 ALTER TABLE notificacion ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT now();
+
+CREATE TABLE IF NOT EXISTS ticket_soporte (
+  id_ticket SERIAL PRIMARY KEY,
+  id_usuario INT NOT NULL,
+  asunto TEXT NOT NULL,
+  descripcion TEXT NOT NULL,
+  tipo TEXT NOT NULL CHECK (tipo IN ('consulta', 'bug')),
+  estado TEXT NOT NULL DEFAULT 'abierto' CHECK (estado IN ('abierto', 'cerrado')),
+  contacto_email TEXT,
+  f_creacion TIMESTAMPTZ NOT NULL DEFAULT now(),
+  CONSTRAINT fk_ticket_soporte_usuario
+    FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE
+);

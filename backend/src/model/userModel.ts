@@ -62,6 +62,15 @@ export async function updatePreferences(
 }
 
 /**
+ * Deletes a user record by id.
+ * Related entities are removed by DB-level ON DELETE CASCADE constraints.
+ */
+export async function deleteUserById(id: number): Promise<boolean> {
+  const result = await pool.query("DELETE FROM usuario WHERE id_usuario = $1", [id]);
+  return (result.rowCount ?? 0) > 0;
+}
+
+/**
  * Retrieves a user by primary key.
  * Side effects: database read.
  */

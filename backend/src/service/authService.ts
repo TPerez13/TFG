@@ -14,14 +14,6 @@ import { createUser, findByEmail } from "../model/userModel";
 const DEFAULT_PREFERENCIAS: Record<string, unknown> = {
   tema: "system",
   idioma: "es",
-  notificaciones: {
-    habilitadas: true,
-    hidratacion: true,
-    nutricion: false,
-    ejercicio: false,
-    sueno: false,
-    meditacion: false,
-  },
   quiet_hours: {
     desde: "23:00",
     hasta: "07:00",

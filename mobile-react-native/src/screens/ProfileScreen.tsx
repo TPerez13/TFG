@@ -9,6 +9,7 @@ import type { User } from '../types/models';
 import type { ProfileStackParamList } from '../navigation/types';
 import { baseStyles } from '../theme/components';
 import { colors, fontSizes, spacing } from '../theme/tokens';
+import { SettingsRow } from '../components/settings/SettingsRow';
 
 type ProfileScreenProps = NativeStackScreenProps<ProfileStackParamList, 'Profile'>;
 
@@ -86,7 +87,7 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
           <SettingsRow
             icon="shield-checkmark"
             title="Privacidad"
-            subtitle="Gestiona tus datos de..."
+            subtitle="Gestiona tus datos y preferencias"
             onPress={() => navigation.navigate('Privacy')}
           />
         </View>
@@ -96,14 +97,14 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
           <SettingsRow
             icon="help-circle"
             title="Ayuda y Soporte"
-            subtitle="Obten ayuda o..."
+            subtitle="FAQ, contacto y reporte de errores"
             onPress={() => navigation.navigate('HelpSupport')}
           />
           <View style={styles.divider} />
           <SettingsRow
             icon="information-circle"
             title="Sobre la App"
-            subtitle="Version 2.4.0"
+            subtitle="Version, creditos y licencias"
             onPress={() => navigation.navigate('AboutApp')}
           />
         </View>
@@ -120,28 +121,6 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
         <Text style={styles.footerText}>HealthyHabits esta disenado para ti.</Text>
       </ScrollView>
     </Screen>
-  );
-}
-
-type SettingsRowProps = {
-  icon: keyof typeof Ionicons.glyphMap;
-  title: string;
-  subtitle: string;
-  onPress?: () => void;
-};
-
-function SettingsRow({ icon, title, subtitle, onPress }: SettingsRowProps) {
-  return (
-    <Pressable style={styles.row} onPress={onPress}>
-      <View style={styles.rowIconWrap}>
-        <Ionicons name={icon} size={20} color={colors.textAccent} />
-      </View>
-      <View style={styles.rowText}>
-        <Text style={styles.rowTitle}>{title}</Text>
-        <Text style={styles.rowSubtitle}>{subtitle}</Text>
-      </View>
-      <Ionicons name="chevron-forward" size={18} color={colors.textSubtle} />
-    </Pressable>
   );
 }
 
@@ -241,33 +220,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 14,
     elevation: 2,
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    paddingVertical: spacing.sm,
-  },
-  rowIconWrap: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: colors.brandSoft,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  rowText: {
-    flex: 1,
-  },
-  rowTitle: {
-    fontSize: fontSizes.base,
-    fontWeight: '700',
-    color: colors.textPrimary,
-  },
-  rowSubtitle: {
-    marginTop: 2,
-    fontSize: fontSizes.sm,
-    color: colors.textMuted,
   },
   divider: {
     height: 1,

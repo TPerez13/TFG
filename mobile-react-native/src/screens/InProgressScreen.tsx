@@ -7,12 +7,10 @@ import { Screen } from '../components/layout/Screen';
 import { baseStyles } from '../theme/components';
 import { colors, fontSizes, spacing } from '../theme/tokens';
 
-type InProgressProps = NativeStackScreenProps<ProfileStackParamList, 'Notifications' | 'Privacy' | 'HelpSupport' | 'AboutApp'>;
+type InProgressProps = NativeStackScreenProps<ProfileStackParamList, 'Privacy' | 'HelpSupport' | 'AboutApp'>;
 
 const getTitle = (routeName: InProgressProps['route']['name']) => {
   switch (routeName) {
-    case 'Notifications':
-      return 'Notificaciones';
     case 'Privacy':
       return 'Privacidad';
     case 'HelpSupport':
