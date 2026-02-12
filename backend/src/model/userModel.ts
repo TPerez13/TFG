@@ -24,6 +24,27 @@ export interface CreateUserInput {
   preferencias: Record<string, unknown> | null;
 }
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  !!value && typeof value === "object" && !Array.isArray(value);
+
+const deepMerge = (
+  current: Record<string, unknown> | null | undefined,
+  patch: Record<string, unknown>
+): Record<string, unknown> => {
+  const base = isRecord(current) ? current : {};
+  const next = { ...base };
+
+  Object.entries(patch).forEach(([key, value]) => {
+    if (isRecord(value) && isRecord(base[key])) {
+      next[key] = deepMerge(base[key] as Record<string, unknown>, value);
+      return;
+    }
+    next[key] = value;
+  });
+
+  return next;
+};
+
 export async function updateNotificationSettings(
   userId: number,
   settings: Record<string, boolean>
@@ -50,15 +71,22 @@ export async function updatePreferences(
   userId: number,
   preferences: Record<string, unknown>
 ): Promise<Record<string, unknown>> {
+  const currentResult = await pool.query<{ preferencias: Record<string, unknown> | null }>(
+    "SELECT preferencias FROM usuario WHERE id_usuario = $1",
+    [userId]
+  );
+  const current = currentResult.rows[0]?.preferencias ?? {};
+  const merged = deepMerge(current, preferences);
+
   const result = await pool.query<{ preferencias: Record<string, unknown> | null }>(
     `UPDATE usuario
-        SET preferencias = COALESCE(preferencias, '{}'::jsonb) || $2::jsonb
+        SET preferencias = $2::jsonb
       WHERE id_usuario = $1
       RETURNING preferencias`,
-    [userId, JSON.stringify(preferences)]
+    [userId, JSON.stringify(merged)]
   );
 
-  return result.rows[0]?.preferencias ?? preferences;
+  return result.rows[0]?.preferencias ?? merged;
 }
 
 /**

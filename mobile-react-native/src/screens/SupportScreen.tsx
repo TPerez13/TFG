@@ -300,18 +300,12 @@ export default function SupportScreen({ navigation }: SupportScreenProps) {
             <View style={styles.card}>
               <PlaceholderLink
                 title="Politica de privacidad"
-                onPress={() =>
-                  Alert.alert(
-                    'Politica de privacidad',
-                    'Placeholder MVP: la version extendida se publicara en una siguiente iteracion.'
-                  )
-                }
+                onPress={() => navigation.navigate('PrivacyPolicy')}
               />
+              <View style={styles.divider} />
               <PlaceholderLink
                 title="Terminos de uso"
-                onPress={() =>
-                  Alert.alert('Terminos de uso', 'Placeholder MVP: texto legal resumido para el TFG.')
-                }
+                onPress={() => navigation.navigate('TermsOfUse')}
               />
             </View>
           </>
@@ -475,6 +469,10 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
     fontSize: fontSizes.base,
     fontWeight: '600',
+  },
+  divider: {
+    height: 1,
+    backgroundColor: colors.divider,
   },
   statusCard: {
     backgroundColor: colors.surface,

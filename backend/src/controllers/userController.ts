@@ -1,10 +1,11 @@
 import type { Response, NextFunction } from "express";
-import type { HabitEntry, UserDataExport, UserSummary } from "@muchasvidas/shared";
+import type { HabitEntry, Notification, UserDataExport, UserSummary } from "@muchasvidas/shared";
 import type { AuthRequest } from "../middleware/auth";
 import { AppError } from "../utils/errors";
 import { findById, updatePreferences, deleteUserById } from "../model/userModel";
 import type { UserRecord } from "../model/userModel";
 import { listEntriesForUserExport } from "../model/habitModel";
+import { listNotifications } from "../model/notificationModel";
 
 const toIsoString = (value: unknown): string | undefined => {
   if (value instanceof Date) {
@@ -40,6 +41,38 @@ const toHabitEntry = (record: {
   valor: Number(record.valor) || 0,
   unidad: record.unidad ?? null,
   notas: record.notas ?? null,
+});
+
+const toNotification = (record: {
+  id_notificacion: number;
+  id_usuario: number;
+  titulo: string;
+  cuerpo: string;
+  tipo: "REMINDER" | "ACHIEVEMENT" | "CHALLENGE" | "SYSTEM";
+  leida: boolean;
+  f_leida: string | Date | null;
+  f_programada: string | Date | null;
+  f_envio: string | Date | null;
+  estado: string | null;
+  metadatos: Record<string, unknown> | null;
+  deep_link: string | null;
+  created_at: string | Date;
+  updated_at: string | Date;
+}): Notification => ({
+  id: record.id_notificacion,
+  userId: record.id_usuario,
+  title: record.titulo,
+  body: record.cuerpo,
+  type: record.tipo,
+  read: record.leida,
+  readAt: toIsoString(record.f_leida) ?? null,
+  scheduledAt: toIsoString(record.f_programada) ?? null,
+  sentAt: toIsoString(record.f_envio) ?? null,
+  status: record.estado ?? null,
+  metadata: record.metadatos ?? null,
+  deepLink: record.deep_link ?? null,
+  createdAt: toIsoString(record.created_at) ?? new Date().toISOString(),
+  updatedAt: toIsoString(record.updated_at) ?? new Date().toISOString(),
 });
 
 /**
@@ -103,11 +136,14 @@ export async function exportMe(req: AuthRequest, res: Response, next: NextFuncti
     }
 
     const entries = await listEntriesForUserExport(userId);
+    const notificationRecords = await listNotifications({ userId, limit: 200 });
     const payload: UserDataExport = {
       generatedAt: new Date().toISOString(),
       user: toUserSummary(user),
       habits: entries.map(toHabitEntry),
     };
+    (payload as UserDataExport & { notifications: Notification[] }).notifications =
+      notificationRecords.map(toNotification);
 
     res.setHeader("Content-Type", "application/json");
     res.setHeader("Content-Disposition", "attachment; filename=\"muchasvidas-export.json\"");

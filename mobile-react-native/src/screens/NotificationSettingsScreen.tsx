@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { ProfileStackParamList } from '../navigation/types';
@@ -8,6 +8,7 @@ import { apiFetch } from '../services/api';
 import type { NotificationSettings } from '../features/notifications/types';
 import { colors, fontSizes, spacing } from '../theme/tokens';
 import { useAuth } from '../navigation/AuthContext';
+import { PillToggle } from '../components/settings/PillToggle';
 
 type SettingsProps = NativeStackScreenProps<ProfileStackParamList, 'NotificationSettings'>;
 
@@ -126,7 +127,9 @@ export default function NotificationSettingsScreen({ navigation }: SettingsProps
             <View style={styles.card}>
               <SettingRow
                 label="Activar notificaciones"
+                description="Control general para habilitar o silenciar todos los avisos."
                 value={settings.enabled}
+                disabled={saving}
                 onValueChange={(value) => {
                   setSettings((prev) => ({
                     ...prev,
@@ -151,19 +154,57 @@ export default function NotificationSettingsScreen({ navigation }: SettingsProps
 
             <Text style={styles.sectionTitle}>Categorias</Text>
             <View style={styles.card}>
-              <SettingRow label="Hidratacion" value={settings.hydration} onValueChange={(v) => updateField('hydration', v)} />
-              <SettingRow label="Nutricion" value={settings.nutrition} onValueChange={(v) => updateField('nutrition', v)} />
-              <SettingRow label="Ejercicio" value={settings.exercise} onValueChange={(v) => updateField('exercise', v)} />
-              <SettingRow label="Sueno" value={settings.sleep} onValueChange={(v) => updateField('sleep', v)} />
-              <SettingRow label="Gamificacion" value={settings.gamification} onValueChange={(v) => updateField('gamification', v)} />
-              <SettingRow label="Sistema" value={settings.system} onValueChange={(v) => updateField('system', v)} />
+              <SettingRow
+                label="Hidratacion"
+                description="Recordatorios para cumplir tu objetivo de agua diario."
+                value={settings.hydration}
+                disabled={saving}
+                onValueChange={(v) => updateField('hydration', v)}
+              />
+              <SettingRow
+                label="Nutricion"
+                description="Avisos para registrar comidas y mantener constancia."
+                value={settings.nutrition}
+                disabled={saving}
+                onValueChange={(v) => updateField('nutrition', v)}
+              />
+              <SettingRow
+                label="Ejercicio"
+                description="Notificaciones para no olvidar sesiones de actividad."
+                value={settings.exercise}
+                disabled={saving}
+                onValueChange={(v) => updateField('exercise', v)}
+              />
+              <SettingRow
+                label="Sueno"
+                description="Recordatorios orientados a mejorar tu rutina de descanso."
+                value={settings.sleep}
+                disabled={saving}
+                onValueChange={(v) => updateField('sleep', v)}
+              />
+              <SettingRow
+                label="Gamificacion"
+                description="Avisos de logros, rachas y recompensas."
+                value={settings.gamification}
+                disabled={saving}
+                onValueChange={(v) => updateField('gamification', v)}
+              />
+              <SettingRow
+                label="Sistema"
+                description="Comunicaciones importantes de la aplicacion."
+                value={settings.system}
+                disabled={saving}
+                onValueChange={(v) => updateField('system', v)}
+              />
             </View>
 
             <Text style={styles.sectionTitle}>Resumen semanal</Text>
             <View style={styles.card}>
               <SettingRow
                 label="Recibir informe semanal"
+                description="Resumen automatico del progreso de tus habitos."
                 value={settings.weeklyReport}
+                disabled={saving}
                 onValueChange={(value) => updateField('weeklyReport', value)}
               />
               <View style={styles.row}>
@@ -190,15 +231,17 @@ export default function NotificationSettingsScreen({ navigation }: SettingsProps
             <View style={styles.card}>
               <SettingRow
                 label="Push en el movil"
+                description="Requiere permiso del sistema."
                 value={settings.pushEnabled}
+                disabled={saving}
                 onValueChange={(value) => updateField('pushEnabled', value)}
-                helper="Requiere permiso del sistema"
               />
               <SettingRow
                 label="Email"
+                description="Requiere configuracion de correo."
                 value={settings.emailEnabled}
+                disabled={saving}
                 onValueChange={(value) => updateField('emailEnabled', value)}
-                helper="Requiere configuracion email"
               />
             </View>
 
@@ -206,7 +249,9 @@ export default function NotificationSettingsScreen({ navigation }: SettingsProps
             <View style={styles.card}>
               <SettingRow
                 label="Activar horas silenciosas"
+                description="Reduce interrupciones en el rango horario que definas."
                 value={settings.quietHoursEnabled}
+                disabled={saving}
                 onValueChange={(value) => updateField('quietHoursEnabled', value)}
               />
               <View style={styles.row}>
@@ -232,8 +277,10 @@ export default function NotificationSettingsScreen({ navigation }: SettingsProps
             <Pressable
               accessibilityRole="button"
               onPress={() => update(settings)}
+              disabled={saving}
               style={({ pressed }) => [
                 styles.saveButton,
+                saving ? styles.saveDisabled : null,
                 pressed ? styles.savePressed : null,
               ]}
             >
@@ -250,19 +297,20 @@ export default function NotificationSettingsScreen({ navigation }: SettingsProps
 
 type SettingRowProps = {
   label: string;
+  description?: string;
   value: boolean;
   onValueChange: (value: boolean) => void;
-  helper?: string;
+  disabled?: boolean;
 };
 
-function SettingRow({ label, value, onValueChange, helper }: SettingRowProps) {
+function SettingRow({ label, description, value, onValueChange, disabled = false }: SettingRowProps) {
   return (
     <View style={styles.row}>
       <View style={styles.rowText}>
         <Text style={styles.rowLabel}>{label}</Text>
-        {helper ? <Text style={styles.helperText}>{helper}</Text> : null}
+        {description ? <Text style={styles.helperText}>{description}</Text> : null}
       </View>
-      <Switch value={value} onValueChange={onValueChange} trackColor={{ true: colors.accent }} />
+      <PillToggle value={value} disabled={disabled} onValueChange={onValueChange} />
     </View>
   );
 }
@@ -358,6 +406,9 @@ const styles = StyleSheet.create({
   },
   savePressed: {
     opacity: 0.85,
+  },
+  saveDisabled: {
+    opacity: 0.6,
   },
   saveText: {
     fontSize: fontSizes.base,

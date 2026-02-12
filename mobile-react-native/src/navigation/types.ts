@@ -25,6 +25,8 @@ export type ProfileStackParamList = {
   Privacy: undefined;
   HelpSupport: undefined;
   AboutApp: undefined;
+  PrivacyPolicy: undefined;
+  TermsOfUse: undefined;
 };
 
 export type AppTabParamList = {

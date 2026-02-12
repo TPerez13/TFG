@@ -89,15 +89,16 @@ export type NotificationUnreadCountResponse = {
 };
 
 export type PrivacyPreferences = {
-  permitirAnalitica: boolean;
-  personalizacion: boolean;
-  mostrarContenidoEnPantallaBloqueada: boolean;
+  analyticsEnabled: boolean;
+  personalizationEnabled: boolean;
+  lockScreenContent: boolean;
 };
 
 export type UserDataExport = {
   generatedAt: string;
   user: UserSummary;
   habits: HabitEntry[];
+  notifications?: Notification[];
 };
 
 export type SupportTicketType = "consulta" | "bug";

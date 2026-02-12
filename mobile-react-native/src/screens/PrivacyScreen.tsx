@@ -1,334 +1,373 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
+  Modal,
   Pressable,
   ScrollView,
   Share,
   StyleSheet,
-  Switch,
   Text,
+  TextInput,
   View,
 } from 'react-native';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { PrivacyPreferences, UserDataExport, UserSummary } from '@muchasvidas/shared';
 import { Screen } from '../components/layout/Screen';
+import { DangerZone, ReadOnlyFieldRow, SettingsSection, ToggleRow } from '../components/settings/PrivacyBlocks';
 import type { ProfileStackParamList } from '../navigation/types';
 import { colors, fontSizes, spacing } from '../theme/tokens';
 import { apiFetch } from '../services/api';
 import { useAuth } from '../navigation/AuthContext';
+import {
+  defaultPrivacyPreferences,
+  hasCompletePrivacyPreferences,
+  normalizePrivacyPreferences,
+} from '../features/users/preferences';
+import { useMe } from '../features/users/useMe';
+import { useUpdatePreferences } from '../features/users/useUpdatePreferences';
 
 type PrivacyScreenProps = NativeStackScreenProps<ProfileStackParamList, 'Privacy'>;
-type ScreenState = 'loading' | 'success' | 'error';
-type Feedback = { type: 'success' | 'error'; message: string } | null;
+type Banner = { type: 'success' | 'error'; message: string } | null;
 
-const defaultPrivacy: PrivacyPreferences = {
-  permitirAnalitica: true,
-  personalizacion: true,
-  mostrarContenidoEnPantallaBloqueada: false,
-};
+const INFO_LAST_UPDATED = '12 de febrero de 2026';
+const SUPPORT_EMAIL = 'soporte@muchasvidas.com';
+const DELETE_KEYWORD = 'ELIMINAR';
 
-const normalizePrivacy = (value: unknown): PrivacyPreferences => {
-  const raw = (value as Partial<PrivacyPreferences> | undefined) ?? {};
-  return {
-    permitirAnalitica:
-      typeof raw.permitirAnalitica === 'boolean' ? raw.permitirAnalitica : defaultPrivacy.permitirAnalitica,
-    personalizacion: typeof raw.personalizacion === 'boolean' ? raw.personalizacion : defaultPrivacy.personalizacion,
-    mostrarContenidoEnPantallaBloqueada:
-      typeof raw.mostrarContenidoEnPantallaBloqueada === 'boolean'
-        ? raw.mostrarContenidoEnPantallaBloqueada
-        : defaultPrivacy.mostrarContenidoEnPantallaBloqueada,
-  };
-};
+const asMap = (value: unknown): Record<string, unknown> =>
+  value && typeof value === 'object' && !Array.isArray(value) ? (value as Record<string, unknown>) : {};
 
-const hasFullPrivacy = (value: unknown): boolean => {
-  if (!value || typeof value !== 'object') return false;
-  const current = value as Partial<PrivacyPreferences>;
-  return (
-    typeof current.permitirAnalitica === 'boolean' &&
-    typeof current.personalizacion === 'boolean' &&
-    typeof current.mostrarContenidoEnPantallaBloqueada === 'boolean'
-  );
-};
+const makeDummyExport = (
+  user: UserSummary | null,
+  privacy: PrivacyPreferences
+): UserDataExport & { preferencias: Record<string, unknown>; notifications: unknown[] } => ({
+  generatedAt: new Date().toISOString(),
+  user: user ?? { id: 0, nombre: 'Usuario', correo: 'no-disponible@local' },
+  habits: [],
+  preferencias: { privacidad: privacy },
+  notifications: [],
+});
 
 export default function PrivacyScreen({ navigation }: PrivacyScreenProps) {
   const { signOut } = useAuth();
-  const [screenState, setScreenState] = useState<ScreenState>('loading');
-  const [user, setUser] = useState<UserSummary | null>(null);
-  const [privacy, setPrivacy] = useState<PrivacyPreferences>(defaultPrivacy);
-  const [saving, setSaving] = useState(false);
+  const { user, setUser, loading, error, reload } = useMe();
+  const { saving, error: updateError, clearError, updatePreferences } = useUpdatePreferences();
+
+  const [privacy, setPrivacy] = useState<PrivacyPreferences>(defaultPrivacyPreferences);
   const [exporting, setExporting] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const [feedback, setFeedback] = useState<Feedback>(null);
+  const [banner, setBanner] = useState<Banner>(null);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [deleteInput, setDeleteInput] = useState('');
 
-  const savePrivacy = async (next: PrivacyPreferences, silent = false): Promise<boolean> => {
-    try {
-      setSaving(true);
-      const res = await apiFetch('/users/me', {
-        method: 'PUT',
-        body: JSON.stringify({ preferencias: { privacidad: next } }),
-      });
+  const hydratedRef = useRef<number | null>(null);
+  const bannerTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-      if (res.status === 401) {
-        await signOut();
-        return false;
-      }
+  const isBusy = saving || exporting || deleting;
+  const canConfirmDelete = deleteInput.trim().toUpperCase() === DELETE_KEYWORD && !deleting;
 
-      if (!res.ok) {
-        throw new Error('No se pudieron guardar las preferencias.');
-      }
-
-      if (!silent) {
-        setFeedback({ type: 'success', message: 'Preferencias de privacidad guardadas.' });
-      }
-      return true;
-    } catch (_error) {
-      setFeedback({ type: 'error', message: 'Error al guardar tus preferencias.' });
-      return false;
-    } finally {
-      setSaving(false);
+  const showBanner = (type: 'success' | 'error', message: string, autoHideMs = 2200) => {
+    setBanner({ type, message });
+    if (bannerTimerRef.current) {
+      clearTimeout(bannerTimerRef.current);
+    }
+    if (autoHideMs > 0) {
+      bannerTimerRef.current = setTimeout(() => setBanner(null), autoHideMs);
     }
   };
 
-  const load = async () => {
-    try {
-      setScreenState('loading');
-      setFeedback(null);
-      const res = await apiFetch('/users/me');
+  const persistPrivacy = async (next: PrivacyPreferences, silent = false): Promise<boolean> => {
+    if (!user) return false;
 
-      if (res.status === 401) {
-        await signOut();
-        return;
-      }
-      if (!res.ok) {
-        throw new Error('No se pudo cargar el perfil.');
-      }
-
-      const payload = (await res.json()) as { user?: UserSummary };
-      const currentUser = payload.user ?? null;
-      const prefs = (currentUser?.preferencias as Record<string, unknown> | null) ?? null;
-      const currentPrivacy = normalizePrivacy(prefs?.privacidad);
-
-      setUser(currentUser);
-      setPrivacy(currentPrivacy);
-      setScreenState('success');
-
-      if (!hasFullPrivacy(prefs?.privacidad)) {
-        await savePrivacy(currentPrivacy, true);
-      }
-    } catch (_error) {
-      setScreenState('error');
-      setFeedback({ type: 'error', message: 'No se pudo cargar la configuracion de privacidad.' });
+    const merged = await updatePreferences(asMap(user.preferencias), { privacidad: next });
+    if (!merged) {
+      return false;
     }
+
+    setUser((current) => (current ? { ...current, preferencias: merged } : current));
+    if (!silent) {
+      showBanner('success', 'Guardado');
+    }
+    return true;
   };
 
   useEffect(() => {
-    void load();
+    if (!user) return;
+
+    const currentPrefs = asMap(user.preferencias);
+    const normalized = normalizePrivacyPreferences(currentPrefs.privacidad);
+    setPrivacy(normalized);
+
+    if (!hasCompletePrivacyPreferences(currentPrefs.privacidad) && hydratedRef.current !== user.id) {
+      hydratedRef.current = user.id;
+      void persistPrivacy(normalized, true);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (updateError) {
+      showBanner('error', updateError, 0);
+    }
+  }, [updateError]);
+
+  useEffect(() => {
+    return () => {
+      if (bannerTimerRef.current) {
+        clearTimeout(bannerTimerRef.current);
+      }
+    };
   }, []);
 
-  const updateToggle = async (key: keyof PrivacyPreferences, value: boolean) => {
+  const onToggle = async (key: keyof PrivacyPreferences, value: boolean) => {
+    if (!user || isBusy) return;
+
+    clearError();
     const previous = privacy;
     const next = { ...privacy, [key]: value };
     setPrivacy(next);
-    const ok = await savePrivacy(next);
+
+    const ok = await persistPrivacy(next);
     if (!ok) {
       setPrivacy(previous);
     }
   };
 
-  const downloadData = async () => {
+  const runExport = async () => {
     try {
       setExporting(true);
-      setFeedback(null);
-      const res = await apiFetch('/users/me/export');
+      clearError();
 
-      if (res.status === 401) {
+      let payload: unknown;
+      const response = await apiFetch('/users/me/export');
+
+      if (response.status === 401) {
         await signOut();
         return;
       }
-      if (!res.ok) {
-        throw new Error('No se pudo generar la exportacion.');
+
+      if (response.status === 404) {
+        // TODO: remove fallback once every environment has /users/me/export enabled.
+        payload = makeDummyExport(user, privacy);
+      } else if (!response.ok) {
+        throw new Error('Export endpoint failed.');
+      } else {
+        payload = (await response.json()) as UserDataExport;
       }
 
-      const payload = (await res.json()) as UserDataExport;
       await Share.share({
         title: 'Exportacion de datos - MuchasVidas',
         message: JSON.stringify(payload, null, 2),
       });
 
-      setFeedback({
-        type: 'success',
-        message: `Exportacion JSON lista (${payload.habits.length} registros de habitos).`,
-      });
+      showBanner('success', 'Exportacion lista para compartir.');
     } catch (_error) {
-      setFeedback({ type: 'error', message: 'No se pudo descargar la exportacion JSON.' });
+      showBanner('error', 'No se pudo completar la exportacion.');
     } finally {
       setExporting(false);
     }
   };
 
-  const deleteAccount = async () => {
+  const confirmExport = () => {
+    Alert.alert(
+      'Descargar mis datos',
+      'Se incluira perfil, preferencias, registros de habitos y notificaciones. La generacion puede tardar unos segundos.',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        { text: 'Continuar', onPress: () => void runExport() },
+      ]
+    );
+  };
+
+  const runDelete = async () => {
     try {
       setDeleting(true);
-      setFeedback(null);
-      const res = await apiFetch('/users/me', { method: 'DELETE' });
+      const response = await apiFetch('/users/me', { method: 'DELETE' });
 
-      if (res.status === 401) {
+      if (response.status === 401) {
         await signOut();
         return;
       }
-      if (!res.ok) {
-        throw new Error('No se pudo eliminar la cuenta.');
+
+      if (!response.ok) {
+        throw new Error('Delete failed.');
       }
 
+      setDeleteModalVisible(false);
+      setDeleteInput('');
       await signOut();
     } catch (_error) {
-      setFeedback({ type: 'error', message: 'No se pudo eliminar la cuenta.' });
+      showBanner('error', 'No se pudo eliminar la cuenta. Intenta nuevamente.', 0);
     } finally {
       setDeleting(false);
     }
   };
 
-  const confirmDelete = () => {
-    Alert.alert('Eliminar mi cuenta', 'Se borraran tu cuenta y todos tus datos.', [
-      { text: 'Cancelar', style: 'cancel' },
-      {
-        text: 'Continuar',
-        style: 'destructive',
-        onPress: () => {
-          Alert.alert('Confirmacion final', 'Esta accion es irreversible. Deseas continuar?', [
-            { text: 'Cancelar', style: 'cancel' },
-            { text: 'Si, eliminar', style: 'destructive', onPress: () => void deleteAccount() },
-          ]);
-        },
-      },
-    ]);
+  const startDeleteFlow = () => {
+    Alert.alert(
+      'Eliminar mi cuenta',
+      'Esta accion borra tu cuenta y datos asociados. Luego tendras que confirmar escribiendo ELIMINAR.',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        { text: 'Continuar', style: 'destructive', onPress: () => setDeleteModalVisible(true) },
+      ]
+    );
   };
 
   return (
     <Screen>
       <ScrollView style={styles.scroll} contentContainerStyle={styles.container}>
         <View style={styles.header}>
-          <Pressable onPress={() => navigation.goBack()} style={styles.backButton}>
+          <Pressable onPress={() => navigation.goBack()} style={styles.backButton} accessibilityLabel="Volver">
             <Ionicons name="chevron-back" size={22} color={colors.textPrimary} />
           </Pressable>
           <Text style={styles.headerTitle}>Privacidad</Text>
           <View style={styles.headerSpacer} />
         </View>
 
-        {screenState === 'loading' ? (
-          <ActivityIndicator size="large" color={colors.textAccent} style={styles.loading} />
-        ) : null}
-
-        {screenState === 'error' ? (
-          <View style={styles.statusCard}>
-            <Text style={styles.statusTitle}>Error al cargar privacidad</Text>
-            <Text style={styles.statusSubtitle}>Reintenta para recuperar tus datos de cuenta.</Text>
-            <Pressable style={styles.retryButton} onPress={() => void load()}>
-              <Text style={styles.retryText}>Reintentar</Text>
-            </Pressable>
+        {banner ? (
+          <View style={[styles.banner, banner.type === 'error' ? styles.bannerError : styles.bannerSuccess]}>
+            <Text style={styles.bannerText}>{banner.message}</Text>
           </View>
         ) : null}
 
-        {screenState === 'success' ? (
+        {loading ? (
+          <LoadingSkeleton />
+        ) : error ? (
+          <View style={styles.errorCard}>
+            <Text style={styles.errorTitle}>No se pudo cargar la configuracion de privacidad</Text>
+            <Text style={styles.errorDescription}>Comprueba tu conexion y vuelve a intentarlo.</Text>
+            <Pressable style={styles.retryButton} onPress={() => void reload()}>
+              <Text style={styles.retryButtonText}>Reintentar</Text>
+            </Pressable>
+          </View>
+        ) : (
           <>
-            {feedback ? (
-              <View style={[styles.feedback, feedback.type === 'error' ? styles.feedbackError : styles.feedbackOk]}>
-                <Text style={styles.feedbackText}>{feedback.message}</Text>
-              </View>
-            ) : null}
-
-            <Text style={styles.sectionTitle}>Datos de la cuenta</Text>
-            <View style={styles.card}>
-              <ReadonlyRow label="Correo" value={user?.correo ?? 'No disponible'} />
-              <ReadonlyRow label="Nombre" value={user?.nombre ?? 'No disponible'} />
+            <SettingsSection
+              title="Datos de la cuenta"
+              subtitle="Consulta tu informacion principal. Estos campos son solo lectura."
+            >
+              <ReadOnlyFieldRow label="Correo" value={user?.correo ?? 'No disponible'} />
+              <ReadOnlyFieldRow label="Nombre" value={user?.nombre ?? 'No disponible'} hideDivider />
               <Pressable
-                style={[styles.primaryButton, exporting ? styles.buttonDisabled : null]}
-                disabled={exporting}
-                onPress={() => void downloadData()}
+                style={[styles.actionButton, isBusy ? styles.buttonDisabled : null]}
+                onPress={confirmExport}
+                disabled={isBusy}
               >
-                <Text style={styles.primaryButtonText}>
-                  {exporting ? 'Generando exportacion...' : 'Descargar mis datos'}
-                </Text>
+                {exporting ? (
+                  <ActivityIndicator size="small" color={colors.textOnAccent} />
+                ) : (
+                  <Text style={styles.actionButtonText}>Descargar mis datos</Text>
+                )}
               </Pressable>
-            </View>
+            </SettingsSection>
 
-            <Text style={styles.sectionTitle}>Control de datos</Text>
-            <View style={styles.card}>
+            <SettingsSection
+              title="Control de datos"
+              subtitle="Decide como se usan tus datos para analisis y personalizacion."
+            >
               <ToggleRow
                 label="Permitir analitica"
-                value={privacy.permitirAnalitica}
-                disabled={saving}
-                onValueChange={(value) => void updateToggle('permitirAnalitica', value)}
+                description="Nos ayuda a mejorar estabilidad y experiencia general."
+                value={privacy.analyticsEnabled}
+                disabled={isBusy}
+                onValueChange={(value) => void onToggle('analyticsEnabled', value)}
               />
               <ToggleRow
                 label="Personalizacion"
-                value={privacy.personalizacion}
-                disabled={saving}
-                onValueChange={(value) => void updateToggle('personalizacion', value)}
+                description="Adapta sugerencias y contenidos a tu actividad."
+                value={privacy.personalizationEnabled}
+                disabled={isBusy}
+                onValueChange={(value) => void onToggle('personalizationEnabled', value)}
+                hideDivider
               />
-            </View>
+            </SettingsSection>
 
-            <Text style={styles.sectionTitle}>Privacidad de notificaciones</Text>
-            <View style={styles.card}>
+            <SettingsSection
+              title="Privacidad de notificaciones"
+              subtitle="Controla la visibilidad del contenido mostrado en avisos."
+            >
               <ToggleRow
                 label="Mostrar contenido en pantalla bloqueada"
-                value={privacy.mostrarContenidoEnPantallaBloqueada}
-                disabled={saving}
-                onValueChange={(value) => void updateToggle('mostrarContenidoEnPantallaBloqueada', value)}
+                description="Depende del sistema operativo. Esta preferencia se guarda dentro de la app."
+                value={privacy.lockScreenContent}
+                disabled={isBusy}
+                onValueChange={(value) => void onToggle('lockScreenContent', value)}
+                hideDivider
               />
-            </View>
+            </SettingsSection>
 
-            <Text style={styles.sectionTitle}>Gestion</Text>
-            <View style={styles.card}>
-              <Pressable
-                style={[styles.dangerButton, deleting ? styles.buttonDisabled : null]}
-                disabled={deleting}
-                onPress={confirmDelete}
-              >
-                <Text style={styles.dangerButtonText}>{deleting ? 'Eliminando...' : 'Eliminar mi cuenta'}</Text>
-              </Pressable>
-              <Text style={styles.legalText}>Esta accion es irreversible.</Text>
-            </View>
+            <SettingsSection
+              title="Gestion"
+              subtitle="Acciones sensibles sobre tu cuenta y tus datos."
+            >
+              <DangerZone
+                description="Si eliminas la cuenta perderas acceso a registros, preferencias y configuraciones."
+                warning="Esta accion es irreversible."
+                buttonLabel={deleting ? 'Eliminando...' : 'Eliminar mi cuenta'}
+                disabled={isBusy}
+                onPress={startDeleteFlow}
+              />
+            </SettingsSection>
+
+            <SettingsSection title="Informacion" subtitle="Detalles y contacto relacionados con privacidad.">
+              <ReadOnlyFieldRow label="Ultima actualizacion" value={INFO_LAST_UPDATED} />
+              <ReadOnlyFieldRow label="Contacto" value={SUPPORT_EMAIL} hideDivider />
+            </SettingsSection>
           </>
-        ) : null}
+        )}
       </ScrollView>
+
+      <Modal visible={deleteModalVisible} transparent animationType="fade" onRequestClose={() => setDeleteModalVisible(false)}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>Confirmacion final</Text>
+            <Text style={styles.modalText}>
+              Escribe <Text style={styles.modalKeyword}>{DELETE_KEYWORD}</Text> para confirmar que quieres eliminar tu cuenta.
+            </Text>
+            <TextInput
+              value={deleteInput}
+              onChangeText={setDeleteInput}
+              autoCapitalize="characters"
+              placeholder={DELETE_KEYWORD}
+              placeholderTextColor={colors.placeholder}
+              style={styles.modalInput}
+            />
+            <View style={styles.modalActions}>
+              <Pressable
+                style={[styles.modalButton, styles.modalSecondary]}
+                onPress={() => {
+                  setDeleteModalVisible(false);
+                  setDeleteInput('');
+                }}
+              >
+                <Text style={styles.modalSecondaryText}>Cancelar</Text>
+              </Pressable>
+              <Pressable
+                style={[styles.modalButton, styles.modalDanger, !canConfirmDelete ? styles.buttonDisabled : null]}
+                onPress={() => void runDelete()}
+                disabled={!canConfirmDelete}
+              >
+                <Text style={styles.modalDangerText}>Eliminar</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </Screen>
   );
 }
 
-type ToggleRowProps = {
-  label: string;
-  value: boolean;
-  disabled?: boolean;
-  onValueChange: (value: boolean) => void;
-};
-
-function ToggleRow({ label, value, disabled, onValueChange }: ToggleRowProps) {
+function LoadingSkeleton() {
   return (
-    <View style={styles.toggleRow}>
-      <Text style={styles.toggleLabel}>{label}</Text>
-      <Switch
-        value={value}
-        disabled={disabled}
-        onValueChange={onValueChange}
-        trackColor={{ true: colors.accent, false: colors.surfaceBorder }}
-      />
-    </View>
-  );
-}
-
-type ReadonlyRowProps = {
-  label: string;
-  value: string;
-};
-
-function ReadonlyRow({ label, value }: ReadonlyRowProps) {
-  return (
-    <View style={styles.readonlyRow}>
-      <Text style={styles.readonlyLabel}>{label}</Text>
-      <Text style={styles.readonlyValue}>{value}</Text>
+    <View>
+      {[0, 1, 2].map((index) => (
+        <View key={index} style={styles.skeletonCard}>
+          <View style={styles.skeletonLineLong} />
+          <View style={styles.skeletonLineMedium} />
+          <View style={styles.skeletonLineShort} />
+        </View>
+      ))}
     </View>
   );
 }
@@ -367,23 +406,56 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
   },
-  loading: {
-    marginTop: spacing.xl,
+  banner: {
+    borderRadius: 12,
+    borderWidth: 1,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    marginBottom: spacing.lg,
   },
-  statusCard: {
+  bannerSuccess: {
+    backgroundColor: colors.brandSoft,
+    borderColor: colors.accent,
+  },
+  bannerError: {
+    backgroundColor: '#fff0f0',
+    borderColor: '#ffb3b3',
+  },
+  bannerText: {
+    fontSize: fontSizes.md,
+    color: colors.textPrimary,
+  },
+  actionButton: {
+    marginTop: spacing.md,
+    borderRadius: 999,
+    backgroundColor: colors.accent,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: spacing.md,
+    minHeight: 46,
+  },
+  actionButtonText: {
+    color: colors.textOnAccent,
+    fontSize: fontSizes.base,
+    fontWeight: '700',
+  },
+  buttonDisabled: {
+    opacity: 0.6,
+  },
+  errorCard: {
     backgroundColor: colors.surface,
-    borderRadius: 16,
+    borderRadius: 18,
     borderWidth: 1,
     borderColor: colors.surfaceBorder,
     padding: spacing.lg,
   },
-  statusTitle: {
+  errorTitle: {
     fontSize: fontSizes.base,
     fontWeight: '700',
     color: colors.textPrimary,
     marginBottom: spacing.xs,
   },
-  statusSubtitle: {
+  errorDescription: {
     fontSize: fontSizes.md,
     color: colors.textMuted,
     marginBottom: spacing.md,
@@ -394,101 +466,102 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
     alignItems: 'center',
   },
-  retryText: {
+  retryButtonText: {
     color: colors.textOnAccent,
     fontWeight: '700',
   },
-  sectionTitle: {
-    fontSize: fontSizes.lg,
-    fontWeight: '700',
-    color: colors.textPrimary,
-    marginBottom: spacing.sm,
-    marginTop: spacing.sm,
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.45)',
+    justifyContent: 'center',
+    paddingHorizontal: spacing.xxl,
   },
-  card: {
+  modalCard: {
     backgroundColor: colors.surface,
     borderRadius: 16,
     borderWidth: 1,
     borderColor: colors.surfaceBorder,
     padding: spacing.lg,
-    marginBottom: spacing.xl,
   },
-  feedback: {
-    borderRadius: 12,
-    borderWidth: 1,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    marginBottom: spacing.lg,
-  },
-  feedbackOk: {
-    backgroundColor: colors.brandSoft,
-    borderColor: colors.accent,
-  },
-  feedbackError: {
-    backgroundColor: '#fff0f0',
-    borderColor: '#ffb3b3',
-  },
-  feedbackText: {
-    fontSize: fontSizes.md,
+  modalTitle: {
+    fontSize: fontSizes.lg,
+    fontWeight: '700',
     color: colors.textPrimary,
+    marginBottom: spacing.sm,
   },
-  readonlyRow: {
+  modalText: {
+    fontSize: fontSizes.md,
+    color: colors.textMuted,
     marginBottom: spacing.md,
   },
-  readonlyLabel: {
-    fontSize: fontSizes.sm,
-    color: colors.textSubtle,
-    marginBottom: spacing.xs,
-  },
-  readonlyValue: {
-    fontSize: fontSizes.base,
-    color: colors.textPrimary,
-    fontWeight: '600',
-  },
-  toggleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: spacing.sm,
-  },
-  toggleLabel: {
-    flex: 1,
-    paddingRight: spacing.md,
-    fontSize: fontSizes.base,
-    color: colors.textPrimary,
-    fontWeight: '600',
-  },
-  primaryButton: {
-    marginTop: spacing.sm,
-    backgroundColor: colors.accent,
-    borderRadius: 999,
-    paddingVertical: spacing.md,
-    alignItems: 'center',
-  },
-  primaryButtonText: {
-    color: colors.textOnAccent,
-    fontSize: fontSizes.base,
+  modalKeyword: {
     fontWeight: '700',
+    color: colors.textPrimary,
   },
-  dangerButton: {
-    backgroundColor: '#fbe9e9',
+  modalInput: {
+    borderWidth: 1,
+    borderColor: colors.surfaceBorder,
+    borderRadius: 12,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    fontSize: fontSizes.base,
+    color: colors.textPrimary,
+    marginBottom: spacing.md,
+  },
+  modalActions: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+  },
+  modalButton: {
+    flex: 1,
+    borderRadius: 999,
+    paddingVertical: spacing.sm,
+    alignItems: 'center',
+  },
+  modalSecondary: {
+    borderWidth: 1,
+    borderColor: colors.surfaceBorder,
+    backgroundColor: colors.surfaceMuted,
+  },
+  modalDanger: {
     borderWidth: 1,
     borderColor: '#d94141',
-    borderRadius: 999,
-    paddingVertical: spacing.md,
-    alignItems: 'center',
+    backgroundColor: '#fbe9e9',
   },
-  dangerButtonText: {
+  modalSecondaryText: {
+    color: colors.textPrimary,
+    fontWeight: '600',
+  },
+  modalDangerText: {
     color: '#b52d2d',
-    fontSize: fontSizes.base,
     fontWeight: '700',
   },
-  buttonDisabled: {
-    opacity: 0.6,
+  skeletonCard: {
+    backgroundColor: colors.surface,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: colors.surfaceBorder,
+    padding: spacing.lg,
+    marginBottom: spacing.lg,
   },
-  legalText: {
-    marginTop: spacing.sm,
-    fontSize: fontSizes.sm,
-    color: colors.textMuted,
+  skeletonLineLong: {
+    height: 14,
+    width: '80%',
+    backgroundColor: colors.surfaceBorder,
+    borderRadius: 999,
+    marginBottom: spacing.sm,
+  },
+  skeletonLineMedium: {
+    height: 12,
+    width: '55%',
+    backgroundColor: colors.surfaceBorder,
+    borderRadius: 999,
+    marginBottom: spacing.sm,
+  },
+  skeletonLineShort: {
+    height: 12,
+    width: '35%',
+    backgroundColor: colors.surfaceBorder,
+    borderRadius: 999,
   },
 });

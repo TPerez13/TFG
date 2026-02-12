@@ -109,6 +109,23 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
           />
         </View>
 
+        <Text style={styles.sectionTitle}>Politica / Terminos</Text>
+        <View style={styles.card}>
+          <SettingsRow
+            icon="document-text"
+            title="Politica de privacidad"
+            subtitle="Como usamos y protegemos tus datos"
+            onPress={() => navigation.navigate('PrivacyPolicy')}
+          />
+          <View style={styles.divider} />
+          <SettingsRow
+            icon="newspaper"
+            title="Terminos de uso"
+            subtitle="Condiciones generales de uso de la app"
+            onPress={() => navigation.navigate('TermsOfUse')}
+          />
+        </View>
+
         <Pressable
           accessibilityRole="button"
           style={({ pressed }) => [styles.logoutButton, pressed ? styles.logoutPressed : null]}

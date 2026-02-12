@@ -8,6 +8,8 @@ import NotificationSettingsScreen from '../screens/NotificationSettingsScreen';
 import PrivacyScreen from '../screens/PrivacyScreen';
 import SupportScreen from '../screens/SupportScreen';
 import AboutScreen from '../screens/AboutScreen';
+import PrivacyPolicyScreen from '../screens/settings/PrivacyPolicyScreen';
+import TermsOfUseScreen from '../screens/settings/TermsOfUseScreen';
 
 const Stack = createNativeStackNavigator<ProfileStackParamList>();
 
@@ -21,6 +23,8 @@ export function ProfileStack() {
       <Stack.Screen name="Privacy" component={PrivacyScreen} />
       <Stack.Screen name="HelpSupport" component={SupportScreen} />
       <Stack.Screen name="AboutApp" component={AboutScreen} />
+      <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} />
+      <Stack.Screen name="TermsOfUse" component={TermsOfUseScreen} />
     </Stack.Navigator>
   );
 }
