@@ -6,6 +6,7 @@ import usersRouter from "./routes/users";
 import notificationsRouter from "./routes/notifications";
 import supportRouter from "./routes/support";
 import appInfoRouter from "./routes/appInfo";
+import nutritionRouter from "./routes/nutrition";
 import { errorHandler } from "./middleware/errorHandler";
 
 /**
@@ -33,6 +34,7 @@ export function createApp() {
   app.use("/api", notificationsRouter);
   app.use("/api", supportRouter);
   app.use("/api", appInfoRouter);
+  app.use("/api", nutritionRouter);
 
   app.use(errorHandler);
 

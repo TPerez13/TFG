@@ -1,4 +1,7 @@
 import type { User } from '../types/models';
+import type { HabitKey } from '../features/habits/habitRegistry';
+import type { MealType } from '../features/nutrition/types';
+import type { ExerciseActivityType } from '../features/exercise/types';
 
 export type AuthStackParamList = {
   Login: undefined;
@@ -11,6 +14,53 @@ export type HomeStackParamList = {
 
 export type HabitsStackParamList = {
   Habits: undefined;
+  HabitDetail:
+    | {
+        habitKey?: HabitKey;
+        typeId?: number;
+        initialTab?: 'add';
+        mode?: 'add';
+      }
+    | undefined;
+  HabitGoals: undefined;
+  Nutrition:
+    | {
+        tipoComidaSeleccionada?: MealType;
+        refreshToken?: number;
+      }
+    | undefined;
+  NutritionQuickAdd:
+    | {
+        tipoComidaSeleccionada?: MealType;
+      }
+    | undefined;
+  NutritionManualEntry:
+    | {
+        tipoComidaSeleccionada?: MealType;
+      }
+    | undefined;
+  Hidratacion:
+    | {
+        refreshToken?: number;
+      }
+    | undefined;
+  RegistrarAgua:
+    | {
+        mode?: 'quick' | 'manual';
+      }
+    | undefined;
+  Ejercicio:
+    | {
+        refreshToken?: number;
+        activityTypeSeleccionada?: ExerciseActivityType;
+      }
+    | undefined;
+  RegistrarEjercicio:
+    | {
+        mode?: 'quick' | 'manual';
+        activityTypeSeleccionada?: ExerciseActivityType;
+      }
+    | undefined;
 };
 
 export type ProgressStackParamList = {

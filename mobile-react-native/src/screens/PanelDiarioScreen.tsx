@@ -23,7 +23,7 @@ import { colors, fontSizes, spacing } from '../theme/tokens';
 type PanelDiarioScreenProps = NativeStackScreenProps<HomeStackParamList, 'PanelDiario'>;
 
 type HabitState = {
-  id: string;
+  key: string;
   total: number;
   progress: number;
 };
@@ -154,8 +154,8 @@ export default function PanelDiarioScreen({ navigation }: PanelDiarioScreenProps
       .filter((habit) => habit.visible !== false)
       .map((habit) => {
         const total = totalsByType.get(habit.idTipoHabito) ?? 0;
-        const progress = habit.target > 0 ? Math.min(total / habit.target, 1) : 0;
-        const state: HabitState = { id: habit.id, total, progress };
+        const progress = habit.goal.value > 0 ? Math.min(total / habit.goal.value, 1) : 0;
+        const state: HabitState = { key: habit.key, total, progress };
         return state;
       });
   }, [totalsByType]);
@@ -169,8 +169,8 @@ export default function PanelDiarioScreen({ navigation }: PanelDiarioScreenProps
   const greetingName = user?.nombre ?? user?.username ?? user?.correo ?? 'Usuario';
   const globalPercent = Math.round(globalProgress * 100);
 
-  const onHabitAction = (habitId: string) => {
-    const habit = habitRegistry.find((item) => item.id === habitId);
+  const onHabitAction = (habitKey: string) => {
+    const habit = habitRegistry.find((item) => item.key === habitKey);
     if (!habit?.action) return;
 
     if (habit.action.intent === 'navigate' && habit.action.routeName) {
@@ -222,17 +222,22 @@ export default function PanelDiarioScreen({ navigation }: PanelDiarioScreenProps
           {habitRegistry
             .filter((habit) => habit.visible !== false)
             .map((habit) => {
-              const state = habitStates.find((item) => item.id === habit.id);
+              const state = habitStates.find((item) => item.key === habit.key);
               const total = state?.total ?? 0;
               const progress = state?.progress ?? 0;
+              const subtitle = habit.formatSummary
+                ? habit.formatSummary(total, habit.goal)
+                : `${total} de ${habit.goal.value} ${habit.goal.unit}`;
               return (
                 <HabitCard
-                  key={habit.id}
+                  key={habit.key}
                   habit={habit}
-                  value={total}
+                  variant="home"
+                  subtitle={subtitle}
                   progress={progress}
                   style={styles.habitCard}
-                  onPressAction={() => onHabitAction(habit.id)}
+                  actionLabel={habit.action?.label}
+                  onPressAction={() => onHabitAction(habit.key)}
                 />
               );
             })}

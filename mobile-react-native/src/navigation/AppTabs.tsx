@@ -62,7 +62,19 @@ export function AppTabs() {
   );
 }
 
-const ROOT_ROUTES = new Set(['PanelDiario', 'Habits', 'Progress', 'Profile']);
+const ROOT_ROUTES = new Set([
+  'PanelDiario',
+  'Habits',
+  'Nutrition',
+  'NutritionQuickAdd',
+  'NutritionManualEntry',
+  'Hidratacion',
+  'RegistrarAgua',
+  'Ejercicio',
+  'RegistrarEjercicio',
+  'Progress',
+  'Profile',
+]);
 
 const shouldHideTabBar = (route: { name?: string } | undefined) => {
   const routeName = getFocusedRouteNameFromRoute(route as any);

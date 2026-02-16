@@ -1,12 +1,26 @@
 import { colors } from '../../theme/tokens';
 
+export type HabitKey = 'agua' | 'ejercicio' | 'sueno' | 'comidas' | 'meditacion';
+
+export type HabitGoal = {
+  value: number;
+  unit: string;
+};
+
+export type HabitQuickAdd = {
+  enabled: boolean;
+  value: number;
+  unit: string;
+};
+
 export type HabitDefinition = {
-  id: string;
+  key: HabitKey;
   idTipoHabito: number;
   label: string;
   title: string;
-  target: number;
-  unit: string;
+  icon: string;
+  goal: HabitGoal;
+  quickAdd: HabitQuickAdd;
   accentColor: string;
   softColor: string;
   action?: {
@@ -14,71 +28,87 @@ export type HabitDefinition = {
     intent: 'navigate' | 'quick';
     routeName?: string;
   };
-  formatSummary?: (current: number, target: number) => string;
+  formatSummary?: (current: number, goal: HabitGoal) => string;
   helperText?: string;
   visible?: boolean;
+  showInGoals?: boolean;
 };
 
 export const habitRegistry: HabitDefinition[] = [
   {
-    id: 'agua',
+    key: 'agua',
     idTipoHabito: 1,
     label: 'AGUA',
-    title: 'Consumo de agua',
-    target: 8,
-    unit: 'vasos',
+    title: 'Agua',
+    icon: 'water-outline',
+    goal: { value: 8, unit: 'vasos' },
+    quickAdd: { enabled: true, value: 1, unit: 'vaso' },
     accentColor: '#2d7ff9',
     softColor: '#eaf3ff',
     action: { label: 'Anadir vaso +', intent: 'quick', routeName: 'HabitosTab' },
-    formatSummary: (current, target) => `${current} de ${target} vasos`,
+    formatSummary: (current, goal) => `${current} de ${goal.value} ${goal.unit}`,
+    showInGoals: true,
   },
   {
-    id: 'ejercicio',
+    key: 'ejercicio',
     idTipoHabito: 3,
     label: 'EJERCICIO',
-    title: 'Caminata diaria',
-    target: 30,
-    unit: 'min',
+    title: 'Ejercicio',
+    icon: 'barbell-outline',
+    goal: { value: 45, unit: 'min' },
+    quickAdd: { enabled: true, value: 10, unit: 'min' },
     accentColor: '#f07f2f',
     softColor: '#fff1e6',
     action: { label: 'Comenzar', intent: 'navigate', routeName: 'HabitosTab' },
-    formatSummary: (current, target) =>
-      current > 0 ? `${current} de ${target} min` : `Meta: ${target} minutos`,
+    formatSummary: (current, goal) =>
+      current > 0 ? `${current} de ${goal.value} ${goal.unit}` : `Meta: ${goal.value} ${goal.unit}`,
+    showInGoals: true,
   },
   {
-    id: 'nutricion',
+    key: 'comidas',
     idTipoHabito: 2,
-    label: 'NUTRICION',
-    title: 'Saludable',
-    target: 3,
-    unit: 'porciones',
+    label: 'COMIDAS',
+    title: 'Comidas / Nutricion',
+    icon: 'restaurant-outline',
+    goal: { value: 4, unit: 'platos' },
+    quickAdd: { enabled: true, value: 1, unit: 'plato' },
     accentColor: colors.textAccent,
     softColor: colors.glowTop,
-    formatSummary: (current, target) =>
-      current > 0 ? `${current} de ${target} porciones` : 'Frutas y verduras',
+    formatSummary: (current, goal) =>
+      current > 0 ? `${current} de ${goal.value} ${goal.unit}` : 'Frutas y verduras',
+    showInGoals: true,
   },
   {
-    id: 'sueno',
+    key: 'sueno',
     idTipoHabito: 4,
     label: 'SUENO',
-    title: 'Horas de descanso',
-    target: 8,
-    unit: 'horas',
+    title: 'Sueno',
+    icon: 'moon-outline',
+    goal: { value: 8, unit: 'horas' },
+    quickAdd: { enabled: true, value: 1, unit: 'hora' },
     accentColor: '#6b78f0',
     softColor: '#eef0ff',
-    formatSummary: (current, target) =>
-      current > 0 ? `${current} de ${target} horas` : 'Calidad buena',
+    formatSummary: (current, goal) =>
+      current > 0 ? `${current} de ${goal.value} ${goal.unit}` : 'Calidad buena',
+    showInGoals: true,
   },
   {
-    id: 'meditacion',
+    key: 'meditacion',
     idTipoHabito: 5,
     label: 'MEDITACION',
     title: 'Respiracion guiada',
-    target: 10,
-    unit: 'min',
+    icon: 'leaf-outline',
+    goal: { value: 10, unit: 'min' },
+    quickAdd: { enabled: true, value: 5, unit: 'min' },
     accentColor: '#17a88a',
     softColor: '#e6f7f2',
-    formatSummary: (current, target) =>
-      current > 0 ? `${current} de ${target} min` : 'Bienestar mental',
+    formatSummary: (current, goal) =>
+      current > 0 ? `${current} de ${goal.value} ${goal.unit}` : 'Bienestar mental',
+    showInGoals: false,
   },
 ];
+
+export const getHabitByKey = (key: HabitKey) => habitRegistry.find((habit) => habit.key === key);
+
+export const getHabitByTypeId = (typeId: number) =>
+  habitRegistry.find((habit) => habit.idTipoHabito === typeId);

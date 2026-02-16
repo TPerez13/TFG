@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { listEntries } from "../controllers/habitController";
+import { createEntry, deleteEntry, listEntries } from "../controllers/habitController";
 import { requireAuth } from "../middleware/auth";
 
 /**
@@ -9,5 +9,7 @@ import { requireAuth } from "../middleware/auth";
 const router = Router();
 
 router.get("/habits/entries", requireAuth, listEntries);
+router.post("/habits/entries", requireAuth, createEntry);
+router.delete("/habits/entries/:id", requireAuth, deleteEntry);
 
 export default router;

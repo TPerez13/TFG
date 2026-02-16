@@ -74,6 +74,81 @@ CREATE INDEX IF NOT EXISTS idx_registro_user_tipo_fecha
   ON registro_habito (id_usuario, id_tipo_habito, f_registro);
 
 -- =========================
+-- TABLA: ALIMENTO (catalogo)
+-- =========================
+CREATE TABLE IF NOT EXISTS alimento (
+  id_alimento         SERIAL PRIMARY KEY,
+  nombre              TEXT        NOT NULL UNIQUE,
+  kcal                NUMERIC     NOT NULL,
+  proteina_g          NUMERIC,
+  carbohidratos_g     NUMERIC,
+  grasas_g            NUMERIC,
+  fuente              TEXT,
+  f_creacion          TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- =========================
+-- TABLA: REGISTRO_COMIDA
+-- =========================
+CREATE TABLE IF NOT EXISTS registro_comida (
+  id_registro_comida  SERIAL PRIMARY KEY,
+  id_usuario          INT         NOT NULL,
+  f_registro          TIMESTAMPTZ NOT NULL,
+  tipo_comida         TEXT        NOT NULL CHECK (tipo_comida IN ('DESAYUNO','ALMUERZO','CENA','SNACK')),
+  id_alimento         INT,
+  nombre_snapshot     TEXT        NOT NULL,
+  kcal                NUMERIC     NOT NULL,
+  proteina_g          NUMERIC,
+  carbohidratos_g     NUMERIC,
+  grasas_g            NUMERIC,
+  CONSTRAINT fk_registro_comida_usuario
+    FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE,
+  CONSTRAINT fk_registro_comida_alimento
+    FOREIGN KEY (id_alimento) REFERENCES alimento(id_alimento) ON DELETE SET NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_registro_comida_user_fecha
+  ON registro_comida (id_usuario, f_registro);
+
+CREATE INDEX IF NOT EXISTS idx_registro_comida_user_tipo_fecha
+  ON registro_comida (id_usuario, tipo_comida, f_registro);
+
+-- Relacion opcional para ligar registro_comida con el habito de nutricion.
+ALTER TABLE registro_habito
+  ADD COLUMN IF NOT EXISTS id_registro_comida INT;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+      FROM pg_constraint
+     WHERE conname = 'fk_registro_habito_comida'
+  ) THEN
+    ALTER TABLE registro_habito
+      ADD CONSTRAINT fk_registro_habito_comida
+      FOREIGN KEY (id_registro_comida)
+      REFERENCES registro_comida(id_registro_comida)
+      ON DELETE CASCADE;
+  END IF;
+END $$;
+
+INSERT INTO alimento (nombre, kcal, proteina_g, carbohidratos_g, grasas_g, fuente)
+VALUES
+  ('Avena con frutas', 320, 10, 54, 7, 'seed'),
+  ('Pechuga de pollo', 180, 34, 0, 4, 'seed'),
+  ('Ensalada mixta', 250, 7, 18, 14, 'seed'),
+  ('Yogur griego natural', 140, 15, 7, 5, 'seed'),
+  ('Sandwich integral de pavo', 340, 24, 36, 10, 'seed'),
+  ('Tostadas con aguacate', 280, 8, 26, 16, 'seed'),
+  ('Arroz con verduras', 410, 9, 70, 9, 'seed'),
+  ('Salmon al horno', 360, 30, 4, 22, 'seed'),
+  ('Lentejas guisadas', 390, 19, 52, 9, 'seed'),
+  ('Omelette de claras', 220, 24, 4, 9, 'seed'),
+  ('Batido de proteina', 210, 27, 14, 3, 'seed'),
+  ('Frutos secos mixtos', 190, 6, 7, 16, 'seed')
+ON CONFLICT (nombre) DO NOTHING;
+
+-- =========================
 -- TABLA: LOGRO
 -- =========================
 CREATE TABLE IF NOT EXISTS logro (

@@ -1,43 +1,93 @@
 import React from 'react';
+import { Ionicons } from '@expo/vector-icons';
 import type { StyleProp, ViewStyle } from 'react-native';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { HabitDefinition } from '../features/habits/habitRegistry';
 import { colors, fontSizes, radius, spacing } from '../theme/tokens';
+import { ProgressBar } from './ProgressBar';
 
 type HabitCardProps = {
   habit: HabitDefinition;
-  value: number;
+  subtitle: string;
   progress: number;
+  variant?: 'home' | 'goals';
+  showPlusButton?: boolean;
+  onQuickAdd?: () => void;
   style?: StyleProp<ViewStyle>;
+  onPress?: () => void;
+  actionLabel?: string;
   onPressAction?: () => void;
 };
 
 const formatPercent = (value: number) => `${Math.round(value * 100)}%`;
 
-export function HabitCard({ habit, value, progress, style, onPressAction }: HabitCardProps) {
-  const summary = habit.formatSummary
-    ? habit.formatSummary(value, habit.target)
-    : `${value} / ${habit.target} ${habit.unit}`;
+export function HabitCard({
+  habit,
+  subtitle,
+  progress,
+  variant = 'home',
+  showPlusButton = false,
+  onQuickAdd,
+  style,
+  onPress,
+  actionLabel,
+  onPressAction,
+}: HabitCardProps) {
+  const isHome = variant === 'home';
+  const percent = formatPercent(progress);
+  const homeActionLabel = actionLabel ?? habit.action?.label;
   const isPrimaryAction = habit.action?.intent === 'quick';
+  const isPressable = Boolean(onPress);
 
   return (
-    <View style={[styles.card, style]}>
+    <Pressable
+      accessibilityRole={isPressable ? 'button' : undefined}
+      disabled={!isPressable}
+      onPress={onPress}
+      style={({ pressed }) => [styles.card, style, isPressable && pressed ? styles.cardPressed : null]}
+    >
       <View style={styles.headerRow}>
-        <View style={[styles.badge, { backgroundColor: habit.softColor }]}>
-          <Text style={[styles.badgeText, { color: habit.accentColor }]}>{habit.label}</Text>
+        <View style={isHome ? [styles.badge, { backgroundColor: habit.softColor }] : styles.titleWithIcon}>
+          {isHome ? (
+            <Text style={[styles.badgeText, { color: habit.accentColor }]}>{habit.label}</Text>
+          ) : (
+            <>
+              <View style={[styles.iconWrapSmall, { backgroundColor: habit.softColor }]}>
+                <Ionicons name={habit.icon as any} size={18} color={habit.accentColor} />
+              </View>
+              <Text style={styles.goalsTitle}>{habit.title}</Text>
+            </>
+          )}
         </View>
-        <Text style={styles.progressText}>{formatPercent(progress)}</Text>
+        {showPlusButton ? (
+          <Pressable
+            accessibilityLabel={`Agregar registro de ${habit.title}`}
+            accessibilityRole="button"
+            onPress={(event) => {
+              event.stopPropagation();
+              onQuickAdd?.();
+            }}
+            style={({ pressed }) => [styles.quickAddButton, pressed ? styles.quickAddPressed : null]}
+          >
+            <Text style={styles.quickAddText}>+</Text>
+          </Pressable>
+        ) : (
+          <Text style={styles.progressText}>{percent}</Text>
+        )}
       </View>
-      <View style={styles.mainRow}>
+      <View style={isHome ? styles.mainRow : styles.goalsMainRow}>
         <View style={styles.textColumn}>
-          <Text style={styles.title}>{habit.title}</Text>
-          <Text style={styles.subtitle}>{summary}</Text>
+          {isHome ? <Text style={styles.title}>{habit.title}</Text> : null}
+          <Text style={styles.subtitle}>{subtitle}</Text>
         </View>
-        <View style={[styles.iconWrap, { backgroundColor: habit.softColor }]}>
-          <View style={[styles.iconDot, { backgroundColor: habit.accentColor }]} />
-        </View>
+        {isHome ? (
+          <View style={[styles.iconWrap, { backgroundColor: habit.softColor }]}>
+            <Ionicons name={habit.icon as any} size={24} color={habit.accentColor} />
+          </View>
+        ) : null}
       </View>
-      {habit.action ? (
+      <ProgressBar progress={progress} fillColor={habit.accentColor} style={styles.progressBar} />
+      {isHome && homeActionLabel ? (
         <Pressable
           accessibilityRole="button"
           onPress={onPressAction}
@@ -48,11 +98,11 @@ export function HabitCard({ habit, value, progress, style, onPressAction }: Habi
           ]}
         >
           <Text style={[styles.actionText, isPrimaryAction ? styles.actionTextPrimary : styles.actionTextOutline]}>
-            {habit.action.label}
+            {homeActionLabel}
           </Text>
         </Pressable>
       ) : null}
-    </View>
+    </Pressable>
   );
 }
 
@@ -69,11 +119,14 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     elevation: 2,
   },
+  cardPressed: {
+    opacity: 0.9,
+  },
   headerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: spacing.md,
+    marginBottom: spacing.sm,
   },
   badge: {
     paddingHorizontal: spacing.sm,
@@ -90,7 +143,50 @@ const styles = StyleSheet.create({
     color: colors.textSubtle,
     fontWeight: '600',
   },
+  titleWithIcon: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  iconWrapSmall: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: spacing.sm,
+  },
+  goalsTitle: {
+    fontSize: fontSizes.base,
+    fontWeight: '700',
+    color: colors.textPrimary,
+    flexShrink: 1,
+  },
+  quickAddButton: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: colors.accent,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: spacing.sm,
+  },
+  quickAddPressed: {
+    opacity: 0.85,
+  },
+  quickAddText: {
+    fontSize: 18,
+    lineHeight: 18,
+    color: colors.textOnAccent,
+    fontWeight: '700',
+  },
   mainRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: spacing.md,
+  },
+  goalsMainRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -110,17 +206,15 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.md,
     color: colors.textMuted,
   },
+  progressBar: {
+    marginBottom: spacing.md,
+  },
   iconWrap: {
     width: 60,
     height: 60,
     borderRadius: radius.md,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  iconDot: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
   },
   actionButton: {
     alignSelf: 'flex-start',
