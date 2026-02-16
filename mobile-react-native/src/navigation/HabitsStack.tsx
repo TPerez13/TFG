@@ -11,6 +11,8 @@ import HidratacionScreen from '../screens/HidratacionScreen';
 import RegistrarAguaScreen from '../screens/RegistrarAguaScreen';
 import EjercicioScreen from '../screens/EjercicioScreen';
 import RegistrarEjercicioScreen from '../screens/RegistrarEjercicioScreen';
+import SuenoScreen from '../screens/SuenoScreen';
+import RegistrarSuenoScreen from '../screens/RegistrarSuenoScreen';
 
 const Stack = createNativeStackNavigator<HabitsStackParamList>();
 
@@ -27,6 +29,8 @@ export function HabitsStack() {
       <Stack.Screen name="RegistrarAgua" component={RegistrarAguaScreen} />
       <Stack.Screen name="Ejercicio" component={EjercicioScreen} />
       <Stack.Screen name="RegistrarEjercicio" component={RegistrarEjercicioScreen} />
+      <Stack.Screen name="Sueno" component={SuenoScreen} />
+      <Stack.Screen name="RegistrarSueno" component={RegistrarSuenoScreen} />
     </Stack.Navigator>
   );
 }

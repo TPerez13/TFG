@@ -72,6 +72,8 @@ const ROOT_ROUTES = new Set([
   'RegistrarAgua',
   'Ejercicio',
   'RegistrarEjercicio',
+  'Sueno',
+  'RegistrarSueno',
   'Progress',
   'Profile',
 ]);

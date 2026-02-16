@@ -61,6 +61,16 @@ export type HabitsStackParamList = {
         activityTypeSeleccionada?: ExerciseActivityType;
       }
     | undefined;
+  Sueno:
+    | {
+        refreshToken?: number;
+      }
+    | undefined;
+  RegistrarSueno:
+    | {
+        mode?: 'quick' | 'manual';
+      }
+    | undefined;
 };
 
 export type ProgressStackParamList = {
