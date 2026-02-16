@@ -13,6 +13,8 @@ import EjercicioScreen from '../screens/EjercicioScreen';
 import RegistrarEjercicioScreen from '../screens/RegistrarEjercicioScreen';
 import SuenoScreen from '../screens/SuenoScreen';
 import RegistrarSuenoScreen from '../screens/RegistrarSuenoScreen';
+import MeditacionScreen from '../screens/MeditacionScreen';
+import RegistrarMeditacionScreen from '../screens/RegistrarMeditacionScreen';
 
 const Stack = createNativeStackNavigator<HabitsStackParamList>();
 
@@ -31,6 +33,8 @@ export function HabitsStack() {
       <Stack.Screen name="RegistrarEjercicio" component={RegistrarEjercicioScreen} />
       <Stack.Screen name="Sueno" component={SuenoScreen} />
       <Stack.Screen name="RegistrarSueno" component={RegistrarSuenoScreen} />
+      <Stack.Screen name="Meditacion" component={MeditacionScreen} />
+      <Stack.Screen name="RegistrarMeditacion" component={RegistrarMeditacionScreen} />
     </Stack.Navigator>
   );
 }

@@ -27,6 +27,7 @@ export default function HabitDetailScreen({ navigation, route }: HabitDetailScre
   const isAgua = habit?.key === 'agua';
   const isEjercicio = habit?.key === 'ejercicio';
   const isSueno = habit?.key === 'sueno';
+  const isMeditacion = habit?.key === 'meditacion';
 
   const onActionPress = (action: string) => {
     if (isAgua && action === 'Anadir registro') {
@@ -66,6 +67,18 @@ export default function HabitDetailScreen({ navigation, route }: HabitDetailScre
       return;
     }
     if (isSueno && action === 'Editar meta') {
+      navigation.navigate('HabitGoals');
+      return;
+    }
+    if (isMeditacion && action === 'Anadir registro') {
+      navigation.navigate('RegistrarMeditacion', { mode: 'quick' });
+      return;
+    }
+    if (isMeditacion && action === 'Ver historico') {
+      navigation.navigate('Meditacion');
+      return;
+    }
+    if (isMeditacion && action === 'Editar meta') {
       navigation.navigate('HabitGoals');
       return;
     }

@@ -177,6 +177,10 @@ export default function HabitsScreen({ navigation }: HabitsScreenProps) {
                   navigation.navigate('Sueno');
                   return;
                 }
+                if (habit.key === 'meditacion') {
+                  navigation.navigate('Meditacion');
+                  return;
+                }
                 if (habit.key === 'comidas') {
                   navigation.navigate('Nutrition', { tipoComidaSeleccionada: defaultMealType });
                   return;
@@ -197,6 +201,10 @@ export default function HabitsScreen({ navigation }: HabitsScreenProps) {
                 }
                 if (habit.key === 'sueno') {
                   navigation.navigate('RegistrarSueno', { mode: 'quick' });
+                  return;
+                }
+                if (habit.key === 'meditacion') {
+                  navigation.navigate('RegistrarMeditacion', { mode: 'quick' });
                   return;
                 }
                 if (habit.key === 'comidas') {

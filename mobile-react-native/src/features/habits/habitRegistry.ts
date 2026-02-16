@@ -96,7 +96,7 @@ export const habitRegistry: HabitDefinition[] = [
     key: 'meditacion',
     idTipoHabito: 5,
     label: 'MEDITACION',
-    title: 'Respiracion guiada',
+    title: 'Meditacion',
     icon: 'leaf-outline',
     goal: { value: 10, unit: 'min' },
     quickAdd: { enabled: true, value: 5, unit: 'min' },
@@ -104,7 +104,7 @@ export const habitRegistry: HabitDefinition[] = [
     softColor: '#e6f7f2',
     formatSummary: (current, goal) =>
       current > 0 ? `${current} de ${goal.value} ${goal.unit}` : 'Bienestar mental',
-    showInGoals: false,
+    showInGoals: true,
   },
 ];
 

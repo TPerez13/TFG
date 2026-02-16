@@ -2,6 +2,7 @@ import type { User } from '../types/models';
 import type { HabitKey } from '../features/habits/habitRegistry';
 import type { MealType } from '../features/nutrition/types';
 import type { ExerciseActivityType } from '../features/exercise/types';
+import type { MeditationSessionType } from '../features/meditation/types';
 
 export type AuthStackParamList = {
   Login: undefined;
@@ -69,6 +70,18 @@ export type HabitsStackParamList = {
   RegistrarSueno:
     | {
         mode?: 'quick' | 'manual';
+      }
+    | undefined;
+  Meditacion:
+    | {
+        refreshToken?: number;
+        sessionTypeSeleccionada?: MeditationSessionType;
+      }
+    | undefined;
+  RegistrarMeditacion:
+    | {
+        mode?: 'quick' | 'manual';
+        sessionTypeSeleccionada?: MeditationSessionType;
       }
     | undefined;
 };
