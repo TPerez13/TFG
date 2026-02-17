@@ -4,6 +4,8 @@ import type { MealType } from '../features/nutrition/types';
 import type { ExerciseActivityType } from '../features/exercise/types';
 import type { MeditationSessionType } from '../features/meditation/types';
 
+export type HistoryFilterKey = 'todos' | HabitKey;
+
 export type AuthStackParamList = {
   Login: undefined;
   Register?: undefined;
@@ -88,6 +90,17 @@ export type HabitsStackParamList = {
 
 export type ProgressStackParamList = {
   Progress: undefined;
+  History: undefined;
+  DayHistoryDetail: {
+    dayKey: string;
+    filter?: HistoryFilterKey;
+  };
+  HabitHistory: {
+    habitKey: HabitKey;
+  };
+  HabitDetailPlaceholder: {
+    habitKey: HabitKey;
+  };
 };
 
 export type ProfileStackParamList = {

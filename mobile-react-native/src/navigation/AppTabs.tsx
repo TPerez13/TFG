@@ -77,6 +77,10 @@ const ROOT_ROUTES = new Set([
   'Meditacion',
   'RegistrarMeditacion',
   'Progress',
+  'History',
+  'DayHistoryDetail',
+  'HabitHistory',
+  'HabitDetailPlaceholder',
   'Profile',
 ]);
 
