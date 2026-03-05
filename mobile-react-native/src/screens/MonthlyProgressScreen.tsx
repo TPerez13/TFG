@@ -33,6 +33,16 @@ const isCurrentMonth = (candidate: Date) => {
 const shiftMonth = (baseDate: Date, delta: number) =>
   new Date(baseDate.getFullYear(), baseDate.getMonth() + delta, 1, 12, 0, 0, 0);
 
+const getStatusChipStyle = (status: 'CUMPLIDO' | 'EN PROCESO' | 'SIN DATOS') => {
+  if (status === 'CUMPLIDO') {
+    return { bg: '#d7efdf', text: '#15a44b' };
+  }
+  if (status === 'SIN DATOS') {
+    return { bg: '#e9eef2', text: '#617283' };
+  }
+  return { bg: '#fff0d8', text: '#ad6a00' };
+};
+
 const getStreakCaption = (streakDays: number, isEmpty: boolean) => {
   if (isEmpty) return '¡Empieza hoy!';
   if (streakDays >= 20) return '¡Excelente!';
@@ -44,6 +54,7 @@ export default function MonthlyProgressScreen({ navigation }: MonthlyProgressScr
   const [selectedMonth, setSelectedMonth] = useState(() => shiftMonth(new Date(), 0));
   const { data, loading, error, reload } = useMonthlyProgress(selectedMonth);
   const disableNext = isCurrentMonth(selectedMonth);
+  const statusChip = getStatusChipStyle(data.statusLabel);
 
   const onBack = () => {
     if (navigation.canGoBack()) {
@@ -136,8 +147,17 @@ export default function MonthlyProgressScreen({ navigation }: MonthlyProgressScr
           </View>
         ) : null}
 
-        {!error ? (
+        {!error && !loading ? (
           <>
+            {data.isEmpty ? (
+              <View style={styles.emptyCard}>
+                <Text style={styles.emptyTitle}>Sin registros para este periodo</Text>
+                <Text style={styles.emptySubtitle}>
+                  Empieza a registrar habitos para ver tu progreso mensual.
+                </Text>
+              </View>
+            ) : null}
+
             <View style={styles.statsRow}>
               <StatCard
                 icon="flame-outline"
@@ -164,8 +184,10 @@ export default function MonthlyProgressScreen({ navigation }: MonthlyProgressScr
                   <Text style={styles.analysisPct}>{data.monthlyAvg}%</Text>
                   <Text style={styles.analysisLabel}>Promedio Mensual</Text>
                 </View>
-                <View style={styles.statusChip}>
-                  <Text style={styles.statusChipText}>{data.statusLabel}</Text>
+                <View style={[styles.statusChip, { backgroundColor: statusChip.bg }]}>
+                  <Text style={[styles.statusChipText, { color: statusChip.text }]}>
+                    {data.statusLabel}
+                  </Text>
                 </View>
               </View>
               <WeeklyBars weekly={data.weekly} bestWeekIndex={data.bestWeekIndex} />
@@ -334,5 +356,24 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '700',
     letterSpacing: 1,
+  },
+  emptyCard: {
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.surfaceBorder,
+    backgroundColor: colors.surface,
+    padding: spacing.lg,
+    marginBottom: spacing.lg,
+    gap: spacing.xs,
+  },
+  emptyTitle: {
+    color: colors.textPrimary,
+    fontSize: fontSizes.base,
+    fontWeight: '700',
+  },
+  emptySubtitle: {
+    color: colors.textMuted,
+    fontSize: fontSizes.md,
+    lineHeight: 20,
   },
 });

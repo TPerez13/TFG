@@ -1,0 +1,63 @@
+﻿@startwbs
+' CAP4 - 07 Mapa de Navegacion
+
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 13
+skinparam ArrowColor #5B7083
+skinparam ArrowThickness 1
+skinparam noteBackgroundColor #FFF9E6
+skinparam noteBorderColor #D7C58A
+
+title Capitulo 4 - Mapa de Navegacion (React Navigation)
+
+* App
+** Auth
+*** Login
+**** Registro (modo signup en LoginScreen)
+** Tabs principales
+*** Inicio/Resumen
+**** PanelDiario
+*** Habitos
+**** Habits
+**** HabitGoals
+**** HabitDetail
+**** Nutrition
+***** NutritionQuickAdd
+***** NutritionManualEntry
+**** Hidratacion
+***** RegistrarAgua
+**** Ejercicio
+***** RegistrarEjercicio
+**** Sueno
+***** RegistrarSueno
+**** Meditacion
+***** RegistrarMeditacion
+*** Progreso
+**** Progress (MonthlyProgress)
+**** History
+***** DayHistoryDetail
+***** HabitHistory
+***** HabitDetailPlaceholder
+*** Gamificacion (Opcional segun alcance final)
+*** Comunidad (Opcional segun alcance final)
+**** Sin stack detectado para social/post/comentarios
+*** Perfil/Ajustes
+**** Profile
+**** NotificationSettings
+**** NotificationDetail
+**** Privacy
+**** HelpSupport
+**** AboutApp
+**** PrivacyPolicy
+**** TermsOfUse
+**** Feed (ruta secundaria)
+
+note right
+Fuente: RootNavigator + AppTabs + AuthStack +
+HomeStack + HabitsStack + ProgressStack + ProfileStack.
+end note
+
+@endwbs

@@ -19,7 +19,7 @@ export type MonthlyProgressData = {
   bestWeekIndex: number;
   bestWeekPct: number;
   achievementTitle: string;
-  statusLabel: 'CUMPLIDO' | 'EN PROCESO';
+  statusLabel: 'CUMPLIDO' | 'EN PROCESO' | 'SIN DATOS';
   isEmpty: boolean;
 };
 
@@ -97,7 +97,7 @@ const createDefaultData = (selectedMonth: Date): MonthlyProgressData => ({
   bestWeekIndex: 0,
   bestWeekPct: 0,
   achievementTitle: 'Medalla de Constancia',
-  statusLabel: 'EN PROCESO',
+  statusLabel: 'SIN DATOS',
   isEmpty: true,
 });
 
@@ -220,11 +220,9 @@ export function useMonthlyProgress(selectedMonth: Date): UseMonthlyProgressResul
       }
     }
 
-    const monthlyAvgRaw =
-      dailyCompletionPct.length > 0
-        ? dailyCompletionPct.reduce((sum, current) => sum + current, 0) / dailyCompletionPct.length
-        : 0;
-    const monthlyAvg = Math.round(monthlyAvgRaw);
+    const plannedChecks = goals.length * lastDayForCalc;
+    const completionRate = plannedChecks > 0 ? completedTotal / plannedChecks : 0;
+    const monthlyAvg = Math.round(completionRate * 100);
 
     const weekSpans = [
       [1, 7],
@@ -256,6 +254,8 @@ export function useMonthlyProgress(selectedMonth: Date): UseMonthlyProgressResul
     );
     const bestWeekPct = weekly[bestWeekIndex] ?? 0;
 
+    const isEmpty = entries.length === 0 || plannedChecks === 0;
+
     return {
       monthLabel: formatMonthLabel(selectedMonth),
       streakDays: streakMax,
@@ -265,8 +265,8 @@ export function useMonthlyProgress(selectedMonth: Date): UseMonthlyProgressResul
       bestWeekIndex,
       bestWeekPct,
       achievementTitle: 'Medalla de Constancia',
-      statusLabel: monthlyAvg >= 80 ? 'CUMPLIDO' : 'EN PROCESO',
-      isEmpty: entries.length === 0,
+      statusLabel: isEmpty ? 'SIN DATOS' : completionRate === 1 ? 'CUMPLIDO' : 'EN PROCESO',
+      isEmpty,
     };
   }, [entries, selectedMonth, user?.preferencias]);
 

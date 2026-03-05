@@ -5,7 +5,7 @@ import MonthlyProgressScreen from '../screens/MonthlyProgressScreen';
 import HistoryScreen from '../screens/HistoryScreen';
 import DayHistoryDetailScreen from '../screens/DayHistoryDetailScreen';
 import HabitHistoryScreen from '../screens/HabitHistoryScreen';
-import HabitDetailPlaceholderScreen from '../screens/HabitDetailPlaceholderScreen';
+import HabitDetailScreen from '../screens/progress/HabitDetailScreen';
 
 const Stack = createNativeStackNavigator<ProgressStackParamList>();
 
@@ -16,7 +16,7 @@ export function ProgressStack() {
       <Stack.Screen name="History" component={HistoryScreen} />
       <Stack.Screen name="DayHistoryDetail" component={DayHistoryDetailScreen} />
       <Stack.Screen name="HabitHistory" component={HabitHistoryScreen} />
-      <Stack.Screen name="HabitDetailPlaceholder" component={HabitDetailPlaceholderScreen} />
+      <Stack.Screen name="HabitDetail" component={HabitDetailScreen} />
     </Stack.Navigator>
   );
 }

@@ -14,12 +14,11 @@ export default function HabitHistoryScreen({ navigation, route }: HabitHistorySc
   const { habitKey } = route.params;
   const { data, loading, error, reload } = useHabitTrend(habitKey, 7);
 
-  const openHabitDetail = () => {
+  const openHabitDetail = () => navigation.navigate('HabitDetail', { habitKey });
+
+  const openHabitsHome = () => {
     const parent = navigation.getParent();
-    if (!parent) {
-      navigation.navigate('HabitDetailPlaceholder', { habitKey });
-      return;
-    }
+    if (!parent) return;
 
     if (habitKey === 'agua') {
       parent.navigate('HabitosTab' as never, { screen: 'Hidratacion' } as never);
@@ -37,12 +36,7 @@ export default function HabitHistoryScreen({ navigation, route }: HabitHistorySc
       parent.navigate('HabitosTab' as never, { screen: 'Meditacion' } as never);
       return;
     }
-    if (habitKey === 'comidas') {
-      parent.navigate('HabitosTab' as never, { screen: 'Nutrition' } as never);
-      return;
-    }
-
-    navigation.navigate('HabitDetailPlaceholder', { habitKey });
+    parent.navigate('HabitosTab' as never, { screen: 'Nutrition' } as never);
   };
 
   return (
@@ -74,7 +68,10 @@ export default function HabitHistoryScreen({ navigation, route }: HabitHistorySc
           </View>
 
           {loading ? (
-            <View style={styles.trendLoading} />
+            <View style={styles.loadingCard}>
+              <View style={styles.trendLoading} />
+              <Text style={styles.loadingText}>Cargando historial del habito...</Text>
+            </View>
           ) : (
             <View style={styles.trendBars}>
               {data.daily.map((point) => {
@@ -110,7 +107,12 @@ export default function HabitHistoryScreen({ navigation, route }: HabitHistorySc
         ) : null}
 
         {!error && !loading && data.recentToday.length === 0 && data.recentYesterday.length === 0 ? (
-          <Text style={styles.emptyText}>Sin registros en los ultimos 7 dias.</Text>
+          <View style={styles.emptyCard}>
+            <Text style={styles.emptyText}>Sin registros en los ultimos 7 dias.</Text>
+            <Pressable onPress={openHabitsHome} style={({ pressed }) => [styles.emptyCta, pressed ? styles.pressed : null]}>
+              <Text style={styles.emptyCtaText}>Ir a Habitos</Text>
+            </Pressable>
+          </View>
         ) : null}
 
         {data.recentToday.length > 0 ? (
@@ -241,6 +243,15 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     backgroundColor: '#dde5ec',
   },
+  loadingCard: {
+    alignItems: 'center',
+    gap: spacing.md,
+  },
+  loadingText: {
+    color: '#60748d',
+    fontSize: 15,
+    fontWeight: '600',
+  },
   trendBars: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -361,6 +372,28 @@ const styles = StyleSheet.create({
   emptyText: {
     color: '#60748d',
     fontSize: 16,
+    marginBottom: spacing.md,
+  },
+  emptyCard: {
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.surfaceBorder,
+    backgroundColor: colors.surface,
+    padding: spacing.lg,
     marginBottom: spacing.lg,
+  },
+  emptyCta: {
+    alignSelf: 'flex-start',
+    borderWidth: 1,
+    borderColor: '#1bbf5e',
+    borderRadius: 14,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    backgroundColor: '#f8fffb',
+  },
+  emptyCtaText: {
+    color: '#18b257',
+    fontWeight: '700',
+    fontSize: 15,
   },
 });

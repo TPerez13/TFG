@@ -9,6 +9,38 @@ export type CreateHabitEntryPayload = {
   notes?: string;
 };
 
+const DATE_ONLY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+
+const toDateOnly = (value: string) => {
+  if (DATE_ONLY_PATTERN.test(value)) {
+    return value;
+  }
+
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return value;
+  }
+
+  const year = parsed.getFullYear();
+  const month = `${parsed.getMonth() + 1}`.padStart(2, '0');
+  const day = `${parsed.getDate()}`.padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+const toDayBoundaryIso = (dateOnly: string, boundary: 'from' | 'to') => {
+  const [year, month, day] = dateOnly.split('-').map((item) => Number(item));
+  if (!year || !month || !day) {
+    return dateOnly;
+  }
+
+  const date =
+    boundary === 'from'
+      ? new Date(year, month - 1, day, 0, 0, 0, 0)
+      : new Date(year, month - 1, day, 23, 59, 59, 999);
+
+  return date.toISOString();
+};
+
 const parseErrorMessage = async (response: Response, fallback: string) => {
   try {
     const payload = (await response.json()) as { message?: string };
@@ -23,9 +55,11 @@ export async function fetchHabitEntries(params: {
   to: string;
   typeId?: number;
 }): Promise<HabitEntry[]> {
+  const fromDateOnly = toDateOnly(params.from);
+  const toDateOnlyValue = toDateOnly(params.to);
   const query = new URLSearchParams({
-    from: params.from,
-    to: params.to,
+    from: toDayBoundaryIso(fromDateOnly, 'from'),
+    to: toDayBoundaryIso(toDateOnlyValue, 'to'),
   });
   if (typeof params.typeId === 'number') {
     query.append('typeId', String(params.typeId));
@@ -37,7 +71,9 @@ export async function fetchHabitEntries(params: {
   }
 
   const payload = (await response.json()) as { entries?: HabitEntry[] };
-  return payload.entries ?? [];
+  return [...(payload.entries ?? [])].sort(
+    (left, right) => new Date(left.f_registro).getTime() - new Date(right.f_registro).getTime(),
+  );
 }
 
 export async function createHabitEntry(payload: CreateHabitEntryPayload): Promise<HabitEntry> {

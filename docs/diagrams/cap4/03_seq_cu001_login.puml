@@ -1,0 +1,58 @@
+﻿@startuml
+' CAP4 - 03 Secuencia CU001 Login/Registro
+
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 13
+skinparam ArrowColor #5B7083
+skinparam ArrowThickness 1
+skinparam sequence {
+  LifeLineBorderColor #6E879D
+  LifeLineBackgroundColor #FFFFFF
+  ParticipantBorderColor #6E879D
+  ParticipantBackgroundColor #FFFFFF
+  ActorBorderColor #6E879D
+  ActorBackgroundColor #FFFFFF
+}
+skinparam noteBackgroundColor #FFF9E6
+skinparam noteBorderColor #D7C58A
+
+title CU001 - Login/Registro (RF-001)
+
+participant "UI (App)" as UI
+participant "API (Backend)" as API
+database "DB (Persistencia)" as DB
+
+alt Login
+  UI -> API: POST /api/login\n{correo, password}
+  API -> DB: SELECT * FROM usuario WHERE correo = ?
+  DB --> API: usuario + hash_clave
+  API -> API: bcrypt.compare(password, hash)
+  alt Credenciales validas
+    API -> API: signAccessToken(id_usuario)
+    API --> UI: 200 {user, token}
+  else Credenciales invalidas
+    API --> UI: 401 {message}
+  end
+else Registro
+  UI -> API: POST /api/register\n{correo, nombre, password}
+  API -> DB: SELECT * FROM usuario WHERE correo = ?
+  DB --> API: existe?/null
+  alt Correo ya registrado
+    API --> UI: 409 {message}
+  else Nuevo usuario
+    API -> API: bcrypt.hash(password)\n+ preferencias por defecto
+    API -> DB: INSERT INTO usuario (...)
+    DB --> API: usuario creado
+    API -> API: signAccessToken(id_usuario)
+    API --> UI: 201 {user, token}
+  end
+end
+
+note right of API
+Basado en authController.ts y authService.ts
+end note
+
+@enduml

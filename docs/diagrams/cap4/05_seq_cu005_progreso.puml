@@ -1,0 +1,46 @@
+﻿@startuml
+' CAP4 - 05 Secuencia CU005 Progreso
+
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 13
+skinparam ArrowColor #5B7083
+skinparam ArrowThickness 1
+skinparam sequence {
+  LifeLineBorderColor #6E879D
+  LifeLineBackgroundColor #FFFFFF
+  ParticipantBorderColor #6E879D
+  ParticipantBackgroundColor #FFFFFF
+}
+skinparam noteBackgroundColor #FFF9E6
+skinparam noteBorderColor #D7C58A
+
+title CU005 - Consultar Progreso/Estadisticas (RF-009)
+
+participant "UI (App)" as UI
+participant "API (Backend)" as API
+database "DB (Persistencia)" as DB
+
+par Carga de registros del periodo
+  UI -> API: GET /api/habits/entries?from&to&typeId?
+  API -> DB: SELECT registro_habito\nWHERE id_usuario=? AND rango fechas
+  DB --> API: lista de entradas
+  API --> UI: 200 {entries}
+else Carga de perfil/metas
+  UI -> API: GET /api/users/me
+  API -> DB: SELECT usuario (preferencias)
+  DB --> API: user
+  API --> UI: 200 {user}
+end
+
+UI -> UI: Agregar por dia/tipo\ncalcular progreso, promedio y racha
+UI --> UI: Renderizar tarjetas y graficas
+
+note right of UI
+En implementacion actual, calculo mensual
+se realiza en cliente (useMonthlyProgress.ts).
+end note
+
+@enduml

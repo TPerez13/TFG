@@ -1,0 +1,81 @@
+﻿@startuml
+' CAP4 - 02 Casos de Uso
+
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 13
+skinparam ArrowColor #5B7083
+skinparam ArrowThickness 1
+skinparam packageStyle rectangle
+skinparam packageBorderColor #9FB3C8
+skinparam packageBackgroundColor #EEF4FA
+skinparam usecaseBackgroundColor #FFFFFF
+skinparam usecaseBorderColor #6E879D
+skinparam actorStyle awesome
+skinparam noteBackgroundColor #FFF9E6
+skinparam noteBorderColor #D7C58A
+
+title Capitulo 4 - Diagrama de Casos de Uso
+
+left to right direction
+
+actor "Usuario no autenticado" as A_GUEST
+actor "Usuario autenticado" as A_USER
+actor "Servicio de notificaciones" as A_NOTIF
+
+rectangle "MuchasVidas" {
+  usecase "Iniciar sesion" as UC_LOGIN
+  usecase "Registrarse" as UC_REGISTER
+  usecase "Gestionar perfil" as UC_PROFILE
+  usecase "Registrar habito" as UC_HABIT
+  usecase "Consultar historico" as UC_HISTORY
+  usecase "Ver progreso/estadisticas" as UC_PROGRESS
+  usecase "Configurar recordatorios" as UC_REMINDERS
+  usecase "Gamificacion\n(logros/retos)" as UC_GAMIF
+  usecase "Eliminar cuenta" as UC_DELETE
+  usecase "Validar credenciales\ny emitir token" as UC_AUTH_CORE
+  usecase "Aplicar preferencias\nde notificaciones" as UC_PREFS
+  usecase "Despachar recordatorio" as UC_DISPATCH
+}
+
+A_GUEST --> UC_LOGIN
+A_GUEST --> UC_REGISTER
+
+A_USER --> UC_PROFILE
+A_USER --> UC_HABIT
+A_USER --> UC_HISTORY
+A_USER --> UC_PROGRESS
+A_USER --> UC_REMINDERS
+A_USER --> UC_GAMIF
+A_USER --> UC_DELETE
+
+UC_LOGIN .> UC_AUTH_CORE : <<include>>
+UC_REGISTER .> UC_AUTH_CORE : <<include>>
+UC_PROGRESS .> UC_HISTORY : <<include>>
+UC_REMINDERS .> UC_PREFS : <<include>>
+UC_DELETE .> UC_PROFILE : <<extend>>
+UC_GAMIF .> UC_PROGRESS : <<extend>>
+
+A_NOTIF --> UC_DISPATCH
+UC_REMINDERS .> UC_DISPATCH : <<extend>>
+
+note right of UC_REMINDERS
+Implementado hoy via PUT /users/me
+(preferencias.notificaciones).
+end note
+
+note right of UC_DISPATCH
+(Opcional segun alcance final)
+No hay integracion externa de push
+confirmada en rutas actuales.
+end note
+
+note bottom
+Modulo Social: no se detectaron casos de uso de comunidad
+(posts/comentarios/reacciones) en el backend actual.
+(Opcional segun alcance final)
+end note
+
+@enduml

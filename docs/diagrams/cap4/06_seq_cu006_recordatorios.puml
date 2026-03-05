@@ -1,0 +1,54 @@
+﻿@startuml
+' CAP4 - 06 Secuencia CU006 Recordatorios
+
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 13
+skinparam ArrowColor #5B7083
+skinparam ArrowThickness 1
+skinparam sequence {
+  LifeLineBorderColor #6E879D
+  LifeLineBackgroundColor #FFFFFF
+  ParticipantBorderColor #6E879D
+  ParticipantBackgroundColor #FFFFFF
+}
+skinparam noteBackgroundColor #FFF9E6
+skinparam noteBorderColor #D7C58A
+
+title CU006 - Configurar Recordatorios (RF-010)
+
+participant "UI (App)" as UI
+participant "API (Backend)" as API
+database "DB (Persistencia)" as DB
+participant "NotifSvc" as NS
+
+UI -> API: GET /api/users/me
+API -> DB: SELECT preferencias FROM usuario
+DB --> API: preferencias actuales
+API --> UI: 200 {user.preferencias.notificaciones}
+
+UI -> API: PUT /api/users/me\n{preferencias.notificaciones = ...}
+API -> DB: SELECT preferencias actuales
+DB --> API: preferencias
+API -> API: deepMerge(preferencias, patch)
+API -> DB: UPDATE usuario SET preferencias = jsonb
+DB --> API: preferencias actualizadas
+API --> UI: 200 {preferencias}
+
+opt Integracion de envio real (no confirmada)
+  API -> NS: programar/cancelar recordatorios
+  NS --> API: ACK
+end
+
+note over API,DB
+TODO: tabla recordatorio existe en SQL,
+pero no hay endpoint dedicado activo para CRUD.
+end note
+
+note over NS
+(Opcional segun alcance final)
+end note
+
+@enduml

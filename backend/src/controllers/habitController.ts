@@ -19,6 +19,16 @@ const toIsoString = (value: unknown): string => {
   return String(value);
 };
 
+const DATE_ONLY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+
+const parseBoundaryDate = (value: string, boundary: "from" | "to"): Date => {
+  if (DATE_ONLY_PATTERN.test(value)) {
+    const suffix = boundary === "from" ? "T00:00:00.000Z" : "T23:59:59.999Z";
+    return new Date(`${value}${suffix}`);
+  }
+  return new Date(value);
+};
+
 const toHabitEntry = (record: HabitEntryRecord): HabitEntry => ({
   id_registro_habito: record.id_registro_habito,
   id_usuario: record.id_usuario,
@@ -56,8 +66,8 @@ export async function listEntries(req: Request, res: Response, next: NextFunctio
       throw new AppError("from y to son requeridos.", 400);
     }
 
-    const fromDate = new Date(from);
-    const toDate = new Date(to);
+    const fromDate = parseBoundaryDate(from, "from");
+    const toDate = parseBoundaryDate(to, "to");
     if (Number.isNaN(fromDate.getTime()) || Number.isNaN(toDate.getTime())) {
       throw new AppError("from o to invalidos.", 400);
     }

@@ -98,7 +98,7 @@ export type ProgressStackParamList = {
   HabitHistory: {
     habitKey: HabitKey;
   };
-  HabitDetailPlaceholder: {
+  HabitDetail: {
     habitKey: HabitKey;
   };
 };

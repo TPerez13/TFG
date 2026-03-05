@@ -80,7 +80,7 @@ const ROOT_ROUTES = new Set([
   'History',
   'DayHistoryDetail',
   'HabitHistory',
-  'HabitDetailPlaceholder',
+  'HabitDetail',
   'Profile',
 ]);
 
