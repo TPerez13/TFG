@@ -11,7 +11,6 @@ import {
 } from "../model/notificationModel";
 import type { NotificationType } from "../model/notificationModel";
 import { seedNotificationsForUser } from "../service/notificationService";
-import { updateNotificationSettings } from "../model/userModel";
 
 const toIsoString = (value: unknown): string | null => {
   if (!value) return null;
@@ -178,23 +177,6 @@ export async function remove(req: Request, res: Response, next: NextFunction): P
     const deleted = await deleteNotification(userId, notificationId);
     if (!deleted) throw new AppError("Notificacion no encontrada.", 404);
     res.json({ ok: true });
-  } catch (error) {
-    next(error);
-  }
-}
-
-export async function updateSettings(req: Request, res: Response, next: NextFunction): Promise<void> {
-  try {
-    const authReq = req as AuthRequest;
-    const userId = authReq.userId;
-    if (!userId) throw new AppError("Token invalido.", 401);
-
-    const settings = req.body as Record<string, boolean>;
-    if (!settings || typeof settings !== "object") {
-      throw new AppError("Settings invalidos.", 400);
-    }
-    const updated = await updateNotificationSettings(userId, settings);
-    res.json({ settings: updated });
   } catch (error) {
     next(error);
   }

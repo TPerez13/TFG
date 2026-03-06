@@ -20,6 +20,18 @@ const toIsoString = (value: unknown): string => {
 };
 
 const DATE_ONLY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+const LEGACY_HABIT_QUERY_FIELDS = ["id_tipo_habito"] as const;
+const LEGACY_HABIT_BODY_FIELDS = [
+  "id_tipo_habito",
+  "valor",
+  "dateTimeIso",
+  "f_registro",
+  "unidad",
+  "notas",
+] as const;
+
+const findLegacyFields = (payload: Record<string, unknown>, fields: readonly string[]): string[] =>
+  fields.filter((field) => Object.prototype.hasOwnProperty.call(payload, field));
 
 const parseBoundaryDate = (value: string, boundary: "from" | "to"): Date => {
   if (DATE_ONLY_PATTERN.test(value)) {
@@ -53,14 +65,15 @@ export async function listEntries(req: Request, res: Response, next: NextFunctio
       throw new AppError("Token invalido.", 401);
     }
 
-    const from = typeof req.query.from === "string" ? req.query.from : undefined;
-    const to = typeof req.query.to === "string" ? req.query.to : undefined;
-    const typeId =
-      typeof req.query.typeId === "string"
-        ? Number(req.query.typeId)
-        : typeof req.query.id_tipo_habito === "string"
-        ? Number(req.query.id_tipo_habito)
-        : undefined;
+    const query = req.query as Record<string, unknown>;
+    const legacyQueryFields = findLegacyFields(query, LEGACY_HABIT_QUERY_FIELDS);
+    if (legacyQueryFields.length > 0) {
+      throw new AppError("Contrato invalido: usa query param typeId.", 400);
+    }
+
+    const from = typeof query.from === "string" ? query.from : undefined;
+    const to = typeof query.to === "string" ? query.to : undefined;
+    const typeId = typeof query.typeId === "string" ? Number(query.typeId) : undefined;
     console.log("[HABITS] range:", { from, to });
     if (!from || !to) {
       throw new AppError("from y to son requeridos.", 400);
@@ -111,11 +124,16 @@ export async function createEntry(req: Request, res: Response, next: NextFunctio
     }
 
     const body = (req.body ?? {}) as Record<string, unknown>;
-    const typeIdRaw = body.typeId ?? body.id_tipo_habito;
-    const valueRaw = body.value ?? body.valor;
-    const dateTimeRaw = body.dateTime ?? body.dateTimeIso ?? body.f_registro;
-    const unitRaw = body.unit ?? body.unidad;
-    const notesRaw = body.notes ?? body.notas;
+    const legacyBodyFields = findLegacyFields(body, LEGACY_HABIT_BODY_FIELDS);
+    if (legacyBodyFields.length > 0) {
+      throw new AppError("Contrato invalido: usa body { typeId, value, unit?, dateTime?, notes? }.", 400);
+    }
+
+    const typeIdRaw = body.typeId;
+    const valueRaw = body.value;
+    const dateTimeRaw = body.dateTime;
+    const unitRaw = body.unit;
+    const notesRaw = body.notes;
 
     const typeId = Number(typeIdRaw);
     if (!Number.isFinite(typeId) || typeId <= 0) {
