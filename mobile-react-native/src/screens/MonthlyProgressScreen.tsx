@@ -56,17 +56,6 @@ export default function MonthlyProgressScreen({ navigation }: MonthlyProgressScr
   const disableNext = isCurrentMonth(selectedMonth);
   const statusChip = getStatusChipStyle(data.statusLabel);
 
-  const onBack = () => {
-    if (navigation.canGoBack()) {
-      navigation.goBack();
-      return;
-    }
-    const parent = navigation.getParent();
-    if (parent) {
-      parent.navigate('InicioTab' as never);
-    }
-  };
-
   const shareMessage = useMemo(
     () =>
       `Logro mensual - ${data.monthLabel}\nRacha del mes: ${data.streakDays} dias\nPromedio mensual: ${data.monthlyAvg}%\nHabitos completados: ${data.habitsCompleted}\n${data.achievementTitle}`,
@@ -95,14 +84,7 @@ export default function MonthlyProgressScreen({ navigation }: MonthlyProgressScr
     <Screen>
       <ScrollView contentContainerStyle={[baseStyles.content, styles.content]}>
         <View style={styles.header}>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Volver"
-            onPress={onBack}
-            style={({ pressed }) => [styles.backButton, pressed ? styles.pressed : null]}
-          >
-            <Ionicons name="chevron-back" size={26} color={colors.textPrimary} />
-          </Pressable>
+          <View style={styles.headerSpacer} />
           <Text style={styles.headerTitle}>Progreso Mensual</Text>
           <View style={styles.headerSpacer} />
         </View>
@@ -216,13 +198,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: spacing.xl,
-  },
-  backButton: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   headerTitle: {
     flex: 1,

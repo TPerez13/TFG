@@ -208,7 +208,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
             </Pressable>
           ) : null}
           <Button
-            title={isSignUp ? 'Crear cuenta ->' : 'Entrar ->'}
+            title={isSignUp ? 'Crear cuenta ->' : 'Iniciar Sesion'}
             onPress={handleAuth}
             style={styles.primaryButton}
           />

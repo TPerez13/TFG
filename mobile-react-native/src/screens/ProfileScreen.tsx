@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useFocusEffect } from '@react-navigation/native';
 import { Screen } from '../components/layout/Screen';
 import { useAuth } from '../navigation/AuthContext';
 import { apiFetch } from '../services/api';
@@ -18,23 +19,30 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    let active = true;
-    const loadUser = async () => {
-      try {
-        const res = await apiFetch('/users/me');
-        if (!res.ok) return;
-        const payload = (await res.json()) as { user?: User };
-        if (active) setUser(payload.user ?? null);
-      } finally {
-        if (active) setLoading(false);
-      }
-    };
-    loadUser();
-    return () => {
-      active = false;
-    };
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      let active = true;
+      const loadUser = async () => {
+        try {
+          setLoading(true);
+          const res = await apiFetch('/users/me');
+          if (res.status === 401) {
+            await signOut();
+            return;
+          }
+          if (!res.ok) return;
+          const payload = (await res.json()) as { user?: User };
+          if (active) setUser(payload.user ?? null);
+        } finally {
+          if (active) setLoading(false);
+        }
+      };
+      void loadUser();
+      return () => {
+        active = false;
+      };
+    }, [signOut])
+  );
 
   const displayName = user?.nombre ?? user?.username ?? user?.correo ?? 'Usuario';
   const memberSince = user?.f_creacion ? new Date(user.f_creacion).getFullYear() : null;
@@ -43,9 +51,7 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
     <Screen>
       <ScrollView contentContainerStyle={[baseStyles.content, styles.content]}>
         <View style={styles.header}>
-          <Pressable style={styles.backButton} accessibilityLabel="Volver">
-            <Ionicons name="chevron-back" size={24} color={colors.textPrimary} />
-          </Pressable>
+          <View style={styles.headerSpacer} />
           <Text style={styles.headerTitle}>Perfil de Usuario</Text>
           <View style={styles.headerSpacer} />
         </View>
@@ -70,6 +76,7 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
 
         <Pressable
           accessibilityRole="button"
+          onPress={() => navigation.navigate('EditProfile')}
           style={({ pressed }) => [styles.editButton, pressed ? styles.buttonPressed : null]}
         >
           <Text style={styles.editButtonText}>Editar Perfil</Text>
@@ -155,16 +162,6 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.lg,
     fontWeight: '700',
     color: colors.textPrimary,
-  },
-  backButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.surfaceBorder,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   headerSpacer: {
     width: 36,

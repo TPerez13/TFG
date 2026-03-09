@@ -24,6 +24,11 @@ export interface CreateUserInput {
   preferencias: Record<string, unknown> | null;
 }
 
+export interface UpdateUserProfileInput {
+  correo?: string;
+  nombre?: string;
+}
+
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   !!value && typeof value === "object" && !Array.isArray(value);
 
@@ -65,6 +70,53 @@ export async function updatePreferences(
   );
 
   return result.rows[0]?.preferencias ?? merged;
+}
+
+export async function updateUserProfile(
+  userId: number,
+  input: UpdateUserProfileInput
+): Promise<UserRecord | null> {
+  const fields: string[] = [];
+  const values: unknown[] = [userId];
+
+  if (typeof input.correo === "string") {
+    values.push(input.correo);
+    fields.push(`correo = $${values.length}`);
+  }
+
+  if (typeof input.nombre === "string") {
+    values.push(input.nombre);
+    fields.push(`nombre = $${values.length}`);
+  }
+
+  if (fields.length === 0) {
+    return findById(userId);
+  }
+
+  const result = await pool.query<UserRecord>(
+    `UPDATE usuario
+        SET ${fields.join(", ")}
+      WHERE id_usuario = $1
+      RETURNING id_usuario, correo, nombre, hash_clave, preferencias, f_creacion`,
+    values
+  );
+
+  if (result.rowCount === 0) {
+    return null;
+  }
+
+  return result.rows[0];
+}
+
+export async function updatePasswordHash(userId: number, hash: string): Promise<boolean> {
+  const result = await pool.query(
+    `UPDATE usuario
+        SET hash_clave = $2
+      WHERE id_usuario = $1`,
+    [userId, hash]
+  );
+
+  return (result.rowCount ?? 0) > 0;
 }
 
 /**

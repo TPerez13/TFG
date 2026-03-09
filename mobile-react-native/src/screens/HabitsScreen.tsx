@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
-import { Alert, Pressable, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { DailyProgressCard } from '../components/DailyProgressCard';
 import { HabitCard } from '../components/HabitCard';
 import { Screen } from '../components/layout/Screen';
@@ -113,21 +113,9 @@ export default function HabitsScreen({ navigation }: HabitsScreenProps) {
       </View>
       <ScrollView contentContainerStyle={[baseStyles.content, styles.content]}>
         <View style={styles.header}>
-          <Pressable
-            accessibilityLabel="Calendario"
-            onPress={() => Alert.alert('Calendario', 'Vista de calendario disponible pronto.')}
-            style={({ pressed }) => [styles.iconButton, pressed ? styles.iconButtonPressed : null]}
-          >
-            <Ionicons name="calendar-outline" size={20} color={colors.textPrimary} />
-          </Pressable>
+          <View style={styles.headerSideSpacer} />
           <Text style={styles.headerTitle}>Mis Habitos</Text>
-          <Pressable
-            accessibilityLabel="Perfil o ajustes"
-            onPress={() => Alert.alert('Perfil', 'Acceso a ajustes disponible pronto.')}
-            style={({ pressed }) => [styles.iconButton, pressed ? styles.iconButtonPressed : null]}
-          >
-            <Ionicons name="person-circle-outline" size={22} color={colors.textPrimary} />
-          </Pressable>
+          <View style={styles.headerSideSpacer} />
         </View>
 
         <Text style={styles.title}>Metas de hoy</Text>
@@ -268,18 +256,9 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: colors.textPrimary,
   },
-  iconButton: {
+  headerSideSpacer: {
     width: 38,
     height: 38,
-    borderRadius: 19,
-    borderWidth: 1,
-    borderColor: colors.surfaceBorder,
-    backgroundColor: colors.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  iconButtonPressed: {
-    opacity: 0.85,
   },
   title: {
     fontSize: 34,

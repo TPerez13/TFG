@@ -1,8 +1,15 @@
+import bcrypt from "bcryptjs";
 import type { Response, NextFunction } from "express";
 import type { HabitEntry, Notification, UserDataExport, UserSummary } from "@muchasvidas/shared";
 import type { AuthRequest } from "../middleware/auth";
 import { AppError } from "../utils/errors";
-import { findById, updatePreferences, deleteUserById } from "../model/userModel";
+import {
+  findById,
+  updatePreferences,
+  deleteUserById,
+  updateUserProfile,
+  updatePasswordHash,
+} from "../model/userModel";
 import type { UserRecord } from "../model/userModel";
 import { listEntriesForUserExport } from "../model/habitModel";
 import { listNotifications } from "../model/notificationModel";
@@ -107,13 +114,121 @@ export async function updateMe(req: AuthRequest, res: Response, next: NextFuncti
       throw new AppError("Token invalido.", 401);
     }
 
-    const preferences = (req.body as { preferencias?: Record<string, unknown> })?.preferencias;
-    if (!preferences || typeof preferences !== "object") {
-      throw new AppError("Preferencias invalidas.", 400);
+    const payload = (req.body as {
+      preferencias?: Record<string, unknown>;
+      nombre?: string;
+      correo?: string;
+    }) ?? {};
+
+    const hasPreferences = Object.prototype.hasOwnProperty.call(payload, "preferencias");
+    const hasNombre = Object.prototype.hasOwnProperty.call(payload, "nombre");
+    const hasCorreo = Object.prototype.hasOwnProperty.call(payload, "correo");
+
+    if (!hasPreferences && !hasNombre && !hasCorreo) {
+      throw new AppError("Debes enviar al menos un campo para actualizar.", 400);
     }
 
-    const updated = await updatePreferences(userId, preferences);
-    res.json({ preferencias: updated });
+    const existing = await findById(userId);
+    if (!existing) {
+      throw new AppError("Usuario no encontrado.", 404);
+    }
+
+    let nextNombre: string | undefined;
+    if (hasNombre) {
+      if (typeof payload.nombre !== "string" || payload.nombre.trim().length === 0) {
+        throw new AppError("Nombre invalido.", 400);
+      }
+      nextNombre = payload.nombre.trim();
+    }
+
+    let nextCorreo: string | undefined;
+    if (hasCorreo) {
+      if (typeof payload.correo !== "string" || payload.correo.trim().length === 0) {
+        throw new AppError("Correo invalido.", 400);
+      }
+      nextCorreo = payload.correo.trim();
+    }
+
+    let nextPreferences: Record<string, unknown> | undefined;
+    if (hasPreferences) {
+      const preferences = payload.preferencias;
+      if (!preferences || typeof preferences !== "object" || Array.isArray(preferences)) {
+        throw new AppError("Preferencias invalidas.", 400);
+      }
+      nextPreferences = preferences;
+    }
+
+    let updatedUser = existing;
+
+    if (hasNombre || hasCorreo) {
+      try {
+        const profileUpdated = await updateUserProfile(userId, {
+          nombre: nextNombre,
+          correo: nextCorreo,
+        });
+        if (!profileUpdated) {
+          throw new AppError("Usuario no encontrado.", 404);
+        }
+        updatedUser = profileUpdated;
+      } catch (error: any) {
+        if (error?.code === "23505") {
+          throw new AppError("El correo ya esta registrado.", 409);
+        }
+        throw error;
+      }
+    }
+
+    if (nextPreferences) {
+      const mergedPreferences = await updatePreferences(userId, nextPreferences);
+      updatedUser = { ...updatedUser, preferencias: mergedPreferences };
+    }
+
+    res.json({ user: toUserSummary(updatedUser), preferencias: updatedUser.preferencias ?? null });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function changePassword(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const userId = req.userId;
+    if (!userId) {
+      throw new AppError("Token invalido.", 401);
+    }
+
+    const payload = (req.body as { currentPassword?: string; newPassword?: string }) ?? {};
+    const currentPassword = typeof payload.currentPassword === "string" ? payload.currentPassword : "";
+    const newPassword = typeof payload.newPassword === "string" ? payload.newPassword : "";
+
+    if (!currentPassword || !newPassword) {
+      throw new AppError("Contrasena actual y nueva contrasena son requeridas.", 400);
+    }
+
+    if (newPassword.length < 6) {
+      throw new AppError("La nueva contrasena debe tener al menos 6 caracteres.", 400);
+    }
+
+    if (currentPassword === newPassword) {
+      throw new AppError("La nueva contrasena debe ser diferente a la actual.", 400);
+    }
+
+    const user = await findById(userId);
+    if (!user) {
+      throw new AppError("Usuario no encontrado.", 404);
+    }
+
+    const isCurrentValid = await bcrypt.compare(currentPassword, user.hash_clave);
+    if (!isCurrentValid) {
+      throw new AppError("La contrasena actual es incorrecta.", 401);
+    }
+
+    const hash = await bcrypt.hash(newPassword, 10);
+    const updated = await updatePasswordHash(userId, hash);
+    if (!updated) {
+      throw new AppError("Usuario no encontrado.", 404);
+    }
+
+    res.json({ message: "Contrasena actualizada correctamente." });
   } catch (error) {
     next(error);
   }

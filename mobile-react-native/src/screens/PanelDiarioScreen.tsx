@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
-  Pressable,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -196,13 +195,7 @@ export default function PanelDiarioScreen({ navigation }: PanelDiarioScreenProps
         <View style={styles.headerRow}>
           <View style={styles.avatar} />
           <Text style={styles.headerTitle}>Panel Diario</Text>
-          <Pressable
-            accessibilityLabel="Ajustes"
-            onPress={() => Alert.alert('Ajustes', 'Disponible pronto.')}
-            style={({ pressed }) => [styles.settingsButton, pressed ? styles.settingsPressed : null]}
-          >
-            <View style={styles.settingsDot} />
-          </Pressable>
+          <View style={styles.headerSpacer} />
         </View>
         <Text style={styles.greeting}>Buenos dias, {greetingName}</Text>
         <Text style={styles.subtitle}>Es un dia hermoso para estar saludable.</Text>
@@ -295,24 +288,9 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: colors.textPrimary,
   },
-  settingsButton: {
+  headerSpacer: {
     width: 36,
     height: 36,
-    borderRadius: 18,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.surfaceBorder,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  settingsPressed: {
-    opacity: 0.8,
-  },
-  settingsDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: colors.textPrimary,
   },
   greeting: {
     fontSize: 28,
