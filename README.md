@@ -1,52 +1,102 @@
 ## Muchas Vidas (Monorepo)
 
-Repo unificado con la API Express (TypeScript + PostgreSQL), la app móvil Expo y un paquete de tipos compartidos.
+Repo unificado con:
+- API Express (`backend/`) en TypeScript + PostgreSQL.
+- App Expo/React Native (`mobile-react-native/`).
+- Paquete compartido de tipos/DTOs (`packages/shared/`).
 
-### Estructura
-- `backend/`: API Express con PostgreSQL.
-- `mobile-react-native/`: app Expo/React Native.
-- `packages/shared/`: DTOs y tipos comunes (`@muchasvidas/shared`).
-- `database/`: scripts para inicializar la base de datos usada por Docker.
+## Requisitos
 
-### Requisitos previos
-- Node.js 18+ con npm >= 8 (soporte para workspaces).
-- Docker + Docker Compose.
+- Node.js 18+ y npm >= 8.
+- Docker Desktop (con Docker Compose).
 
-### Instalación
+## Instalacion
+
 ```bash
 npm install
 ```
-> El paso anterior instala todas las dependencias de los workspaces y compila `packages/shared` (se ejecuta en `postinstall`).
 
-### Variables de entorno
+## Variables de entorno (backend)
+
 ```bash
 cp backend/.env.example backend/.env
 ```
-Los valores por defecto enlazan con el servicio de PostgreSQL definido en `docker-compose.yml`.
 
-### Servicios principales
-- **Base de datos**: `docker-compose up -d` levanta PostgreSQL con la tabla `users` y el usuario `usuario/password`.
-- **API (desarrollo)**: `npm run dev:backend` → http://localhost:3000
-- **API (build + start)**:
-  ```bash
-  npm run build --workspace backend
-  npm run start:backend
-  ```
-- **App móvil**: `npm run start:mobile` abre el bundler de Expo.
+El backend usa `DATABASE_URL` para conectarse a PostgreSQL.
 
-### Endpoints de referencia
-- `GET /api/health`: estado del servicio.
-- `POST /api/login` (ver `packages/shared` para el contrato `LoginRequest`/`LoginResponse`).
-- `GET /api/notifications`: listado paginado de notificaciones (auth).
-- `GET /api/notifications/unread-count`: contador de no leidas (auth).
-- `PATCH /api/notifications/:id/read`: marca leida/no leida (auth).
-- `PATCH /api/notifications/read-all`: marca todas como leidas (auth).
-- `DELETE /api/notifications/:id`: elimina notificacion (auth).
-- `PUT /api/notifications/settings`: guarda preferencias (auth).
+## Base de datos
 
-### Paquete compartido
-`@muchasvidas/shared` expone los DTOs usados tanto por el backend como por la app móvil. Modifica `packages/shared/src/index.ts` y ejecuta:
+Comandos utiles:
+
+```bash
+npm run db:up
+npm run db:down
+npm run db:reset
+npm run db:logs
+```
+
+- `db:up`: levanta PostgreSQL y pgAdmin en Docker.
+- `db:reset`: borra volumenes y vuelve a ejecutar `database/init.sql` (util para volver a sembrar datos).
+
+Configuracion actual de PostgreSQL en `docker-compose.yml`:
+- Host: `localhost`
+- Puerto: `5432`
+- Database: `muchasvidas`
+- Usuario: `postgres`
+- Password: `postgres`
+
+## pgAdmin (web)
+
+Acceso a pgAdmin:
+- URL: `http://localhost:5050`
+- Email: `admin@muchasvidas.com`
+- Password: `admin`
+
+Dentro de pgAdmin, crea un servidor nuevo con:
+- Name: `muchasvidas-db` (el que prefieras)
+- Host name/address: `db`
+- Port: `5432`
+- Maintenance database: `muchasvidas`
+- Username: `postgres`
+- Password: `postgres`
+
+Si no ves tablas en `public`:
+1. Ejecuta `npm run db:up`.
+2. Si la BD ya existia y no cargo el script inicial, ejecuta `npm run db:reset`.
+3. En pgAdmin refresca `Schemas > public > Tables`.
+
+Si `http://localhost:5050` no abre (connection refused):
+1. Verifica que Docker Desktop este iniciado.
+2. Ejecuta `npm run db:up`.
+3. Revisa `npm run db:logs` y confirma que `muchasvidas-pgadmin` este en estado `running`.
+
+## API
+
+- Desarrollo: `npm run dev:backend` -> `http://localhost:3000`
+- Build y arranque:
+  - `npm run build --workspace backend`
+  - `npm run start:backend`
+
+Endpoints de referencia:
+- `GET /api/health`
+- `POST /api/login`
+- `GET /api/notifications`
+- `GET /api/notifications/unread-count`
+- `PATCH /api/notifications/:id/read`
+- `PATCH /api/notifications/read-all`
+- `DELETE /api/notifications/:id`
+- `PUT /api/notifications/settings`
+
+## App movil
+
+```bash
+npm run start:mobile
+```
+
+## Paquete compartido
+
+Tras cambiar `packages/shared/src/index.ts`:
+
 ```bash
 npm run build:shared
 ```
-para regenerar los tipos/JS distribuidos.

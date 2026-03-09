@@ -14,6 +14,10 @@
     "start:mobile": "npm --prefix mobile-react-native run start",
     "typecheck:mobile": "npm --prefix mobile-react-native run typecheck",
     "build:shared": "npm --prefix packages/shared run build",
+    "db:up": "docker-compose up -d db pgadmin",
+    "db:down": "docker-compose down",
+    "db:reset": "docker-compose down -v && docker-compose up -d db pgadmin",
+    "db:logs": "docker-compose logs -f db pgadmin",
     "android": "expo run:android",
     "ios": "expo run:ios"
   },
