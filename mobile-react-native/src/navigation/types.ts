@@ -107,6 +107,7 @@ export type ProgressStackParamList = {
 export type ProfileStackParamList = {
   Profile: undefined;
   EditProfile: undefined;
+  AchievementsScreen: undefined;
   Feed?: { user?: User } | undefined;
   NotificationDetail: { notificationId: number };
   NotificationSettings: undefined;

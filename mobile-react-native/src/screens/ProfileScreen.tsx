@@ -156,6 +156,13 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
         <Text style={styles.sectionTitle}>Ajustes de la App</Text>
         <View style={styles.card}>
           <SettingsRow
+            icon="trophy"
+            title="Logros"
+            subtitle="Consulta tus logros y desbloqueos"
+            onPress={() => navigation.navigate('AchievementsScreen')}
+          />
+          <View style={styles.divider} />
+          <SettingsRow
             icon="notifications"
             title="Notificaciones"
             subtitle="Gestiona avisos y recordatorios"

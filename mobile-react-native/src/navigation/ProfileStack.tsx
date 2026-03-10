@@ -9,6 +9,7 @@ import NotificationSettingsScreen from '../screens/NotificationSettingsScreen';
 import PrivacyScreen from '../screens/PrivacyScreen';
 import SupportScreen from '../screens/SupportScreen';
 import AboutScreen from '../screens/AboutScreen';
+import AchievementsScreen from '../screens/AchievementsScreen';
 import PrivacyPolicyScreen from '../screens/settings/PrivacyPolicyScreen';
 import TermsOfUseScreen from '../screens/settings/TermsOfUseScreen';
 
@@ -19,6 +20,7 @@ export function ProfileStack() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Profile" component={ProfileScreen} />
       <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+      <Stack.Screen name="AchievementsScreen" component={AchievementsScreen} />
       <Stack.Screen name="Feed" component={FeedScreen} />
       <Stack.Screen name="NotificationDetail" component={NotificationDetailScreen} />
       <Stack.Screen name="NotificationSettings" component={NotificationSettingsScreen} />
