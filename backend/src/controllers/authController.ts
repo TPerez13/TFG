@@ -28,3 +28,29 @@ export async function register(req: Request, res: Response, next: NextFunction):
     next(error);
   }
 }
+
+/**
+ * POST /api/password/forgot
+ * Creates a temporary reset code for the account linked to the email.
+ */
+export async function forgotPassword(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const result = await authService.requestPasswordReset(req.body);
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+}
+
+/**
+ * POST /api/password/reset
+ * Resets the account password using a valid temporary code.
+ */
+export async function resetPassword(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const result = await authService.resetPassword(req.body);
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+}

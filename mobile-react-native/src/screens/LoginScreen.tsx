@@ -203,7 +203,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
             </>
           ) : null}
           {!isSignUp ? (
-            <Pressable style={styles.forgotLink}>
+            <Pressable style={styles.forgotLink} onPress={() => navigation.navigate('ForgotPassword')}>
               <Text style={styles.forgotText}>Olvidaste tu contrasena?</Text>
             </Pressable>
           ) : null}

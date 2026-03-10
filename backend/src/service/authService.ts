@@ -1,4 +1,5 @@
 import bcrypt from "bcryptjs";
+import { createHash, randomInt } from "crypto";
 import type {
   LoginRequest,
   LoginResponse,
@@ -9,7 +10,8 @@ import type {
 import { AppError } from "../utils/errors";
 import { signAccessToken } from "../utils/jwt";
 import type { UserRecord } from "../model/userModel";
-import { createUser, findByEmail } from "../model/userModel";
+import { createUser, findByEmail, updatePasswordHash } from "../model/userModel";
+import { createPasswordResetToken, consumePasswordResetToken } from "../model/passwordResetModel";
 
 const DEFAULT_PREFERENCIAS: Record<string, unknown> = {
   tema: "system",
@@ -40,6 +42,8 @@ const DEFAULT_PREFERENCIAS: Record<string, unknown> = {
   },
 };
 
+const PASSWORD_RESET_EXPIRATION_MINUTES = 15;
+
 const toIsoString = (value: unknown): string | undefined => {
   if (value instanceof Date) {
     return value.toISOString();
@@ -57,6 +61,10 @@ const toUserSummary = (user: UserRecord): UserSummary => ({
   preferencias: user.preferencias ?? null,
   f_creacion: toIsoString(user.f_creacion),
 });
+
+const hashResetCode = (value: string): string => createHash("sha256").update(value).digest("hex");
+
+const generateResetCode = (): string => randomInt(0, 1_000_000).toString().padStart(6, "0");
 
 /**
  * Business logic for user authentication.
@@ -126,4 +134,73 @@ export async function register(payload: Partial<RegisterRequest>): Promise<Regis
   };
 
   return response;
+}
+
+export async function requestPasswordReset(payload: { correo?: string }): Promise<{
+  message: string;
+  devResetCode?: string;
+}> {
+  const correo = (payload?.correo ?? "").trim();
+  if (!correo) {
+    throw new AppError("Correo requerido.", 400);
+  }
+
+  const genericMessage =
+    "Si el correo existe, enviamos instrucciones para restablecer la contrasena.";
+  const user = await findByEmail(correo);
+  if (!user) {
+    return { message: genericMessage };
+  }
+
+  const resetCode = generateResetCode();
+  const tokenHash = hashResetCode(resetCode);
+  const expiresAt = new Date(Date.now() + PASSWORD_RESET_EXPIRATION_MINUTES * 60 * 1000);
+
+  await createPasswordResetToken(user.id_usuario, tokenHash, expiresAt);
+
+  if (process.env.NODE_ENV !== "production") {
+    return {
+      message: genericMessage,
+      devResetCode: resetCode,
+    };
+  }
+
+  return { message: genericMessage };
+}
+
+export async function resetPassword(payload: {
+  correo?: string;
+  code?: string;
+  newPassword?: string;
+}): Promise<{ message: string }> {
+  const correo = (payload?.correo ?? "").trim();
+  const code = (payload?.code ?? "").trim();
+  const newPassword = payload?.newPassword ?? "";
+
+  if (!correo || !code || !newPassword) {
+    throw new AppError("Correo, codigo y nueva contrasena son requeridos.", 400);
+  }
+
+  if (newPassword.length < 6) {
+    throw new AppError("La nueva contrasena debe tener al menos 6 caracteres.", 400);
+  }
+
+  const user = await findByEmail(correo);
+  if (!user) {
+    throw new AppError("Codigo invalido o expirado.", 400);
+  }
+
+  const tokenHash = hashResetCode(code);
+  const tokenConsumed = await consumePasswordResetToken(user.id_usuario, tokenHash, new Date());
+  if (!tokenConsumed) {
+    throw new AppError("Codigo invalido o expirado.", 400);
+  }
+
+  const hash = await bcrypt.hash(newPassword, 10);
+  const updated = await updatePasswordHash(user.id_usuario, hash);
+  if (!updated) {
+    throw new AppError("Usuario no encontrado.", 404);
+  }
+
+  return { message: "Contrasena restablecida correctamente." };
 }

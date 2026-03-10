@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
@@ -33,6 +33,13 @@ const isCurrentMonth = (candidate: Date) => {
 const shiftMonth = (baseDate: Date, delta: number) =>
   new Date(baseDate.getFullYear(), baseDate.getMonth() + delta, 1, 12, 0, 0, 0);
 
+const compareMonths = (a: Date, b: Date) => {
+  if (a.getFullYear() !== b.getFullYear()) {
+    return a.getFullYear() - b.getFullYear();
+  }
+  return a.getMonth() - b.getMonth();
+};
+
 const getStatusChipStyle = (status: 'CUMPLIDO' | 'EN PROCESO' | 'SIN DATOS') => {
   if (status === 'CUMPLIDO') {
     return { bg: '#d7efdf', text: '#15a44b' };
@@ -52,9 +59,20 @@ const getStreakCaption = (streakDays: number, isEmpty: boolean) => {
 
 export default function MonthlyProgressScreen({ navigation }: MonthlyProgressScreenProps) {
   const [selectedMonth, setSelectedMonth] = useState(() => shiftMonth(new Date(), 0));
-  const { data, loading, error, reload } = useMonthlyProgress(selectedMonth);
+  const { data, loading, error, reload, firstAvailableMonth } = useMonthlyProgress(selectedMonth);
   const disableNext = isCurrentMonth(selectedMonth);
+  const disablePrev =
+    firstAvailableMonth !== null ? compareMonths(selectedMonth, firstAvailableMonth) <= 0 : false;
   const statusChip = getStatusChipStyle(data.statusLabel);
+
+  useEffect(() => {
+    if (!firstAvailableMonth) {
+      return;
+    }
+    if (compareMonths(selectedMonth, firstAvailableMonth) < 0) {
+      setSelectedMonth(firstAvailableMonth);
+    }
+  }, [firstAvailableMonth, selectedMonth]);
 
   const shareMessage = useMemo(
     () =>
@@ -73,7 +91,11 @@ export default function MonthlyProgressScreen({ navigation }: MonthlyProgressScr
     }
   };
 
-  const handlePrevMonth = () => setSelectedMonth((current) => shiftMonth(current, -1));
+  const handlePrevMonth = () => {
+    if (!disablePrev) {
+      setSelectedMonth((current) => shiftMonth(current, -1));
+    }
+  };
   const handleNextMonth = () => {
     if (!disableNext) {
       setSelectedMonth((current) => shiftMonth(current, 1));
@@ -91,6 +113,7 @@ export default function MonthlyProgressScreen({ navigation }: MonthlyProgressScr
 
         <MonthPager
           monthLabel={data.monthLabel}
+          disablePrev={disablePrev}
           disableNext={disableNext}
           onPrev={handlePrevMonth}
           onNext={handleNextMonth}

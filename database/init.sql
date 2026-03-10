@@ -14,6 +14,23 @@ CREATE TABLE IF NOT EXISTS usuario (
   f_creacion     TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+CREATE TABLE IF NOT EXISTS password_reset_token (
+  id_password_reset SERIAL PRIMARY KEY,
+  id_usuario        INT         NOT NULL,
+  token_hash        TEXT        NOT NULL UNIQUE,
+  expires_at        TIMESTAMPTZ NOT NULL,
+  used_at           TIMESTAMPTZ,
+  created_at        TIMESTAMPTZ NOT NULL DEFAULT now(),
+  CONSTRAINT fk_password_reset_usuario
+    FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_password_reset_user_created
+  ON password_reset_token (id_usuario, created_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_password_reset_expires
+  ON password_reset_token (expires_at);
+
 INSERT INTO usuario (correo, nombre, hash_clave, preferencias)
 VALUES (
   'ejemplo@muchasvidas.com',

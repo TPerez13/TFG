@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -9,6 +9,7 @@ import {
   View,
 } from 'react-native';
 import Svg, { Circle, G } from 'react-native-svg';
+import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { HomeStackParamList } from '../navigation/types';
 import { Screen } from '../components/layout/Screen';
@@ -135,9 +136,11 @@ export default function PanelDiarioScreen({ navigation }: PanelDiarioScreenProps
     }
   }, []);
 
-  useEffect(() => {
-    loadDashboard();
-  }, [loadDashboard]);
+  useFocusEffect(
+    useCallback(() => {
+      void loadDashboard();
+    }, [loadDashboard]),
+  );
 
   const totalsByType = useMemo(() => {
     const totals = new Map<number, number>();

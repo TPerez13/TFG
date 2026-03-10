@@ -9,6 +9,7 @@ type ButtonProps = {
   title: string;
   onPress: () => void;
   variant?: 'primary' | 'outline';
+  disabled?: boolean;
   rightIcon?: ReactNode;
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
@@ -18,6 +19,7 @@ export function Button({
   title,
   onPress,
   variant = 'primary',
+  disabled = false,
   rightIcon,
   style,
   textStyle,
@@ -29,9 +31,11 @@ export function Button({
       style={({ pressed }) => [
         styles.button,
         isOutline ? styles.buttonOutline : styles.buttonPrimary,
-        pressed ? styles.pressed : null,
+        pressed && !disabled ? styles.pressed : null,
+        disabled ? styles.disabled : null,
         style,
       ]}
+      disabled={disabled}
       onPress={onPress}
     >
       <View style={styles.content}>
@@ -66,6 +70,9 @@ const styles = StyleSheet.create({
   },
   pressed: {
     opacity: 0.85,
+  },
+  disabled: {
+    opacity: 0.6,
   },
   content: {
     flexDirection: 'row',

@@ -28,6 +28,7 @@ type UseMonthlyProgressResult = {
   loading: boolean;
   error: string | null;
   reload: () => Promise<void>;
+  firstAvailableMonth: Date | null;
 };
 
 const CORE_HABIT_KEYS = ['agua', 'comidas', 'ejercicio', 'sueno', 'meditacion'] as const;
@@ -149,6 +150,17 @@ export function useMonthlyProgress(selectedMonth: Date): UseMonthlyProgressResul
   useEffect(() => {
     void reload();
   }, [reload]);
+
+  const firstAvailableMonth = useMemo(() => {
+    if (!user?.f_creacion) {
+      return null;
+    }
+    const createdAt = new Date(user.f_creacion);
+    if (Number.isNaN(createdAt.getTime())) {
+      return null;
+    }
+    return startOfMonth(createdAt);
+  }, [user?.f_creacion]);
 
   const data = useMemo<MonthlyProgressData>(() => {
     const defaults = createDefaultData(selectedMonth);
@@ -275,5 +287,6 @@ export function useMonthlyProgress(selectedMonth: Date): UseMonthlyProgressResul
     loading,
     error,
     reload,
+    firstAvailableMonth,
   };
 }

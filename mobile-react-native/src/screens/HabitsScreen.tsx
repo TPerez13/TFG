@@ -1,9 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
 import { Pressable, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
-import { DailyProgressCard } from '../components/DailyProgressCard';
 import { HabitCard } from '../components/HabitCard';
 import { Screen } from '../components/layout/Screen';
 import { habitRegistry } from '../features/habits/habitRegistry';
@@ -20,14 +18,6 @@ const startOfDay = (baseDate: Date) =>
   new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate(), 0, 0, 0, 0);
 const endOfDay = (baseDate: Date) =>
   new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate(), 23, 59, 59, 999);
-const formatCurrentDate = () => {
-  const formatted = new Intl.DateTimeFormat('es-ES', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-  }).format(new Date());
-  return formatted.charAt(0).toUpperCase() + formatted.slice(1);
-};
 const clamp = (value: number) => Math.max(0, Math.min(1, value));
 const defaultMealType: MealType = 'DESAYUNO';
 
@@ -96,14 +86,6 @@ export default function HabitsScreen({ navigation }: HabitsScreenProps) {
     });
   }, [habits, totalsByType]);
 
-  const dailyProgress = useMemo(() => {
-    if (goalCards.length === 0) return 0;
-    const sum = goalCards.reduce((acc, item) => acc + item.progress, 0);
-    return sum / goalCards.length;
-  }, [goalCards]);
-
-  const completedGoals = useMemo(() => goalCards.filter((item) => item.progress >= 1).length, [goalCards]);
-
   return (
     <Screen>
       <StatusBar barStyle="dark-content" />
@@ -117,14 +99,6 @@ export default function HabitsScreen({ navigation }: HabitsScreenProps) {
           <Text style={styles.headerTitle}>Mis Habitos</Text>
           <View style={styles.headerSideSpacer} />
         </View>
-
-        <Text style={styles.title}>Metas de hoy</Text>
-        <Text style={styles.subtitle}>{formatCurrentDate()}</Text>
-
-        <Pressable onPress={() => navigation.navigate('HabitGoals')} style={styles.editGoalsButton}>
-          <Text style={styles.editGoalsText}>Editar metas</Text>
-          <Ionicons name="create-outline" size={16} color={colors.textAccent} />
-        </Pressable>
 
         {loading ? (
           <View style={styles.loadingWrap}>
@@ -141,8 +115,6 @@ export default function HabitsScreen({ navigation }: HabitsScreenProps) {
           </View>
         ) : null}
 
-        <DailyProgressCard progress={dailyProgress} completedGoals={completedGoals} />
-
         <View style={styles.list}>
           {goalCards.map(({ habit, progress, subtitle }) => (
             <HabitCard
@@ -151,7 +123,6 @@ export default function HabitsScreen({ navigation }: HabitsScreenProps) {
               variant="goals"
               subtitle={subtitle}
               progress={progress}
-              showPlusButton={habit.quickAdd.enabled}
               onPress={() => {
                 if (habit.key === 'agua') {
                   navigation.navigate('Hidratacion');
@@ -176,34 +147,6 @@ export default function HabitsScreen({ navigation }: HabitsScreenProps) {
                 navigation.navigate('HabitDetail', {
                   habitKey: habit.key,
                   typeId: habit.idTipoHabito,
-                });
-              }}
-              onQuickAdd={() => {
-                if (habit.key === 'agua') {
-                  navigation.navigate('RegistrarAgua', { mode: 'quick' });
-                  return;
-                }
-                if (habit.key === 'ejercicio') {
-                  navigation.navigate('RegistrarEjercicio', { mode: 'quick' });
-                  return;
-                }
-                if (habit.key === 'sueno') {
-                  navigation.navigate('RegistrarSueno', { mode: 'quick' });
-                  return;
-                }
-                if (habit.key === 'meditacion') {
-                  navigation.navigate('RegistrarMeditacion', { mode: 'quick' });
-                  return;
-                }
-                if (habit.key === 'comidas') {
-                  navigation.navigate('Nutrition', { tipoComidaSeleccionada: defaultMealType });
-                  return;
-                }
-                navigation.navigate('HabitDetail', {
-                  habitKey: habit.key,
-                  typeId: habit.idTipoHabito,
-                  initialTab: 'add',
-                  mode: 'add',
                 });
               }}
             />
@@ -259,35 +202,6 @@ const styles = StyleSheet.create({
   headerSideSpacer: {
     width: 38,
     height: 38,
-  },
-  title: {
-    fontSize: 34,
-    fontWeight: '700',
-    color: colors.textPrimary,
-    marginBottom: spacing.xs,
-  },
-  subtitle: {
-    fontSize: 15,
-    color: colors.textMuted,
-    marginBottom: spacing.md,
-  },
-  editGoalsButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    alignSelf: 'flex-start',
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.surfaceBorder,
-    borderRadius: 16,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    marginBottom: spacing.lg,
-  },
-  editGoalsText: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: colors.textAccent,
   },
   loadingWrap: {
     marginBottom: spacing.lg,

@@ -5,21 +5,27 @@ import { colors, spacing } from '../../theme/tokens';
 
 type MonthPagerProps = {
   monthLabel: string;
+  disablePrev: boolean;
   disableNext: boolean;
   onPrev: () => void;
   onNext: () => void;
 };
 
-export function MonthPager({ monthLabel, disableNext, onPrev, onNext }: MonthPagerProps) {
+export function MonthPager({ monthLabel, disablePrev, disableNext, onPrev, onNext }: MonthPagerProps) {
   return (
     <View style={styles.container}>
       <Pressable
         accessibilityRole="button"
         accessibilityLabel="Mes anterior"
+        disabled={disablePrev}
         onPress={onPrev}
-        style={({ pressed }) => [styles.navButton, pressed ? styles.pressed : null]}
+        style={({ pressed }) => [
+          styles.navButton,
+          disablePrev ? styles.disabled : null,
+          pressed && !disablePrev ? styles.pressed : null,
+        ]}
       >
-        <Ionicons name="chevron-back" size={22} color={colors.textPrimary} />
+        <Ionicons name="chevron-back" size={22} color={disablePrev ? '#9aa7a0' : colors.textPrimary} />
       </Pressable>
 
       <Text style={styles.label}>{monthLabel}</Text>
