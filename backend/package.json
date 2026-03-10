@@ -1,7 +1,7 @@
 {
-  "name": "muchas-vidas-ts",
+  "name": "trackhabit-loop-api",
   "version": "1.0.0",
-  "description": "Esqueleto básico de aplicación Node.js con TypeScript y PostgreSQL.",
+  "description": "API de TrackHabit Loop construida con Node.js, TypeScript y PostgreSQL.",
   "main": "dist/server.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
@@ -28,3 +28,4 @@
     "typescript": "^5.4.5"
   }
 }
+

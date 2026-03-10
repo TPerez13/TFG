@@ -261,7 +261,7 @@ export async function exportMe(req: AuthRequest, res: Response, next: NextFuncti
       notificationRecords.map(toNotification);
 
     res.setHeader("Content-Type", "application/json");
-    res.setHeader("Content-Disposition", "attachment; filename=\"muchasvidas-export.json\"");
+    res.setHeader("Content-Disposition", "attachment; filename=\"trackhabit-loop-export.json\"");
     res.json(payload);
   } catch (error) {
     next(error);

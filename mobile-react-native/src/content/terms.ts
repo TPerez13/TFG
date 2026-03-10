@@ -7,7 +7,7 @@ export const TERMS_OF_USE_SECTIONS: LegalDocumentSection[] = [
   {
     title: 'Aceptacion de los terminos',
     body:
-      'Al usar MuchasVidas aceptas estos terminos de forma preliminar para el entorno del proyecto/TFG.',
+      'Al usar TrackHabit Loop aceptas estos terminos de forma preliminar para el entorno del proyecto/TFG.',
   },
   {
     title: 'Descripcion del servicio',

@@ -1,7 +1,7 @@
 {
   "name": "@muchasvidas/shared",
   "version": "1.0.0",
-  "description": "Tipos y DTOs compartidos para MuchaVida.",
+  "description": "Tipos y DTOs compartidos para TrackHabit Loop.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [

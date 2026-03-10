@@ -32,7 +32,7 @@ type PrivacyScreenProps = NativeStackScreenProps<ProfileStackParamList, 'Privacy
 type Banner = { type: 'success' | 'error'; message: string } | null;
 
 const INFO_LAST_UPDATED = '12 de febrero de 2026';
-const SUPPORT_EMAIL = 'soporte@muchasvidas.com';
+const SUPPORT_EMAIL = 'support@trackhabitloop.com';
 const DELETE_KEYWORD = 'ELIMINAR';
 
 const asMap = (value: unknown): Record<string, unknown> =>
@@ -156,7 +156,7 @@ export default function PrivacyScreen({ navigation }: PrivacyScreenProps) {
       }
 
       await Share.share({
-        title: 'Exportacion de datos - MuchasVidas',
+        title: 'Exportacion de datos - TrackHabit Loop',
         message: JSON.stringify(payload, null, 2),
       });
 

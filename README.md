@@ -1,6 +1,6 @@
-## Muchas Vidas (Monorepo)
+## TrackHabit Loop (Monorepo)
 
-Repo unificado con:
+Repositorio unificado de TrackHabit Loop con:
 - API Express (`backend/`) en TypeScript + PostgreSQL.
 - App Expo/React Native (`mobile-react-native/`).
 - Paquete compartido de tipos/DTOs (`packages/shared/`).
@@ -41,7 +41,7 @@ npm run db:logs
 Configuracion actual de PostgreSQL en `docker-compose.yml`:
 - Host: `localhost`
 - Puerto: `5432`
-- Database: `muchasvidas`
+- Database: `muchasvidas` (identificador tecnico legacy)
 - Usuario: `postgres`
 - Password: `postgres`
 
@@ -49,14 +49,14 @@ Configuracion actual de PostgreSQL en `docker-compose.yml`:
 
 Acceso a pgAdmin:
 - URL: `http://localhost:5050`
-- Email: `admin@muchasvidas.com`
+- Email: `admin@muchasvidas.com` (identificador tecnico legacy)
 - Password: `admin`
 
 Dentro de pgAdmin, crea un servidor nuevo con:
-- Name: `muchasvidas-db` (el que prefieras)
+- Name: `muchasvidas-db` (identificador tecnico legacy; puedes usar cualquier etiqueta visual)
 - Host name/address: `db`
 - Port: `5432`
-- Maintenance database: `muchasvidas`
+- Maintenance database: `muchasvidas` (identificador tecnico legacy)
 - Username: `postgres`
 - Password: `postgres`
 
@@ -68,7 +68,7 @@ Si no ves tablas en `public`:
 Si `http://localhost:5050` no abre (connection refused):
 1. Verifica que Docker Desktop este iniciado.
 2. Ejecuta `npm run db:up`.
-3. Revisa `npm run db:logs` y confirma que `muchasvidas-pgadmin` este en estado `running`.
+3. Revisa `npm run db:logs` y confirma que `muchasvidas-pgadmin` (nombre tecnico legacy) este en estado `running`.
 
 ## API
 

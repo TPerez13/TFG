@@ -1,13 +1,13 @@
 import type { LegalDocumentSection } from './legalTypes';
 
 export const PRIVACY_POLICY_LAST_UPDATED = '12 de febrero de 2026';
-export const LEGAL_SUPPORT_EMAIL = 'soporte@muchasvidas.com';
+export const LEGAL_SUPPORT_EMAIL = 'support@trackhabitloop.com';
 
 export const PRIVACY_POLICY_SECTIONS: LegalDocumentSection[] = [
   {
     title: 'Responsable del tratamiento',
     body: [
-      'Este proyecto/app (MuchasVidas) es responsable del tratamiento de los datos que introduces en la plataforma.',
+      'Este proyecto/app (TrackHabit Loop) es responsable del tratamiento de los datos que introduces en la plataforma.',
       `Para consultas puedes escribir a ${LEGAL_SUPPORT_EMAIL}.`,
     ],
   },

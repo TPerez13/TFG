@@ -11,28 +11,30 @@ import { apiFetch } from '../services/api';
 type AboutScreenProps = NativeStackScreenProps<ProfileStackParamList, 'AboutApp'>;
 type ScreenState = 'loading' | 'success' | 'error';
 
-const changelog = [
+const CHANGELOG_ITEMS = [
   'v0.2 - Panel diario y registro de habitos.',
   'v0.3 - Sistema de notificaciones y centro de avisos.',
   'v0.4 - Ajustes de privacidad, ayuda y soporte.',
 ];
-const appConfig = require('../../app.json');
+const APP_CONFIG = require('../../app.json');
 
 export default function AboutScreen({ navigation }: AboutScreenProps) {
   const [screenState, setScreenState] = useState<ScreenState>('loading');
   const [appInfo, setAppInfo] = useState<AppInfoResponse | null>(null);
 
-  const localVersion = appConfig?.expo?.version ?? '0.0.0';
-  const localBuild = String(appConfig?.expo?.android?.versionCode ?? appConfig?.expo?.ios?.buildNumber ?? 'dev');
+  const localVersion = APP_CONFIG?.expo?.version ?? '0.0.0';
+  const localBuild = String(
+    APP_CONFIG?.expo?.android?.versionCode ?? APP_CONFIG?.expo?.ios?.buildNumber ?? 'dev'
+  );
 
-  const load = async () => {
+  const handleLoadAppInfo = async () => {
     try {
       setScreenState('loading');
-      const res = await apiFetch('/app/info');
-      if (!res.ok) {
+      const response = await apiFetch('/app/info');
+      if (!response.ok) {
         throw new Error('No se pudo cargar /app/info');
       }
-      const payload = (await res.json()) as AppInfoResponse;
+      const payload = (await response.json()) as AppInfoResponse;
       setAppInfo(payload);
       setScreenState('success');
     } catch (_error) {
@@ -42,7 +44,7 @@ export default function AboutScreen({ navigation }: AboutScreenProps) {
   };
 
   useEffect(() => {
-    void load();
+    void handleLoadAppInfo();
   }, []);
 
   return (
@@ -64,7 +66,7 @@ export default function AboutScreen({ navigation }: AboutScreenProps) {
           <View style={styles.statusCard}>
             <Text style={styles.statusTitle}>No se pudo cargar informacion remota</Text>
             <Text style={styles.statusSubtitle}>Se mostraran datos locales de la app.</Text>
-            <Pressable style={styles.retryButton} onPress={() => void load()}>
+            <Pressable style={styles.retryButton} onPress={() => void handleLoadAppInfo()}>
               <Text style={styles.retryText}>Reintentar</Text>
             </Pressable>
           </View>
@@ -83,8 +85,8 @@ export default function AboutScreen({ navigation }: AboutScreenProps) {
             <Text style={styles.sectionTitle}>Descripcion</Text>
             <View style={styles.card}>
               <Text style={styles.paragraph}>
-                MuchasVidas ayuda a registrar habitos diarios, visualizar progreso y mantener rutinas saludables con
-                feedback simple.
+                TrackHabit Loop ayuda a registrar habitos diarios, visualizar progreso y mantener rutinas saludables
+                con feedback simple.
               </Text>
             </View>
 
@@ -97,7 +99,7 @@ export default function AboutScreen({ navigation }: AboutScreenProps) {
 
             <Text style={styles.sectionTitle}>Changelog</Text>
             <View style={styles.card}>
-              {changelog.map((item) => (
+              {CHANGELOG_ITEMS.map((item) => (
                 <Text key={item} style={styles.changelogItem}>
                   {item}
                 </Text>

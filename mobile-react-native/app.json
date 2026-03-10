@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "MuchasVidasRN",
+    "name": "TrackHabit Loop",
     "slug": "muchasvidas-rn",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -11,4 +11,3 @@
     }
   }
 }
-

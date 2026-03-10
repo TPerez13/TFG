@@ -2,7 +2,7 @@
 import React from 'react';
 import type { ReactNode } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
-import { SafeAreaView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { baseStyles } from '../../theme/components';
 
 type ScreenProps = {

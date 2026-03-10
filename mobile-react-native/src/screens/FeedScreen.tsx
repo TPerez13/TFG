@@ -1,6 +1,7 @@
 // Pantalla de feed con detalles del usuario.
 import React from 'react';
-import { Pressable, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { ProfileStackParamList } from '../navigation/types';
 import { useAuth } from '../navigation/AuthContext';

@@ -29,13 +29,13 @@ type SupportScreenProps = NativeStackScreenProps<ProfileStackParamList, 'HelpSup
 type ScreenState = 'loading' | 'success' | 'error';
 type SubmitState = 'idle' | 'loading' | 'success' | 'error';
 
-const bugKinds = [
+const BUG_KIND_OPTIONS = [
   { id: 'ui', label: 'UI' },
   { id: 'datos', label: 'Datos' },
   { id: 'rendimiento', label: 'Rendimiento' },
   { id: 'crash', label: 'Cierre inesperado' },
 ];
-const appConfig = require('../../app.json');
+const APP_CONFIG = require('../../app.json');
 
 export default function SupportScreen({ navigation }: SupportScreenProps) {
   const { signOut } = useAuth();
@@ -50,8 +50,10 @@ export default function SupportScreen({ navigation }: SupportScreenProps) {
   const [ticketState, setTicketState] = useState<SubmitState>('idle');
   const [feedback, setFeedback] = useState<string | null>(null);
 
-  const appVersion = appConfig?.expo?.version ?? '0.0.0';
-  const appBuild = String(appConfig?.expo?.android?.versionCode ?? appConfig?.expo?.ios?.buildNumber ?? 'dev');
+  const appVersion = APP_CONFIG?.expo?.version ?? '0.0.0';
+  const appBuild = String(
+    APP_CONFIG?.expo?.android?.versionCode ?? APP_CONFIG?.expo?.ios?.buildNumber ?? 'dev'
+  );
 
   const deviceInfo = useMemo(
     () => ({
@@ -59,12 +61,12 @@ export default function SupportScreen({ navigation }: SupportScreenProps) {
       platformVersion: Platform.Version,
       appVersion,
       appBuild,
-      runtimeVersion: appConfig?.expo?.runtimeVersion ?? null,
+      runtimeVersion: APP_CONFIG?.expo?.runtimeVersion ?? null,
     }),
     [appBuild, appVersion]
   );
 
-  const load = async () => {
+  const handleLoadSupportData = async () => {
     try {
       setScreenState('loading');
       setFeedback(null);
@@ -91,7 +93,7 @@ export default function SupportScreen({ navigation }: SupportScreenProps) {
   };
 
   useEffect(() => {
-    void load();
+    void handleLoadSupportData();
   }, []);
 
   const createTicket = async (payload: {
@@ -104,7 +106,7 @@ export default function SupportScreen({ navigation }: SupportScreenProps) {
     try {
       setTicketState('loading');
       setFeedback(null);
-      const res = await apiFetch('/support/tickets', {
+      const response = await apiFetch('/support/tickets', {
         method: 'POST',
         body: JSON.stringify({
           asunto: payload.asunto,
@@ -115,15 +117,15 @@ export default function SupportScreen({ navigation }: SupportScreenProps) {
         }),
       });
 
-      if (res.status === 401) {
+      if (response.status === 401) {
         await signOut();
         return;
       }
-      if (!res.ok) {
+      if (!response.ok) {
         throw new Error('No se pudo crear el ticket.');
       }
 
-      const ticket = (await res.json()) as SupportTicketResponse;
+      const ticket = (await response.json()) as SupportTicketResponse;
       setTicketState('success');
       setFeedback(`Ticket creado: ${ticket.ticketNumber}`);
       Alert.alert('Solicitud enviada', `Tu ticket ${ticket.ticketNumber} se registro correctamente.`);
@@ -133,7 +135,7 @@ export default function SupportScreen({ navigation }: SupportScreenProps) {
     }
   };
 
-  const sendContact = async () => {
+  const handleSendContact = async () => {
     if (subject.trim().length < 3 || description.trim().length < 10) {
       setFeedback('Completa asunto (3+) y descripcion (10+) para enviar.');
       setTicketState('error');
@@ -149,14 +151,14 @@ export default function SupportScreen({ navigation }: SupportScreenProps) {
     setDescription('');
   };
 
-  const sendBugReport = async () => {
+  const handleSendBugReport = async () => {
     if (bugDescription.trim().length < 10) {
       setFeedback('Describe el error con al menos 10 caracteres.');
       setTicketState('error');
       return;
     }
 
-    const selectedBug = bugKinds.find((item) => item.id === bugType)?.label ?? bugType;
+    const selectedBug = BUG_KIND_OPTIONS.find((item) => item.id === bugType)?.label ?? bugType;
     await createTicket({
       asunto: `Reporte de error - ${selectedBug}`,
       descripcion: bugDescription.trim(),
@@ -186,7 +188,7 @@ export default function SupportScreen({ navigation }: SupportScreenProps) {
           <View style={styles.statusCard}>
             <Text style={styles.statusTitle}>No se pudo cargar soporte</Text>
             <Text style={styles.statusSubtitle}>Comprueba la conexion y vuelve a intentarlo.</Text>
-            <Pressable style={styles.retryButton} onPress={() => void load()}>
+            <Pressable style={styles.retryButton} onPress={() => void handleLoadSupportData()}>
               <Text style={styles.retryText}>Reintentar</Text>
             </Pressable>
           </View>
@@ -244,7 +246,7 @@ export default function SupportScreen({ navigation }: SupportScreenProps) {
               <Pressable
                 style={[styles.primaryButton, ticketState === 'loading' ? styles.buttonDisabled : null]}
                 disabled={ticketState === 'loading'}
-                onPress={() => void sendContact()}
+                onPress={() => void handleSendContact()}
               >
                 <Text style={styles.primaryButtonText}>
                   {ticketState === 'loading' ? 'Enviando...' : 'Enviar'}
@@ -262,7 +264,7 @@ export default function SupportScreen({ navigation }: SupportScreenProps) {
               {reportExpanded ? (
                 <>
                   <View style={styles.chipWrap}>
-                    {bugKinds.map((kind) => (
+                    {BUG_KIND_OPTIONS.map((kind) => (
                       <Pressable
                         key={kind.id}
                         onPress={() => setBugType(kind.id)}
@@ -288,7 +290,7 @@ export default function SupportScreen({ navigation }: SupportScreenProps) {
                   <Pressable
                     style={[styles.primaryButton, ticketState === 'loading' ? styles.buttonDisabled : null]}
                     disabled={ticketState === 'loading'}
-                    onPress={() => void sendBugReport()}
+                    onPress={() => void handleSendBugReport()}
                   >
                     <Text style={styles.primaryButtonText}>Enviar reporte</Text>
                   </Pressable>

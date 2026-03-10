@@ -136,14 +136,14 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
           <Text style={styles.avatarHint}>Toca para cambiar avatar</Text>
         </Pressable>
 
-        {loading ? <ActivityIndicator color={colors.textAccent} style={styles.profileLoader} /> : null}
+        {loading && <ActivityIndicator color={colors.textAccent} style={styles.profileLoader} />}
 
-        {!loading ? (
+        {!loading && (
           <>
             <Text style={styles.name}>{displayName}</Text>
             <Text style={styles.memberSince}>{memberSince ? `Miembro desde ${memberSince}` : 'Miembro desde 2023'}</Text>
           </>
-        ) : null}
+        )}
 
         <Pressable
           accessibilityRole="button"
@@ -213,7 +213,7 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
           <Text style={styles.logoutText}>Cerrar Sesion</Text>
         </Pressable>
 
-        <Text style={styles.footerText}>HealthyHabits esta disenado para ti.</Text>
+        <Text style={styles.footerText}>TrackHabit Loop esta disenado para ti.</Text>
       </ScrollView>
 
       <Modal
