@@ -1,5 +1,5 @@
 ﻿@startuml
-' CAP4 - 06 Secuencia CU006 Recordatorios
+' CAP4 - 06 Secuencia CU006 Recordatorios/Notificaciones
 
 skinparam backgroundColor #F8FAFC
 skinparam shadowing false
@@ -17,38 +17,50 @@ skinparam sequence {
 skinparam noteBackgroundColor #FFF9E6
 skinparam noteBorderColor #D7C58A
 
-title CU006 - Configurar Recordatorios (RF-010)
+title CU006 - Configurar recordatorios y gestionar notificaciones
 
-participant "UI (App)" as UI
+participant "UI (Perfil/Notificaciones)" as UI
 participant "API (Backend)" as API
-database "DB (Persistencia)" as DB
-participant "NotifSvc" as NS
+database "DB (PostgreSQL)" as DB
 
+== Configuracion de recordatorios ==
 UI -> API: GET /api/users/me
 API -> DB: SELECT preferencias FROM usuario
 DB --> API: preferencias actuales
 API --> UI: 200 {user.preferencias.notificaciones}
 
-UI -> API: PUT /api/users/me\n{preferencias.notificaciones = ...}
+UI -> API: PUT /api/users/me\n{preferencias.notificaciones = patch}
 API -> DB: SELECT preferencias actuales
-DB --> API: preferencias
+DB --> API: json actual
 API -> API: deepMerge(preferencias, patch)
 API -> DB: UPDATE usuario SET preferencias = jsonb
 DB --> API: preferencias actualizadas
-API --> UI: 200 {preferencias}
+API --> UI: 200 {user, preferencias}
 
-opt Integracion de envio real (no confirmada)
-  API -> NS: programar/cancelar recordatorios
-  NS --> API: ACK
-end
+== Centro de notificaciones ==
+UI -> API: GET /api/notifications/unread-count
+API -> DB: COUNT notificacion WHERE leida=false
+DB --> API: count
+API --> UI: 200 {count}
 
+UI -> API: GET /api/notifications?limit&cursor&type&unreadOnly
+API -> DB: SELECT notificacion por usuario
+DB --> API: items[]
+API --> UI: 200 {items, nextCursor}
+
+UI -> API: PATCH /api/notifications/:id/read {read:true}
+API -> DB: UPDATE notificacion SET leida=true, f_leida=now()
+DB --> API: item actualizado
+API --> UI: 200 {item}
+/'
 note over API,DB
-TODO: tabla recordatorio existe en SQL,
-pero no hay endpoint dedicado activo para CRUD.
+La app usa preferencias JSON para recordatorios.
+La tabla recordatorio existe, pero no hay CRUD activo en rutas.
 end note
 
-note over NS
-(Opcional segun alcance final)
-end note
+note right of UI
+NotificationSettingsScreen consume /users/me.
+NotificationsScreen consume /notifications.*
+end note'/
 
 @enduml

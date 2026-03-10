@@ -17,30 +17,41 @@ skinparam sequence {
 skinparam noteBackgroundColor #FFF9E6
 skinparam noteBorderColor #D7C58A
 
-title CU005 - Consultar Progreso/Estadisticas (RF-009)
+title CU005 - Progreso, historial y logros (calculo en cliente)
 
-participant "UI (App)" as UI
+participant "UI (App mobile)" as UI
 participant "API (Backend)" as API
-database "DB (Persistencia)" as DB
+database "DB (PostgreSQL)" as DB
 
-par Carga de registros del periodo
+par Carga de registros por rango
   UI -> API: GET /api/habits/entries?from&to&typeId?
-  API -> DB: SELECT registro_habito\nWHERE id_usuario=? AND rango fechas
-  DB --> API: lista de entradas
+  API -> DB: SELECT registro_habito por usuario + rango
+  DB --> API: entries[]
   API --> UI: 200 {entries}
 else Carga de perfil/metas
   UI -> API: GET /api/users/me
-  API -> DB: SELECT usuario (preferencias)
+  API -> DB: SELECT usuario(preferencias)
   DB --> API: user
   API --> UI: 200 {user}
 end
 
-UI -> UI: Agregar por dia/tipo\ncalcular progreso, promedio y racha
-UI --> UI: Renderizar tarjetas y graficas
+UI -> UI: Agregar por dia y tipo (historyUtils)
+UI -> UI: Calcular progreso mensual (useMonthlyProgress)
+UI -> UI: Calcular historial/filtros (useHistoryRange/useHabitTrend)
+UI -> UI: Calcular logros y unlockedAt (useAchievements)
+UI --> UI: Render Progress, History y AchievementsScreen
 
+loop Cambio de mes o filtros
+  UI -> API: GET /api/habits/entries con nuevo rango
+  API -> DB: SELECT por nuevo rango
+  DB --> API: entries[]
+  API --> UI: 200 {entries}
+  UI -> UI: Recalcular vistas
+end
+/'
 note right of UI
-En implementacion actual, calculo mensual
-se realiza en cliente (useMonthlyProgress.ts).
-end note
+No existe endpoint dedicado de progreso/logros.
+Todo el agregado se realiza en cliente.
+end note'/
 
 @enduml

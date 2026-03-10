@@ -1,0 +1,73 @@
+﻿@startuml
+' CAP4 - 08 Secuencia representativa: modulo de notificaciones
+
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 13
+skinparam ArrowColor #5B7083
+skinparam ArrowThickness 1
+skinparam sequence {
+  LifeLineBorderColor #6E879D
+  LifeLineBackgroundColor #FFFFFF
+  ParticipantBorderColor #6E879D
+  ParticipantBackgroundColor #FFFFFF
+}
+skinparam noteBackgroundColor #FFF9E6
+skinparam noteBorderColor #D7C58A
+
+title CU007 - Gestion de notificaciones (listado, detalle y lectura)
+
+participant "UI (NotificationsScreen)" as UI
+participant "API Notifications" as API
+database "DB (notificacion)" as DB
+
+== Carga inicial ==
+UI -> API: GET /api/notifications/unread-count
+API -> DB: SELECT COUNT(*) WHERE id_usuario=? AND leida=false
+DB --> API: count
+API --> UI: 200 {count}
+
+UI -> API: GET /api/notifications?limit=20&cursor?
+API -> DB: SELECT notificaciones ORDER BY created_at DESC LIMIT 20
+DB --> API: items[]
+API --> UI: 200 {items, nextCursor}
+
+== Detalle ==
+UI -> API: GET /api/notifications/:id
+API -> DB: SELECT notificacion por id_usuario + id
+alt Existe
+  DB --> API: item
+  API --> UI: 200 {item}
+else No existe
+  API --> UI: 404 {message}
+end
+
+== Marcar leida ==
+UI -> API: PATCH /api/notifications/:id/read {read:true}
+API -> DB: UPDATE notificacion SET leida=true, f_leida=now()
+DB --> API: item actualizado
+API --> UI: 200 {item}
+
+== Marcar todas leidas ==
+UI -> API: PATCH /api/notifications/read-all
+API -> DB: UPDATE notificacion SET leida=true WHERE leida=false
+DB --> API: filas afectadas
+API --> UI: 200 {updated}
+
+== Borrar ==
+UI -> API: DELETE /api/notifications/:id
+API -> DB: DELETE notificacion por id_usuario + id
+alt Eliminada
+  API --> UI: 200 {ok:true}
+else No encontrada
+  API --> UI: 404 {message}
+end
+/'
+note right of API
+Rutas activas: /notifications, /notifications/unread-count,
+/:id, /:id/read, /read-all, /seed.
+end note'/
+
+@enduml

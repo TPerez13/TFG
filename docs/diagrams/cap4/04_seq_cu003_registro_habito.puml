@@ -17,34 +17,52 @@ skinparam sequence {
 skinparam noteBackgroundColor #FFF9E6
 skinparam noteBorderColor #D7C58A
 
-title CU003 - Registrar Habito (RF-003..RF-007)
+title CU003 - Registrar habito y registro nutricional
 
 participant "UI (App)" as UI
-participant "API (Backend)" as API
-database "DB (Persistencia)" as DB
+participant "API Habits/Nutrition" as API
+database "DB (PostgreSQL)" as DB
 
-UI -> API: POST /api/habits/entries\n{typeId, value, unit, dateTime, notes}
-API -> API: Validar token + body
-alt Datos invalidos
-  API --> UI: 400/401 {message}
-else Datos validos
-  API -> DB: INSERT INTO registro_habito (...)
-  DB --> API: entry creada
-  API --> UI: 201 {entry}
-end
+alt Registro de habito general
+  UI -> API: POST /api/habits/entries\n{typeId, value, unit?, dateTime?, notes?}
+  API -> API: validar token + contrato de body
+  alt Datos invalidos
+    API --> UI: 400/401 {message}
+  else Datos validos
+    API -> DB: INSERT registro_habito
+    DB --> API: entry creada
+    API --> UI: 201 {entry}
+  end
 
-opt Registro nutricional (flujo especifico)
-  UI -> API: POST /api/nutrition/entries\n{tipoComida, kcal, ...}
+else Registro de comida (nutricion)
+  UI -> API: POST /api/nutrition/entries\n{tipoComida, alimentoId?, nombre?, kcal?, ...}
+  API -> API: validar token + payload
   API -> DB: BEGIN
-  API -> DB: INSERT INTO registro_comida (...)
-  API -> DB: INSERT INTO registro_habito\n(type=2, id_registro_comida)
+  API -> DB: INSERT registro_comida
+  API -> DB: INSERT registro_habito (id_tipo_habito=2, valor=1, id_registro_comida)
   API -> DB: COMMIT
-  API --> UI: 201 {entry nutricion}
+  DB --> API: entry nutricion creada
+  API --> UI: 201 {entry}
+
+  alt Error de validacion o persistencia
+    API -> DB: ROLLBACK
+    API --> UI: 400/500 {message}
+  end
 end
 
+opt Eliminar registro
+  UI -> API: DELETE /api/habits/entries/:id
+  API -> DB: DELETE registro_habito por id_usuario + id
+  alt Existe registro
+    API --> UI: 200 {ok, entry}
+  else No encontrado
+    API --> UI: 404 {message}
+  end
+end
+/'
 note over API,DB
-TODO: no se detecto actualizacion de puntos/rachas
-persistida en tablas de gamificacion tras registrar habito.
-end note
+En nutricion la creacion es transaccional para mantener
+consistencia entre registro_comida y registro_habito.
+end note'/
 
 @enduml

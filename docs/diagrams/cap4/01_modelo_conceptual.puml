@@ -19,9 +19,9 @@ skinparam noteBorderColor #D7C58A
 
 hide methods
 
-title Capitulo 4 - Modelo Conceptual (Dominio Real del Repositorio)
+title Capitulo 4 - Modelo Conceptual (estado actual del repositorio)
 
-package "Auth" {
+package "Cuenta y autenticacion" {
   class Usuario {
     +id_usuario: int
     +correo: string
@@ -30,9 +30,18 @@ package "Auth" {
     +preferencias: jsonb
     +f_creacion: timestamptz
   }
+
+  class PasswordResetToken {
+    +id_password_reset_token: int
+    +id_usuario: int
+    +token_hash: string
+    +expires_at: timestamptz
+    +consumed_at?: timestamptz
+    +created_at: timestamptz
+  }
 }
 
-package "Habits" {
+package "Habitos y nutricion" {
   class TipoHabito {
     +id_tipo_habito: int
     +nombre: string
@@ -41,10 +50,12 @@ package "Habits" {
 
   class RegistroHabito {
     +id_registro_habito: int
+    +id_usuario: int
+    +id_tipo_habito: int
     +f_registro: timestamptz
     +valor: decimal
-    +unidad: string
-    +notas: string
+    +unidad?: string
+    +notas?: string
     +id_registro_comida?: int
   }
 
@@ -52,13 +63,15 @@ package "Habits" {
     +id_alimento: int
     +nombre: string
     +kcal: decimal
-    +proteina_g: decimal
-    +carbohidratos_g: decimal
-    +grasas_g: decimal
+    +proteina_g?: decimal
+    +carbohidratos_g?: decimal
+    +grasas_g?: decimal
+    +fuente?: string
   }
 
   class RegistroComida {
     +id_registro_comida: int
+    +id_usuario: int
     +f_registro: timestamptz
     +tipo_comida: enum
     +nombre_snapshot: string
@@ -67,12 +80,60 @@ package "Habits" {
   }
 }
 
-package "Progress" {
+package "Notificaciones y dispositivos" {
+  class Notificacion {
+    +id_notificacion: int
+    +id_usuario: int
+    +titulo: string
+    +cuerpo: string
+    +tipo: enum
+    +leida: boolean
+    +f_programada?: timestamptz
+    +f_leida?: timestamptz
+    +estado?: string
+    +deep_link?: string
+    +created_at: timestamptz
+    +updated_at: timestamptz
+  }
+
+  class UserDevice {
+    +id_user_device: int
+    +id_usuario: int
+    +platform: string
+    +expo_push_token: string
+    +created_at: timestamptz
+    +last_seen_at: timestamptz
+  }
+
+  class Recordatorio <<InfraLegacy>> {
+    +id_recordatorio: int
+    +id_usuario: int
+    +id_tipo_habito: int
+    +programacion: jsonb
+    +activo: boolean
+    +f_creacion: timestamptz
+  }
+}
+
+package "Soporte" {
+  class TicketSoporte {
+    +id_ticket: int
+    +id_usuario: int
+    +asunto: string
+    +descripcion: string
+    +tipo: enum
+    +estado: enum
+    +contacto_email?: string
+    +f_creacion: timestamptz
+  }
+}
+
+package "Lecturas calculadas en cliente (mobile)" {
   class ProgresoMensual <<ReadModel>> {
     +monthLabel: string
     +streakDays: int
-    +habitsCompleted: int
     +monthlyAvg: int
+    +habitsCompleted: int
     +bestWeekPct: int
   }
 
@@ -82,35 +143,17 @@ package "Progress" {
     +goalsReached: int
     +filterTypeId?: int
   }
-}
 
-package "Notifications" {
-  class Recordatorio {
-    +id_recordatorio: int
-    +programacion: jsonb
-    +activo: boolean
-    +f_creacion: timestamptz
-  }
-
-  class Notificacion {
-    +id_notificacion: int
-    +titulo: string
-    +tipo: enum
-    +leida: boolean
-    +f_programada: timestamptz
-    +estado: string
-  }
-
-  class DispositivoUsuario {
-    +id_user_device: int
-    +platform: string
-    +expo_push_token: string
-    +created_at: timestamptz
-    +last_seen_at: timestamptz
+  class LogroCliente <<ReadModel>> {
+    +id: string
+    +title: string
+    +unlocked: boolean
+    +unlockedAt?: YYYY-MM-DD
+    +progress?: X/Y
   }
 }
 
-package "Gamification" {
+package "Gamificacion (persistencia existente sin API dedicada)" {
   class Logro {
     +id_logro: int
     +nombre: string
@@ -121,6 +164,8 @@ package "Gamification" {
 
   class UsuarioLogro {
     +id_usuario_logro: int
+    +id_usuario: int
+    +id_logro: int
     +f_obtencion: timestamptz
     +puntos: int
   }
@@ -136,65 +181,65 @@ package "Gamification" {
 
   class UsuarioReto {
     +id_usuario_reto: int
+    +id_usuario: int
+    +id_reto: int
     +estado: string
     +progreso: decimal
     +f_inscripcion: timestamptz
   }
 }
 
-package "Social" {
-  note "Sin entidades sociales (posts/comments/reactions)\nencontradas en backend ni en SQL.\n(Opcional segun alcance final)" as N_SOCIAL
-}
+Usuario "1" -- "0..*" PasswordResetToken : genera
 
 Usuario "1" -- "0..*" RegistroHabito : registra
 TipoHabito "1" -- "0..*" RegistroHabito : clasifica
 
 Usuario "1" -- "0..*" RegistroComida : registra
-Alimento "0..1" -- "0..*" RegistroComida : snapshot/opcional
+Alimento "0..1" -- "0..*" RegistroComida : referencia opcional
 RegistroComida "0..1" <-- "0..*" RegistroHabito : vinculo nutricion
 
-Usuario "1" -- "0..*" Recordatorio : configura
-TipoHabito "1" -- "0..*" Recordatorio : objetivo
 Usuario "1" -- "0..*" Notificacion : recibe
-Usuario "1" -- "0..*" DispositivoUsuario : registra
+Usuario "1" -- "0..*" UserDevice : registra
+Usuario "1" -- "0..*" TicketSoporte : crea
+
+Usuario "1" -- "0..*" Recordatorio : tabla legacy
+TipoHabito "1" -- "0..*" Recordatorio : objetivo
 
 Usuario "1" -- "0..*" UsuarioLogro : desbloquea
 Logro "1" -- "0..*" UsuarioLogro : otorga
 Usuario "1" -- "0..*" UsuarioReto : participa
 Reto "1" -- "0..*" UsuarioReto : define
 
-ProgresoMensual ..> RegistroHabito : calcula desde
-ProgresoMensual ..> Usuario : metas (preferencias)
-HistorialDiario ..> RegistroHabito : agrega por dia
-
+ProgresoMensual ..> RegistroHabito : agrega
+ProgresoMensual ..> Usuario : usa metas/preferencias
+HistorialDiario ..> RegistroHabito : agrupa por dia
+LogroCliente ..> RegistroHabito : evalua reglas MVP
+LogroCliente ..> Usuario : usa metas activas
+/'
 note right of RegistroHabito
-RB-001: cada registro_habito pertenece a 1 usuario.
-RB-002: cada registro_habito usa 1 tipo_habito valido.
+RB-001: cada registro pertenece a un usuario autenticado.
+RB-002: id_tipo_habito debe existir en tipo_habito.
+RB-003: consultas principales por rango de fechas.
 end note
 
-note right of UsuarioLogro
-RB-003: (id_usuario, id_logro) es unico.
-1 logro por usuario no se duplica.
-end note
-
-note right of UsuarioReto
-RB-004: (id_usuario, id_reto) es unico.
-Estado: inscrito|en_curso|completado|cancelado.
+note right of Notificacion
+RB-004: API activa para listar, detalle, marcar leida,
+marcar todas como leidas, borrar y seed.
 end note
 
 note bottom of Recordatorio
-TODO: existe tabla recordatorio, pero en API actual la
-configuracion de avisos se persiste en usuario.preferencias.
+Existe tabla en SQL, pero la configuracion operativa actual
+de avisos se guarda en usuario.preferencias.notificaciones.
 end note
 
-note bottom of Gamification
-TODO: tablas de gamificacion existen en SQL, pero no se
-encontraron endpoints REST dedicados en backend.
+note bottom of "Gamificacion (persistencia existente sin API dedicada)"
+Las tablas logro/reto existen en BD; hoy no hay rutas REST
+dedicadas para gestion de gamificacion en backend.
 end note
 
-note bottom of Progress
-RB-005: progreso mensual/historial se calcula como lectura
-(agregacion), sin tabla persistida dedicada.
+note bottom
+No se detecto modulo social (posts/comentarios/reacciones)
+en la version actual del backend ni de la app mobile.
 end note
-
+'/
 @enduml

@@ -1,5 +1,5 @@
 ﻿@startuml
-' CAP4 - 03 Secuencia CU001 Login/Registro
+' CAP4 - 03 Secuencia CU001 Autenticacion
 
 skinparam backgroundColor #F8FAFC
 skinparam shadowing false
@@ -19,15 +19,15 @@ skinparam sequence {
 skinparam noteBackgroundColor #FFF9E6
 skinparam noteBorderColor #D7C58A
 
-title CU001 - Login/Registro (RF-001)
+title CU001 - Autenticacion y recuperacion de contrasena
 
 participant "UI (App)" as UI
 participant "API (Backend)" as API
-database "DB (Persistencia)" as DB
+database "DB (PostgreSQL)" as DB
 
 alt Login
-  UI -> API: POST /api/login\n{correo, password}
-  API -> DB: SELECT * FROM usuario WHERE correo = ?
+  UI -> API: POST /api/login\n{correo|username, password}
+  API -> DB: SELECT usuario por correo
   DB --> API: usuario + hash_clave
   API -> API: bcrypt.compare(password, hash)
   alt Credenciales validas
@@ -36,23 +36,48 @@ alt Login
   else Credenciales invalidas
     API --> UI: 401 {message}
   end
+
 else Registro
   UI -> API: POST /api/register\n{correo, nombre, password}
-  API -> DB: SELECT * FROM usuario WHERE correo = ?
+  API -> DB: SELECT usuario por correo
   DB --> API: existe?/null
   alt Correo ya registrado
     API --> UI: 409 {message}
   else Nuevo usuario
-    API -> API: bcrypt.hash(password)\n+ preferencias por defecto
-    API -> DB: INSERT INTO usuario (...)
+    API -> API: bcrypt.hash(password)
+    API -> DB: INSERT usuario con preferencias por defecto
     DB --> API: usuario creado
     API -> API: signAccessToken(id_usuario)
     API --> UI: 201 {user, token}
   end
+
+else Recuperar contrasena
+  UI -> API: POST /api/password/forgot\n{correo}
+  API -> DB: SELECT usuario por correo
+  alt Usuario existe
+    API -> API: generar codigo temporal + hash
+    API -> DB: INSERT password_reset_token
+    DB --> API: token persistido
+    API --> UI: 200 {message, devResetCode?}
+  else Usuario no existe
+    API --> UI: 200 {message generico}
+  end
+
+else Restablecer contrasena
+  UI -> API: POST /api/password/reset\n{correo, code, newPassword}
+  API -> DB: validar y consumir password_reset_token
+  alt Codigo valido
+    API -> API: bcrypt.hash(newPassword)
+    API -> DB: UPDATE usuario.hash_clave
+    API --> UI: 200 {message}
+  else Codigo invalido/expirado
+    API --> UI: 400 {message}
+  end
 end
-
+/'
 note right of API
-Basado en authController.ts y authService.ts
+Basado en authController.ts + authService.ts +
+password_reset_token.
 end note
-
+'/
 @enduml

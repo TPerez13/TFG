@@ -11,53 +11,64 @@ skinparam ArrowThickness 1
 skinparam noteBackgroundColor #FFF9E6
 skinparam noteBorderColor #D7C58A
 
-title Capitulo 4 - Mapa de Navegacion (React Navigation)
+title Capitulo 4 - Mapa de Navegacion (React Navigation actual)
 
-* App
-** Auth
-*** Login
-**** Registro (modo signup en LoginScreen)
-** Tabs principales
-*** Inicio/Resumen
-**** PanelDiario
-*** Habitos
-**** Habits
-**** HabitGoals
-**** HabitDetail
-**** Nutrition
-***** NutritionQuickAdd
-***** NutritionManualEntry
-**** Hidratacion
-***** RegistrarAgua
-**** Ejercicio
-***** RegistrarEjercicio
-**** Sueno
-***** RegistrarSueno
-**** Meditacion
-***** RegistrarMeditacion
-*** Progreso
-**** Progress (MonthlyProgress)
-**** History
-***** DayHistoryDetail
-***** HabitHistory
-***** HabitDetailPlaceholder
-*** Gamificacion (Opcional segun alcance final)
-*** Comunidad (Opcional segun alcance final)
-**** Sin stack detectado para social/post/comentarios
-*** Perfil/Ajustes
-**** Profile
-**** NotificationSettings
-**** NotificationDetail
-**** Privacy
-**** HelpSupport
-**** AboutApp
-**** PrivacyPolicy
-**** TermsOfUse
-**** Feed (ruta secundaria)
-
+* RootNavigator
+** Sin token
+*** AuthStack
+**** Login
+***** Registro (modo signup dentro de LoginScreen)
+***** Recuperar contrasena (ForgotPassword)
+** Con token
+*** AppTabs
+**** InicioTab
+***** HomeStack
+****** PanelDiario
+**** HabitosTab
+***** HabitsStack
+****** Habits
+****** HabitGoals
+****** HabitDetail
+****** Nutrition
+******* NutritionQuickAdd
+******* NutritionManualEntry
+****** Hidratacion
+******* RegistrarAgua
+****** Ejercicio
+******* RegistrarEjercicio
+****** Sueno
+******* RegistrarSueno
+****** Meditacion
+******* RegistrarMeditacion
+**** ProgresoTab
+***** ProgressStack
+****** Progress (MonthlyProgressScreen)
+****** History
+******* DayHistoryDetail
+******* HabitHistory
+******* HabitDetail (stack de progreso)
+**** PerfilTab
+***** ProfileStack
+****** Profile
+****** EditProfile
+****** AchievementsScreen
+****** NotificationSettings
+****** NotificationDetail
+****** Privacy
+****** HelpSupport
+****** AboutApp
+****** PrivacyPolicy
+****** TermsOfUse
+****** Feed
+/'
 note right
 Fuente: RootNavigator + AppTabs + AuthStack +
 HomeStack + HabitsStack + ProgressStack + ProfileStack.
 end note
+
+note bottom
+El tab bar se oculta en rutas no raiz segun shouldHideTabBar()
+de AppTabs (por ejemplo EditProfile, AchievementsScreen, etc.).
+end note'/
 
 @endwbs
