@@ -28,6 +28,12 @@ type UseAchievementsResult = {
   isEmpty: boolean;
 };
 
+export type ClosestAchievementItem = AchievementItem & {
+  progressCurrent: number;
+  progressTarget: number;
+  progressPct: number;
+};
+
 const GLOBAL_LOOKBACK_DAYS = 365;
 const MONTH_BUFFER_DAYS = 7;
 
@@ -50,6 +56,41 @@ const sortEntriesAsc = (entries: HabitEntry[]) =>
   [...entries].sort(
     (left, right) => new Date(left.f_registro).getTime() - new Date(right.f_registro).getTime(),
   );
+
+const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
+
+export const selectClosestLockedAchievements = (
+  achievements: AchievementItem[],
+  limit = 3,
+): ClosestAchievementItem[] => {
+  const withProgress = achievements
+    .map((achievement, index) => {
+      const target = achievement.progress?.target ?? 0;
+      const current = achievement.progress?.current ?? 0;
+      if (achievement.unlocked || target <= 0) {
+        return null;
+      }
+      const ratio = current / target;
+      const progressPct = clamp(Number.isFinite(ratio) ? ratio : 0, 0, 1);
+      return {
+        ...achievement,
+        progressCurrent: current,
+        progressTarget: target,
+        progressPct,
+        _index: index,
+      };
+    })
+    .filter((item): item is ClosestAchievementItem & { _index: number } => item !== null);
+
+  withProgress.sort((left, right) => {
+    if (right.progressPct !== left.progressPct) {
+      return right.progressPct - left.progressPct;
+    }
+    return left._index - right._index;
+  });
+
+  return withProgress.slice(0, Math.max(1, limit)).map(({ _index, ...rest }) => rest);
+};
 
 export function useAchievements(selectedMonth: Date): UseAchievementsResult {
   const { signOut } = useAuth();

@@ -12,8 +12,14 @@ import Svg, { Circle, G } from 'react-native-svg';
 import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { HomeStackParamList } from '../navigation/types';
+import { AchievementsTeaserCard } from '../components/achievements/AchievementsTeaserCard';
 import { Screen } from '../components/layout/Screen';
 import { HabitCard } from '../components/HabitCard';
+import { startOfMonth } from '../features/achievements/calendarUtils';
+import {
+  selectClosestLockedAchievements,
+  useAchievements,
+} from '../features/achievements/useAchievements';
 import { habitRegistry } from '../features/habits/habitRegistry';
 import { apiFetch } from '../services/api';
 import type { HabitEntry, User } from '../types/models';
@@ -38,6 +44,8 @@ const progressMessage = (percent: number) => {
   if (percent >= 55) return 'Buen ritmo. Sigue asi.';
   return 'Aun hay tiempo para avanzar hoy.';
 };
+
+const defaultMealType = 'DESAYUNO' as const;
 
 const ProgressRing = ({ progress }: { progress: number }) => {
   const size = 180;
@@ -96,6 +104,20 @@ export default function PanelDiarioScreen({ navigation }: PanelDiarioScreenProps
   const [entries, setEntries] = useState<HabitEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [achievementsMonth] = useState(() => startOfMonth(new Date()));
+
+  const {
+    achievements,
+    loading: achievementsLoading,
+    error: achievementsError,
+    reload: reloadAchievements,
+    isEmpty: achievementsEmpty,
+  } = useAchievements(achievementsMonth);
+
+  const closestAchievements = useMemo(
+    () => selectClosestLockedAchievements(achievements, 3),
+    [achievements],
+  );
 
   const loadDashboard = useCallback(async () => {
     setLoading(true);
@@ -187,6 +209,43 @@ export default function PanelDiarioScreen({ navigation }: PanelDiarioScreenProps
     Alert.alert('Accion rapida', `Listo para ${habit.title.toLowerCase()}.`);
   };
 
+  const onHabitCardPress = (habitKey: string) => {
+    const parent = navigation.getParent();
+    if (!parent) return;
+
+    if (habitKey === 'agua') {
+      parent.navigate('HabitosTab' as never, { screen: 'Hidratacion' } as never);
+      return;
+    }
+    if (habitKey === 'ejercicio') {
+      parent.navigate('HabitosTab' as never, { screen: 'Ejercicio' } as never);
+      return;
+    }
+    if (habitKey === 'sueno') {
+      parent.navigate('HabitosTab' as never, { screen: 'Sueno' } as never);
+      return;
+    }
+    if (habitKey === 'meditacion') {
+      parent.navigate('HabitosTab' as never, { screen: 'Meditacion' } as never);
+      return;
+    }
+    if (habitKey === 'comidas') {
+      parent.navigate(
+        'HabitosTab' as never,
+        { screen: 'Nutrition', params: { tipoComidaSeleccionada: defaultMealType } } as never,
+      );
+      return;
+    }
+
+    parent.navigate('HabitosTab' as never);
+  };
+
+  const onOpenAchievements = () => {
+    const parent = navigation.getParent();
+    if (!parent) return;
+    parent.navigate('PerfilTab' as never, { screen: 'AchievementsScreen' } as never);
+  };
+
   return (
     <Screen>
       <StatusBar barStyle="dark-content" />
@@ -208,6 +267,18 @@ export default function PanelDiarioScreen({ navigation }: PanelDiarioScreenProps
           <Text style={styles.progressMessage}>{progressMessage(globalPercent)}</Text>
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
         </View>
+
+        <AchievementsTeaserCard
+          items={closestAchievements}
+          loading={achievementsLoading}
+          error={achievementsError}
+          isEmptyHistory={achievementsEmpty}
+          onRetry={() => {
+            void reloadAchievements();
+          }}
+          onPressAll={onOpenAchievements}
+          onPressItem={(_item) => onOpenAchievements()}
+        />
 
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Habitos de hoy</Text>
@@ -232,7 +303,8 @@ export default function PanelDiarioScreen({ navigation }: PanelDiarioScreenProps
                   subtitle={subtitle}
                   progress={progress}
                   style={styles.habitCard}
-                  actionLabel={habit.action?.label}
+                  onPress={() => onHabitCardPress(habit.key)}
+                  actionLabel={habit.key === 'agua' || habit.key === 'ejercicio' ? '' : habit.action?.label}
                   onPressAction={() => onHabitAction(habit.key)}
                 />
               );
