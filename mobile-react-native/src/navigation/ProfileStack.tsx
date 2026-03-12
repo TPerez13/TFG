@@ -4,7 +4,6 @@ import type { ProfileStackParamList } from './types';
 import ProfileScreen from '../screens/ProfileScreen';
 import EditProfileScreen from '../screens/EditProfileScreen';
 import FeedScreen from '../screens/FeedScreen';
-import NotificationDetailScreen from '../screens/NotificationDetailScreen';
 import NotificationSettingsScreen from '../screens/NotificationSettingsScreen';
 import PrivacyScreen from '../screens/PrivacyScreen';
 import SupportScreen from '../screens/SupportScreen';
@@ -22,7 +21,6 @@ export function ProfileStack() {
       <Stack.Screen name="EditProfile" component={EditProfileScreen} />
       <Stack.Screen name="AchievementsScreen" component={AchievementsScreen} />
       <Stack.Screen name="Feed" component={FeedScreen} />
-      <Stack.Screen name="NotificationDetail" component={NotificationDetailScreen} />
       <Stack.Screen name="NotificationSettings" component={NotificationSettingsScreen} />
       <Stack.Screen name="Privacy" component={PrivacyScreen} />
       <Stack.Screen name="HelpSupport" component={SupportScreen} />

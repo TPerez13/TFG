@@ -109,7 +109,6 @@ export type ProfileStackParamList = {
   EditProfile: undefined;
   AchievementsScreen: undefined;
   Feed?: { user?: User } | undefined;
-  NotificationDetail: { notificationId: number };
   NotificationSettings: undefined;
   Privacy: undefined;
   HelpSupport: undefined;

@@ -196,7 +196,7 @@ TipoHabito "1" -- "0..*" RegistroHabito : clasifica
 
 Usuario "1" -- "0..*" RegistroComida : registra
 Alimento "0..1" -- "0..*" RegistroComida : referencia opcional
-RegistroComida "0..1" <-- "0..*" RegistroHabito : vinculo nutricion
+RegistroComida "1" <-- "0..1" RegistroHabito : vinculo nutricion
 
 Usuario "1" -- "0..*" Notificacion : recibe
 Usuario "1" -- "0..*" UserDevice : registra

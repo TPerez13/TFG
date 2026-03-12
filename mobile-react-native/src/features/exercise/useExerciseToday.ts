@@ -46,7 +46,13 @@ const getReminderEnabled = (preferences: unknown) => {
   const prefs = preferences as Record<string, unknown>;
   const notifications = prefs.notificaciones;
   if (!notifications || typeof notifications !== 'object') return true;
-  const value = (notifications as Record<string, unknown>).ejercicio;
+  const notificationRecord = notifications as Record<string, unknown>;
+  const value =
+    typeof notificationRecord.ejercicio === 'boolean'
+      ? notificationRecord.ejercicio
+      : typeof notificationRecord.exercise === 'boolean'
+        ? notificationRecord.exercise
+        : undefined;
   return typeof value === 'boolean' ? value : true;
 };
 

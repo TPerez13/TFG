@@ -178,7 +178,11 @@ export function useHydrationToday(date: Date): UseHydrationTodayResult {
         ? (preferences.notificaciones as Record<string, unknown>)
         : null;
     const remindersEnabled =
-      typeof notifications?.hidratacion === 'boolean' ? Boolean(notifications.hidratacion) : true;
+      typeof notifications?.hidratacion === 'boolean'
+        ? Boolean(notifications.hidratacion)
+        : typeof notifications?.hydration === 'boolean'
+          ? Boolean(notifications.hydration)
+          : true;
 
     return {
       goal,
