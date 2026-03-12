@@ -66,8 +66,9 @@ note right of API
 MVP sin scheduler backend enterprise.
 La coherencia se mantiene en un estado unico:
 usuario.preferencias.notificaciones.
-TODO: integrar scheduling local (Expo) cuando se
-incorpore dependencia de notificaciones locales.
+Scheduling local en mobile (expo-notifications):
+una notificacion activa por habito y resincronizacion
+al abrir app, editar ajustes o registrar habitos.
 end note
 
 @enduml

@@ -239,7 +239,9 @@ end note
 note right of ConfiguracionAvisoHabito
 Al registrar un habito/comida, se actualiza lastCompletedDate
 para coherencia MVP de cancelacion/reprogramacion logica.
-Sin motor de scheduling backend en esta fase.
+Sin motor de scheduling backend en esta fase;
+la programacion activa se ejecuta en mobile con
+notificaciones locales.
 end note
 
 note bottom

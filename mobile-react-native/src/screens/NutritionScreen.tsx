@@ -10,17 +10,19 @@ import {
   StyleSheet,
   Switch,
   Text,
-  TextInput,
   View,
 } from 'react-native';
 import { ProgressBar } from '../components/ProgressBar';
 import { MacroStatCard } from '../components/nutrition/MacroStatCard';
 import { Screen } from '../components/layout/Screen';
+import { ReminderDebugPanel } from '../components/settings/ReminderDebugPanel';
+import { TimePickerField } from '../components/settings/TimePickerField';
 import { Snackbar } from '../components/ui/Snackbar';
 import { mealTypeLabel, mealTypeOptions } from '../features/nutrition/constants';
 import { emitNutritionFlash, subscribeNutritionFlash } from '../features/nutrition/nutritionFlash';
-import { patchNotificationSettings } from '../features/notifications/api';
-import { isValidTimeValue } from '../features/notifications/settings';
+import { sendHabitTestNotification } from '../features/notifications/localNotifications';
+import { saveHabitReminderPatch } from '../features/notifications/reminderSettings';
+import { useHabitReminderDebug } from '../features/notifications/useHabitReminderDebug';
 import { useNutritionMutations } from '../features/nutrition/useNutritionMutations';
 import { useNutritionToday } from '../features/nutrition/useNutritionToday';
 import type { MealType } from '../features/nutrition/types';
@@ -56,6 +58,7 @@ export default function NutritionScreen({ navigation, route }: NutritionScreenPr
   const [reminderEnabled, setReminderEnabled] = useState(false);
   const [reminderTime, setReminderTime] = useState('13:00');
   const [reminderSaving, setReminderSaving] = useState(false);
+  const [sendingTest, setSendingTest] = useState(false);
   const [snackbar, setSnackbar] = useState<SnackbarState>({
     visible: false,
     message: '',
@@ -63,6 +66,18 @@ export default function NutritionScreen({ navigation, route }: NutritionScreenPr
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const today = useMemo(() => formatLocalDate(new Date()), []);
   const { data, loading, error, reload } = useNutritionToday(today, selectedType);
+  const reminderDebug = useHabitReminderDebug(
+    'nutricion',
+    data?.reminderSnapshot ?? {
+      globalEnabled: false,
+      quietHoursEnabled: false,
+      quietFrom: '22:00',
+      quietTo: '07:00',
+      habitEnabled: false,
+      time: '13:00',
+      lastCompletedDate: null,
+    }
+  );
   const { deleteEntry } = useNutritionMutations();
 
   useEffect(() => {
@@ -102,8 +117,8 @@ export default function NutritionScreen({ navigation, route }: NutritionScreenPr
 
   useFocusEffect(
     React.useCallback(() => {
-      void reload();
-    }, [reload]),
+      void Promise.all([reload(), reminderDebug.reload()]);
+    }, [reload, reminderDebug.reload]),
   );
 
   const historyItems = showAllHistory ? data?.historial ?? [] : (data?.historial ?? []).slice(0, 3);
@@ -112,14 +127,20 @@ export default function NutritionScreen({ navigation, route }: NutritionScreenPr
     setReminderEnabled(value);
     setReminderSaving(true);
     try {
-      await patchNotificationSettings({
-        habits: {
-          nutricion: {
-            enabled: value,
-          },
+      const result = await saveHabitReminderPatch(
+        'nutricion',
+        {
+          enabled: value,
         },
-      });
+        { requestPermissions: value }
+      );
       await reload();
+      if (result.shouldBeScheduled && result.permissionState !== 'granted') {
+        Alert.alert(
+          'Permisos pendientes',
+          'Cambios guardados, pero el sistema no tiene permisos para mostrar notificaciones.'
+        );
+      }
     } catch (err) {
       setReminderEnabled(!value);
       Alert.alert('Error', err instanceof Error ? err.message : 'No se pudo guardar el recordatorio.');
@@ -128,29 +149,45 @@ export default function NutritionScreen({ navigation, route }: NutritionScreenPr
     }
   };
 
-  const saveReminderTime = async () => {
-    const normalized = reminderTime.trim();
-    if (!isValidTimeValue(normalized)) {
-      Alert.alert('Hora invalida', 'Usa formato HH:MM.');
-      setReminderTime(data?.reminderTime ?? '13:00');
-      return;
-    }
-
+  const saveReminderTime = async (nextValue: string) => {
+    const previousValue = reminderTime;
+    setReminderTime(nextValue);
     setReminderSaving(true);
     try {
-      await patchNotificationSettings({
-        habits: {
-          nutricion: {
-            time: normalized,
-          },
+      const result = await saveHabitReminderPatch(
+        'nutricion',
+        {
+          time: nextValue,
         },
-      });
+        { requestPermissions: reminderEnabled }
+      );
       await reload();
+      if (result.shouldBeScheduled && result.permissionState !== 'granted') {
+        Alert.alert(
+          'Permisos pendientes',
+          'Cambios guardados, pero el sistema no tiene permisos para mostrar notificaciones.'
+        );
+      }
     } catch (err) {
       Alert.alert('Error', err instanceof Error ? err.message : 'No se pudo guardar la hora.');
-      setReminderTime(data?.reminderTime ?? '13:00');
+      setReminderTime(previousValue);
     } finally {
       setReminderSaving(false);
+    }
+  };
+
+  const sendTestNow = async () => {
+    setSendingTest(true);
+    try {
+      const sent = await sendHabitTestNotification('nutricion');
+      await reminderDebug.reload();
+      if (!sent) {
+        Alert.alert('Permisos pendientes', 'El sistema no tiene permisos para mostrar notificaciones.');
+      }
+    } catch (err) {
+      Alert.alert('Error', err instanceof Error ? err.message : 'No se pudo lanzar la prueba.');
+    } finally {
+      setSendingTest(false);
     }
   };
 
@@ -220,7 +257,7 @@ export default function NutritionScreen({ navigation, route }: NutritionScreenPr
                   pressed ? styles.buttonPressed : null,
                 ]}
               >
-                <Ionicons name={option.icon as any} size={18} color={active ? '#22c55e' : colors.textSubtle} />
+                <Ionicons name={option.icon} size={18} color={active ? '#22c55e' : colors.textSubtle} />
                 <Text style={[styles.tabLabel, active ? styles.tabLabelActive : null]}>{option.label}</Text>
               </Pressable>
             );
@@ -269,14 +306,19 @@ export default function NutritionScreen({ navigation, route }: NutritionScreenPr
           <View style={styles.reminderTextWrap}>
             <Text style={styles.reminderTitle}>Recordatorios</Text>
             <Text style={styles.reminderSubtitle}>Notificar horas de comida</Text>
-            <TextInput
+            {data?.globalNotificationsEnabled === false ? (
+              <Text style={styles.reminderHint}>
+                Este horario queda guardado, pero no se programa mientras las notificaciones globales
+                esten desactivadas.
+              </Text>
+            ) : null}
+            <TimePickerField
               value={reminderTime}
-              onChangeText={setReminderTime}
-              onEndEditing={() => {
-                void saveReminderTime();
-              }}
-              editable={!reminderSaving}
-              placeholder="HH:MM"
+              onConfirm={saveReminderTime}
+              disabled={!data || reminderSaving}
+              modalTitle="Hora del recordatorio de nutricion"
+              modalDescription="Se programa una unica notificacion local para este habito."
+              accentColor="#22c55e"
               style={styles.reminderTimeInput}
             />
           </View>
@@ -288,6 +330,14 @@ export default function NutritionScreen({ navigation, route }: NutritionScreenPr
             thumbColor="#ffffff"
           />
         </View>
+        <ReminderDebugPanel
+          data={reminderDebug.data}
+          loading={reminderDebug.loading || !data}
+          onSendTest={() => {
+            void sendTestNow();
+          }}
+          sendingTest={sendingTest}
+        />
       </ScrollView>
       <Snackbar
         visible={snackbar.visible}
@@ -542,17 +592,15 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     fontSize: fontSizes.base,
   },
-  reminderTimeInput: {
+  reminderHint: {
     marginTop: spacing.xs,
-    borderWidth: 1,
-    borderColor: colors.surfaceBorder,
-    borderRadius: 10,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
+    color: '#9a6b22',
+    fontSize: fontSizes.sm,
+    lineHeight: 18,
+  },
+  reminderTimeInput: {
+    marginTop: spacing.sm,
     minWidth: 96,
     maxWidth: 112,
-    textAlign: 'center',
-    color: colors.textPrimary,
-    backgroundColor: colors.surface,
   },
 });

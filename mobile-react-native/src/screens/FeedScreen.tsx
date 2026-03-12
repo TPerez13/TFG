@@ -151,10 +151,6 @@ export default function FeedScreen({ route, navigation }: FeedScreenProps) {
                     </Text>
                   </View>
                   <View style={styles.row}>
-                    <Text style={styles.label}>Resumen</Text>
-                    <Text style={styles.value}>{notificationSettings.global.summaryTime}</Text>
-                  </View>
-                  <View style={styles.row}>
                     <Text style={styles.label}>Silencio</Text>
                     <Text style={styles.value}>{quietHoursText}</Text>
                   </View>

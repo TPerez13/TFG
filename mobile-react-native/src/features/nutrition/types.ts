@@ -1,3 +1,5 @@
+import type { HabitReminderSnapshot } from '../notifications/types';
+
 export const MEAL_TYPES = ['DESAYUNO', 'ALMUERZO', 'CENA', 'SNACK'] as const;
 export type MealType = (typeof MEAL_TYPES)[number];
 
@@ -28,8 +30,10 @@ export type NutritionTodayData = {
   progreso: number;
   resumen: NutritionSummary;
   historial: NutritionEntry[];
+  globalNotificationsEnabled: boolean;
   reminderEnabled: boolean;
   reminderTime: string;
+  reminderSnapshot: HabitReminderSnapshot;
 };
 
 export type FoodTemplate = {

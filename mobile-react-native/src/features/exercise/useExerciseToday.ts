@@ -5,7 +5,12 @@ import { apiFetch } from '../../services/api';
 import { getHabitByKey } from '../habits/habitRegistry';
 import type { ExerciseActivityType, ExerciseHistoryItem } from './types';
 import { toExerciseHistoryItem } from './utils';
-import { normalizeNotificationSettingsFromPreferences } from '../notifications/settings';
+import type { HabitReminderSnapshot } from '../notifications/types';
+import {
+  buildHabitReminderSnapshot,
+  DEFAULT_NOTIFICATION_SETTINGS,
+  normalizeNotificationSettingsFromPreferences,
+} from '../notifications/settings';
 
 const DEFAULT_GOAL_MIN = 45;
 
@@ -15,8 +20,10 @@ type ExerciseTodayData = {
   sessionsCount: number;
   progress: number;
   history: ExerciseHistoryItem[];
+  globalNotificationsEnabled: boolean;
   remindersEnabled: boolean;
   reminderTime: string;
+  reminderSnapshot: HabitReminderSnapshot;
 };
 
 type UseExerciseTodayResult = {
@@ -45,10 +52,12 @@ const getGoalMinutes = (preferences: unknown) => {
 
 const getReminderConfig = (preferences: unknown) => {
   const settings = normalizeNotificationSettingsFromPreferences(preferences);
-  const habit = settings.habits.ejercicio;
+  const snapshot = buildHabitReminderSnapshot(settings, 'ejercicio');
   return {
-    enabled: settings.global.enabled && habit.enabled,
-    time: habit.time,
+    snapshot,
+    globalEnabled: snapshot.globalEnabled,
+    enabled: snapshot.habitEnabled,
+    time: snapshot.time,
   };
 };
 
@@ -58,8 +67,10 @@ const initialData: ExerciseTodayData = {
   sessionsCount: 0,
   progress: 0,
   history: [],
+  globalNotificationsEnabled: true,
   remindersEnabled: true,
   reminderTime: '20:00',
+  reminderSnapshot: buildHabitReminderSnapshot(DEFAULT_NOTIFICATION_SETTINGS, 'ejercicio'),
 };
 
 export function useExerciseToday(
@@ -122,8 +133,10 @@ export function useExerciseToday(
       sessionsCount: mappedHistory.length,
       progress,
       history: filteredHistory,
+      globalNotificationsEnabled: reminder.globalEnabled,
       remindersEnabled: reminder.enabled,
       reminderTime: reminder.time,
+      reminderSnapshot: reminder.snapshot,
     };
   }, [entries, selectedType, user?.preferencias]);
 

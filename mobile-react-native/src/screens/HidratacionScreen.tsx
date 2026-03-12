@@ -10,17 +10,19 @@ import {
   StyleSheet,
   Switch,
   Text,
-  TextInput,
   View,
 } from 'react-native';
 import { ProgressBar } from '../components/ProgressBar';
 import { Screen } from '../components/layout/Screen';
+import { ReminderDebugPanel } from '../components/settings/ReminderDebugPanel';
+import { TimePickerField } from '../components/settings/TimePickerField';
 import { Snackbar } from '../components/ui/Snackbar';
 import { emitHydrationFlash, subscribeHydrationFlash } from '../features/hydration/hydrationFlash';
 import { useHydrationToday } from '../features/hydration/useHydrationToday';
 import { useDeleteHabitEntry } from '../features/habits/useDeleteHabitEntry';
-import { patchNotificationSettings } from '../features/notifications/api';
-import { isValidTimeValue } from '../features/notifications/settings';
+import { sendHabitTestNotification } from '../features/notifications/localNotifications';
+import { saveHabitReminderPatch } from '../features/notifications/reminderSettings';
+import { useHabitReminderDebug } from '../features/notifications/useHabitReminderDebug';
 import type { HabitsStackParamList } from '../navigation/types';
 import { baseStyles } from '../theme/components';
 import { colors, fontSizes, radius, spacing } from '../theme/tokens';
@@ -51,12 +53,14 @@ export default function HidratacionScreen({ navigation }: HidratacionScreenProps
   const [reminderEnabled, setReminderEnabled] = useState(true);
   const [reminderTime, setReminderTime] = useState('10:00');
   const [reminderSaving, setReminderSaving] = useState(false);
+  const [sendingTest, setSendingTest] = useState(false);
   const [snackbar, setSnackbar] = useState<SnackbarState>({
     visible: false,
     message: '',
   });
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { data, loading, error, reload } = useHydrationToday(today);
+  const reminderDebug = useHabitReminderDebug('hidratacion', data.reminderSnapshot);
   const { deleteEntry, deleting } = useDeleteHabitEntry();
 
   useEffect(() => {
@@ -89,8 +93,8 @@ export default function HidratacionScreen({ navigation }: HidratacionScreenProps
 
   useFocusEffect(
     React.useCallback(() => {
-      void reload();
-    }, [reload]),
+      void Promise.all([reload(), reminderDebug.reload()]);
+    }, [reload, reminderDebug.reload]),
   );
 
   const goalLabel = useMemo(() => formatGoal(data.goal.value, data.goal.unit), [data.goal.unit, data.goal.value]);
@@ -107,14 +111,20 @@ export default function HidratacionScreen({ navigation }: HidratacionScreenProps
     setReminderEnabled(nextValue);
     setReminderSaving(true);
     try {
-      await patchNotificationSettings({
-        habits: {
-          hidratacion: {
-            enabled: nextValue,
-          },
+      const result = await saveHabitReminderPatch(
+        'hidratacion',
+        {
+          enabled: nextValue,
         },
-      });
+        { requestPermissions: nextValue }
+      );
       await reload();
+      if (result.shouldBeScheduled && result.permissionState !== 'granted') {
+        Alert.alert(
+          'Permisos pendientes',
+          'Cambios guardados, pero el sistema no tiene permisos para mostrar notificaciones.'
+        );
+      }
     } catch (err) {
       setReminderEnabled((current) => !current);
       Alert.alert('Error', err instanceof Error ? err.message : 'No se pudo guardar recordatorio.');
@@ -123,29 +133,45 @@ export default function HidratacionScreen({ navigation }: HidratacionScreenProps
     }
   };
 
-  const saveReminderTime = async () => {
-    const normalized = reminderTime.trim();
-    if (!isValidTimeValue(normalized)) {
-      Alert.alert('Hora invalida', 'Usa formato HH:MM.');
-      setReminderTime(data.reminderTime);
-      return;
-    }
-
+  const saveReminderTime = async (nextValue: string) => {
+    const previousValue = reminderTime;
+    setReminderTime(nextValue);
     setReminderSaving(true);
     try {
-      await patchNotificationSettings({
-        habits: {
-          hidratacion: {
-            time: normalized,
-          },
+      const result = await saveHabitReminderPatch(
+        'hidratacion',
+        {
+          time: nextValue,
         },
-      });
+        { requestPermissions: reminderEnabled }
+      );
       await reload();
+      if (result.shouldBeScheduled && result.permissionState !== 'granted') {
+        Alert.alert(
+          'Permisos pendientes',
+          'Cambios guardados, pero el sistema no tiene permisos para mostrar notificaciones.'
+        );
+      }
     } catch (err) {
       Alert.alert('Error', err instanceof Error ? err.message : 'No se pudo guardar la hora.');
-      setReminderTime(data.reminderTime);
+      setReminderTime(previousValue);
     } finally {
       setReminderSaving(false);
+    }
+  };
+
+  const sendTestNow = async () => {
+    setSendingTest(true);
+    try {
+      const sent = await sendHabitTestNotification('hidratacion');
+      await reminderDebug.reload();
+      if (!sent) {
+        Alert.alert('Permisos pendientes', 'El sistema no tiene permisos para mostrar notificaciones.');
+      }
+    } catch (err) {
+      Alert.alert('Error', err instanceof Error ? err.message : 'No se pudo lanzar la prueba.');
+    } finally {
+      setSendingTest(false);
     }
   };
 
@@ -231,14 +257,18 @@ export default function HidratacionScreen({ navigation }: HidratacionScreenProps
           <View style={styles.reminderText}>
             <Text style={styles.reminderTitle}>Recordatorios</Text>
             <Text style={styles.reminderSubtitle}>Recordatorios de hidratacion</Text>
-            <TextInput
+            {!data.globalNotificationsEnabled ? (
+              <Text style={styles.reminderHint}>
+                Este horario queda guardado, pero no se programa mientras las notificaciones globales
+                esten desactivadas.
+              </Text>
+            ) : null}
+            <TimePickerField
               value={reminderTime}
-              onChangeText={setReminderTime}
-              onEndEditing={() => {
-                void saveReminderTime();
-              }}
-              editable={!reminderSaving}
-              placeholder="HH:MM"
+              onConfirm={saveReminderTime}
+              disabled={reminderSaving}
+              modalTitle="Hora del recordatorio de hidratacion"
+              modalDescription="Se programa una unica notificacion local para este habito."
               style={styles.reminderTimeInput}
             />
           </View>
@@ -250,6 +280,14 @@ export default function HidratacionScreen({ navigation }: HidratacionScreenProps
             thumbColor="#ffffff"
           />
         </View>
+        <ReminderDebugPanel
+          data={reminderDebug.data}
+          loading={reminderDebug.loading}
+          onSendTest={() => {
+            void sendTestNow();
+          }}
+          sendingTest={sendingTest}
+        />
       </ScrollView>
 
       <Snackbar
@@ -452,17 +490,15 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     fontSize: fontSizes.base,
   },
-  reminderTimeInput: {
+  reminderHint: {
     marginTop: spacing.xs,
-    borderWidth: 1,
-    borderColor: colors.surfaceBorder,
-    borderRadius: 10,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
+    color: '#9a6b22',
+    fontSize: fontSizes.sm,
+    lineHeight: 18,
+  },
+  reminderTimeInput: {
+    marginTop: spacing.sm,
     minWidth: 96,
     maxWidth: 112,
-    textAlign: 'center',
-    color: colors.textPrimary,
-    backgroundColor: colors.surface,
   },
 });

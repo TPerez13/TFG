@@ -1,4 +1,4 @@
-import type { HabitNotificationKey, NotificationSettings } from './types';
+import type { HabitNotificationKey, HabitReminderSnapshot, NotificationSettings } from './types';
 
 const HABIT_KEYS: HabitNotificationKey[] = [
   'hidratacion',
@@ -70,6 +70,19 @@ const readLegacyHabitEnabled = (
 };
 
 export const isValidTimeValue = (value: string): boolean => TIME_PATTERN.test(value.trim());
+
+export const buildHabitReminderSnapshot = (
+  settings: NotificationSettings,
+  habitKey: HabitNotificationKey
+): HabitReminderSnapshot => ({
+  globalEnabled: settings.global.enabled,
+  quietHoursEnabled: settings.global.quietHoursEnabled,
+  quietFrom: settings.global.quietFrom,
+  quietTo: settings.global.quietTo,
+  habitEnabled: settings.habits[habitKey].enabled,
+  time: settings.habits[habitKey].time,
+  lastCompletedDate: settings.habits[habitKey].lastCompletedDate ?? null,
+});
 
 export const normalizeNotificationSettingsFromPreferences = (preferences: unknown): NotificationSettings => {
   const normalized = cloneDefaults();

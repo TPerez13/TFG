@@ -1,5 +1,6 @@
 import { apiFetch } from '../../services/api';
 import type { NotificationSettings, NotificationSettingsPatch } from './types';
+import { syncAllHabitNotifications } from './localNotifications';
 
 export class NotificationSettingsApiError extends Error {
   status?: number;
@@ -37,7 +38,8 @@ export async function fetchNotificationSettings(): Promise<NotificationSettings>
 }
 
 export async function patchNotificationSettings(
-  patch: NotificationSettingsPatch
+  patch: NotificationSettingsPatch,
+  options: { syncLocal?: boolean; requestPermissions?: boolean } = {}
 ): Promise<NotificationSettings> {
   const response = await apiFetch('/notifications/settings', {
     method: 'PATCH',
@@ -54,5 +56,28 @@ export async function patchNotificationSettings(
   if (!payload.settings) {
     throw new NotificationSettingsApiError('Respuesta invalida al guardar configuracion de avisos.');
   }
+  if (options.syncLocal !== false) {
+    try {
+      await syncAllHabitNotifications(payload.settings, {
+        requestPermissions: options.requestPermissions ?? false,
+      });
+    } catch {
+      // La configuracion remota ya se guardo; no bloqueamos por error local.
+    }
+  }
   return payload.settings;
+}
+
+export async function syncLocalNotificationsWithServer(
+  options: { requestPermissions?: boolean } = {}
+): Promise<NotificationSettings> {
+  const settings = await fetchNotificationSettings();
+  try {
+    await syncAllHabitNotifications(settings, {
+      requestPermissions: options.requestPermissions ?? false,
+    });
+  } catch {
+    // noop: el caller decide si quiere actuar ante fallos de sincronizacion local.
+  }
+  return settings;
 }

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { createNutritionEntry, deleteNutritionEntry } from './api';
 import type { CreateNutritionEntryPayload, NutritionEntry } from './types';
+import { syncLocalNotificationsWithServer } from '../notifications/api';
 
 type UseNutritionMutationsResult = {
   creating: boolean;
@@ -16,7 +17,13 @@ export function useNutritionMutations(): UseNutritionMutationsResult {
   const createEntry = async (payload: CreateNutritionEntryPayload) => {
     setCreating(true);
     try {
-      return await createNutritionEntry(payload);
+      const entry = await createNutritionEntry(payload);
+      try {
+        await syncLocalNotificationsWithServer({ requestPermissions: false });
+      } catch {
+        // La creacion del registro no debe fallar por sincronizacion local.
+      }
+      return entry;
     } finally {
       setCreating(false);
     }

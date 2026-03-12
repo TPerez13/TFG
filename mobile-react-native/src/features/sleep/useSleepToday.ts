@@ -5,7 +5,12 @@ import { fetchHabitEntries } from '../habits/entriesApi';
 import { getHabitByKey } from '../habits/habitRegistry';
 import type { SleepHistoryItem, SleepQuality } from './types';
 import { toSleepHistoryItem } from './utils';
-import { normalizeNotificationSettingsFromPreferences } from '../notifications/settings';
+import type { HabitReminderSnapshot } from '../notifications/types';
+import {
+  buildHabitReminderSnapshot,
+  DEFAULT_NOTIFICATION_SETTINGS,
+  normalizeNotificationSettingsFromPreferences,
+} from '../notifications/settings';
 
 const DEFAULT_GOAL_HOURS = 8;
 
@@ -14,8 +19,10 @@ type SleepTodayData = {
   totalHours: number;
   progress: number;
   history: SleepHistoryItem[];
+  globalNotificationsEnabled: boolean;
   remindersEnabled: boolean;
   reminderTime: string;
+  reminderSnapshot: HabitReminderSnapshot;
   averageQuality?: SleepQuality;
 };
 
@@ -45,10 +52,12 @@ const getGoalHours = (preferences: unknown) => {
 
 const getReminderConfig = (preferences: unknown) => {
   const settings = normalizeNotificationSettingsFromPreferences(preferences);
-  const habit = settings.habits.sueno;
+  const snapshot = buildHabitReminderSnapshot(settings, 'sueno');
   return {
-    enabled: settings.global.enabled && habit.enabled,
-    time: habit.time,
+    snapshot,
+    globalEnabled: snapshot.globalEnabled,
+    enabled: snapshot.habitEnabled,
+    time: snapshot.time,
   };
 };
 
@@ -70,8 +79,10 @@ const initialData: SleepTodayData = {
   totalHours: 0,
   progress: 0,
   history: [],
+  globalNotificationsEnabled: true,
   remindersEnabled: true,
   reminderTime: '22:00',
+  reminderSnapshot: buildHabitReminderSnapshot(DEFAULT_NOTIFICATION_SETTINGS, 'sueno'),
 };
 
 export function useSleepToday(date: Date): UseSleepTodayResult {
@@ -121,7 +132,7 @@ export function useSleepToday(date: Date): UseSleepTodayResult {
 
     const qualityScores = history
       .map((item) => qualityToScore(item.quality))
-      .filter((item): item is number => typeof item === 'number');
+      .filter((item): item is 1 | 2 | 3 => item !== undefined);
     const averageQuality =
       qualityScores.length > 0
         ? scoreToQuality(qualityScores.reduce((sum, item) => sum + item, 0) / qualityScores.length)
@@ -134,8 +145,10 @@ export function useSleepToday(date: Date): UseSleepTodayResult {
       totalHours,
       progress,
       history,
+      globalNotificationsEnabled: reminder.globalEnabled,
       remindersEnabled: reminder.enabled,
       reminderTime: reminder.time,
+      reminderSnapshot: reminder.snapshot,
       averageQuality,
     };
   }, [entries, user?.preferencias]);

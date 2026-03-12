@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { ProfileStackParamList } from '../navigation/types';
 import { Screen } from '../components/layout/Screen';
+import { TimePickerField } from '../components/settings/TimePickerField';
 import type { NotificationSettings } from '../features/notifications/types';
-import { DEFAULT_NOTIFICATION_SETTINGS, isValidTimeValue } from '../features/notifications/settings';
+import { DEFAULT_NOTIFICATION_SETTINGS } from '../features/notifications/settings';
 import { colors, fontSizes, spacing } from '../theme/tokens';
 import { useAuth } from '../navigation/AuthContext';
 import { PillToggle } from '../components/settings/PillToggle';
@@ -14,6 +15,7 @@ import {
   NotificationSettingsApiError,
   patchNotificationSettings,
 } from '../features/notifications/api';
+import { getNotificationPermissionState } from '../features/notifications/localNotifications';
 
 type SettingsProps = NativeStackScreenProps<ProfileStackParamList, 'NotificationSettings'>;
 
@@ -25,7 +27,6 @@ export default function NotificationSettingsScreen({ navigation }: SettingsProps
   const [feedback, setFeedback] = useState<string | null>(null);
 
   const [globalEnabled, setGlobalEnabled] = useState(DEFAULT_NOTIFICATION_SETTINGS.global.enabled);
-  const [summaryTime, setSummaryTime] = useState(DEFAULT_NOTIFICATION_SETTINGS.global.summaryTime);
   const [quietEnabled, setQuietEnabled] = useState(DEFAULT_NOTIFICATION_SETTINGS.global.quietHoursEnabled);
   const [quietFrom, setQuietFrom] = useState(DEFAULT_NOTIFICATION_SETTINGS.global.quietFrom);
   const [quietTo, setQuietTo] = useState(DEFAULT_NOTIFICATION_SETTINGS.global.quietTo);
@@ -56,43 +57,37 @@ export default function NotificationSettingsScreen({ navigation }: SettingsProps
 
   useEffect(() => {
     setGlobalEnabled(settings.global.enabled);
-    setSummaryTime(settings.global.summaryTime);
     setQuietEnabled(settings.global.quietHoursEnabled);
     setQuietFrom(settings.global.quietFrom);
     setQuietTo(settings.global.quietTo);
   }, [settings]);
 
   const saveGlobal = async () => {
-    const normalizedSummaryTime = summaryTime.trim();
-    const normalizedQuietFrom = quietFrom.trim();
-    const normalizedQuietTo = quietTo.trim();
-
-    if (!isValidTimeValue(normalizedSummaryTime)) {
-      setFeedback('Hora de resumen invalida. Usa HH:MM.');
-      return;
-    }
-    if (!isValidTimeValue(normalizedQuietFrom)) {
-      setFeedback('Hora inicio silencio invalida. Usa HH:MM.');
-      return;
-    }
-    if (!isValidTimeValue(normalizedQuietTo)) {
-      setFeedback('Hora fin silencio invalida. Usa HH:MM.');
-      return;
-    }
-
     setSaving(true);
     setFeedback(null);
     try {
       const nextSettings = await patchNotificationSettings({
         global: {
           enabled: globalEnabled,
-          summaryTime: normalizedSummaryTime,
           quietHoursEnabled: quietEnabled,
-          quietFrom: normalizedQuietFrom,
-          quietTo: normalizedQuietTo,
+          quietFrom,
+          quietTo,
         },
+      }, {
+        requestPermissions: globalEnabled,
       });
       setSettings(nextSettings);
+
+      if (globalEnabled) {
+        const permissionState = await getNotificationPermissionState();
+        if (permissionState !== 'granted') {
+          setFeedback(
+            'Cambios guardados, pero faltan permisos del sistema para mostrar notificaciones.'
+          );
+          return;
+        }
+      }
+
       setFeedback('Cambios guardados.');
     } catch (error) {
       if (error instanceof NotificationSettingsApiError && error.status === 401) {
@@ -130,16 +125,10 @@ export default function NotificationSettingsScreen({ navigation }: SettingsProps
                 onValueChange={setGlobalEnabled}
               />
 
-              <View style={styles.row}>
-                <Text style={styles.rowLabel}>Hora resumen</Text>
-                <TextInput
-                  style={styles.input}
-                  editable={!saving}
-                  value={summaryTime}
-                  onChangeText={setSummaryTime}
-                  placeholder="HH:MM"
-                />
-              </View>
+              <Text style={styles.helperBlock}>
+                La hora concreta de cada aviso se configura dentro de cada habito. Aqui solo activas o
+                desactivas el sistema de avisos y las horas de silencio.
+              </Text>
             </View>
 
             <Text style={styles.sectionTitle}>Horas silenciosas</Text>
@@ -153,22 +142,24 @@ export default function NotificationSettingsScreen({ navigation }: SettingsProps
               />
               <View style={styles.row}>
                 <Text style={styles.rowLabel}>Inicio</Text>
-                <TextInput
+                <TimePickerField
                   style={styles.input}
-                  editable={!saving}
                   value={quietFrom}
-                  onChangeText={setQuietFrom}
-                  placeholder="HH:MM"
+                  onConfirm={setQuietFrom}
+                  disabled={saving}
+                  modalTitle="Inicio de horas silenciosas"
+                  modalDescription="Durante este tramo se intenta aplazar los avisos de habitos."
                 />
               </View>
               <View style={styles.row}>
                 <Text style={styles.rowLabel}>Fin</Text>
-                <TextInput
+                <TimePickerField
                   style={styles.input}
-                  editable={!saving}
                   value={quietTo}
-                  onChangeText={setQuietTo}
-                  placeholder="HH:MM"
+                  onConfirm={setQuietTo}
+                  disabled={saving}
+                  modalTitle="Fin de horas silenciosas"
+                  modalDescription="Los avisos vuelven a poder programarse a partir de esta hora."
                 />
               </View>
             </View>
@@ -307,16 +298,14 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.sm,
     color: colors.textSubtle,
   },
+  helperBlock: {
+    marginTop: spacing.sm,
+    color: colors.textMuted,
+    fontSize: fontSizes.base,
+    lineHeight: 22,
+  },
   input: {
-    borderWidth: 1,
-    borderColor: colors.surfaceBorder,
-    borderRadius: 10,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    minWidth: 90,
-    textAlign: 'center',
-    color: colors.textPrimary,
-    backgroundColor: colors.surface,
+    minWidth: 110,
   },
   sectionTitle: {
     fontSize: fontSizes.lg,

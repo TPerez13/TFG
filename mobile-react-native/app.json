@@ -5,9 +5,11 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "platforms": ["android"],
+    "plugins": ["expo-notifications"],
     "android": {
       "package": "com.muchasvidas.client",
-      "usesCleartextTraffic": true
+      "usesCleartextTraffic": true,
+      "permissions": ["SCHEDULE_EXACT_ALARM"]
     }
   }
 }

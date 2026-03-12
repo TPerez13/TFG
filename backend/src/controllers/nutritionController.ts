@@ -136,9 +136,18 @@ export async function nutritionToday(
         grasasG: Number(summary.grasas_total_g) || 0,
       },
       historial: entries.map(toNutritionEntry),
-      reminderEnabled:
-        notificationSettings.global.enabled && notificationSettings.habits.nutricion.enabled,
+      globalNotificationsEnabled: notificationSettings.global.enabled,
+      reminderEnabled: notificationSettings.habits.nutricion.enabled,
       reminderTime: notificationSettings.habits.nutricion.time,
+      reminderSnapshot: {
+        globalEnabled: notificationSettings.global.enabled,
+        quietHoursEnabled: notificationSettings.global.quietHoursEnabled,
+        quietFrom: notificationSettings.global.quietFrom,
+        quietTo: notificationSettings.global.quietTo,
+        habitEnabled: notificationSettings.habits.nutricion.enabled,
+        time: notificationSettings.habits.nutricion.time,
+        lastCompletedDate: notificationSettings.habits.nutricion.lastCompletedDate ?? null,
+      },
     });
   } catch (error) {
     next(error);

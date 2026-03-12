@@ -3,7 +3,12 @@ import type { HabitEntry, User } from '../../types/models';
 import { fetchHabitEntries } from '../habits/entriesApi';
 import { apiFetch } from '../../services/api';
 import { getHabitByKey } from '../habits/habitRegistry';
-import { normalizeNotificationSettingsFromPreferences } from '../notifications/settings';
+import type { HabitReminderSnapshot } from '../notifications/types';
+import {
+  buildHabitReminderSnapshot,
+  DEFAULT_NOTIFICATION_SETTINGS,
+  normalizeNotificationSettingsFromPreferences,
+} from '../notifications/settings';
 
 const ML_PER_GLASS = 250;
 const DEFAULT_GOAL_VALUE = 8;
@@ -29,8 +34,10 @@ type HydrationTodayData = {
   progress: number;
   history: HydrationHistoryItem[];
   recentAmountsMl: number[];
+  globalNotificationsEnabled: boolean;
   remindersEnabled: boolean;
   reminderTime: string;
+  reminderSnapshot: HabitReminderSnapshot;
 };
 
 type UseHydrationTodayResult = {
@@ -100,8 +107,10 @@ const initialData: HydrationTodayData = {
   progress: 0,
   history: [],
   recentAmountsMl: [],
+  globalNotificationsEnabled: true,
   remindersEnabled: true,
   reminderTime: '10:00',
+  reminderSnapshot: buildHabitReminderSnapshot(DEFAULT_NOTIFICATION_SETTINGS, 'hidratacion'),
 };
 
 export function useHydrationToday(date: Date): UseHydrationTodayResult {
@@ -173,9 +182,9 @@ export function useHydrationToday(date: Date): UseHydrationTodayResult {
       .slice(0, 6);
 
     const notificationSettings = normalizeNotificationSettingsFromPreferences(user?.preferencias);
-    const remindersEnabled =
-      notificationSettings.global.enabled && notificationSettings.habits.hidratacion.enabled;
-    const reminderTime = notificationSettings.habits.hidratacion.time;
+    const reminderSnapshot = buildHabitReminderSnapshot(notificationSettings, 'hidratacion');
+    const remindersEnabled = reminderSnapshot.habitEnabled;
+    const reminderTime = reminderSnapshot.time;
 
     return {
       goal,
@@ -185,8 +194,10 @@ export function useHydrationToday(date: Date): UseHydrationTodayResult {
       progress,
       history,
       recentAmountsMl,
+      globalNotificationsEnabled: notificationSettings.global.enabled,
       remindersEnabled,
       reminderTime,
+      reminderSnapshot,
     };
   }, [entries, user, windowEntries]);
 
