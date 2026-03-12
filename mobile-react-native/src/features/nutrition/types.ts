@@ -29,6 +29,7 @@ export type NutritionTodayData = {
   resumen: NutritionSummary;
   historial: NutritionEntry[];
   reminderEnabled: boolean;
+  reminderTime: string;
 };
 
 export type FoodTemplate = {

@@ -5,6 +5,7 @@ import { apiFetch } from '../../services/api';
 import { getHabitByKey } from '../habits/habitRegistry';
 import type { ExerciseActivityType, ExerciseHistoryItem } from './types';
 import { toExerciseHistoryItem } from './utils';
+import { normalizeNotificationSettingsFromPreferences } from '../notifications/settings';
 
 const DEFAULT_GOAL_MIN = 45;
 
@@ -15,6 +16,7 @@ type ExerciseTodayData = {
   progress: number;
   history: ExerciseHistoryItem[];
   remindersEnabled: boolean;
+  reminderTime: string;
 };
 
 type UseExerciseTodayResult = {
@@ -41,19 +43,13 @@ const getGoalMinutes = (preferences: unknown) => {
   return Math.round(value);
 };
 
-const getReminderEnabled = (preferences: unknown) => {
-  if (!preferences || typeof preferences !== 'object') return true;
-  const prefs = preferences as Record<string, unknown>;
-  const notifications = prefs.notificaciones;
-  if (!notifications || typeof notifications !== 'object') return true;
-  const notificationRecord = notifications as Record<string, unknown>;
-  const value =
-    typeof notificationRecord.ejercicio === 'boolean'
-      ? notificationRecord.ejercicio
-      : typeof notificationRecord.exercise === 'boolean'
-        ? notificationRecord.exercise
-        : undefined;
-  return typeof value === 'boolean' ? value : true;
+const getReminderConfig = (preferences: unknown) => {
+  const settings = normalizeNotificationSettingsFromPreferences(preferences);
+  const habit = settings.habits.ejercicio;
+  return {
+    enabled: settings.global.enabled && habit.enabled,
+    time: habit.time,
+  };
 };
 
 const initialData: ExerciseTodayData = {
@@ -63,6 +59,7 @@ const initialData: ExerciseTodayData = {
   progress: 0,
   history: [],
   remindersEnabled: true,
+  reminderTime: '20:00',
 };
 
 export function useExerciseToday(
@@ -117,13 +114,16 @@ export function useExerciseToday(
     const totalMin = mappedHistory.reduce((sum, item) => sum + item.durationMin, 0);
     const progress = goalMin > 0 ? Math.max(0, Math.min(totalMin / goalMin, 1)) : 0;
 
+    const reminder = getReminderConfig(user?.preferencias);
+
     return {
       goalMin,
       totalMin,
       sessionsCount: mappedHistory.length,
       progress,
       history: filteredHistory,
-      remindersEnabled: getReminderEnabled(user?.preferencias),
+      remindersEnabled: reminder.enabled,
+      reminderTime: reminder.time,
     };
   }, [entries, selectedType, user?.preferencias]);
 

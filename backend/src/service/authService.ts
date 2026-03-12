@@ -12,6 +12,7 @@ import { signAccessToken } from "../utils/jwt";
 import type { UserRecord } from "../model/userModel";
 import { createUser, findByEmail, updatePasswordHash } from "../model/userModel";
 import { createPasswordResetToken, consumePasswordResetToken } from "../model/passwordResetModel";
+import { getDefaultNotificationSettings } from "./notificationSettingsService";
 
 const DEFAULT_PREFERENCIAS: Record<string, unknown> = {
   tema: "system",
@@ -20,27 +21,7 @@ const DEFAULT_PREFERENCIAS: Record<string, unknown> = {
     desde: "23:00",
     hasta: "07:00",
   },
-  notificaciones: {
-    enabled: true,
-    reminders: true,
-    achievements: true,
-    challenges: true,
-    system: true,
-    hidratacion: true,
-    nutricion: true,
-    ejercicio: true,
-    sueno: true,
-    meditacion: true,
-    gamification: true,
-    weeklyReport: false,
-    weeklyDay: "L",
-    weeklyTime: "08:00",
-    pushEnabled: true,
-    emailEnabled: false,
-    quietHoursEnabled: false,
-    quietFrom: "22:00",
-    quietTo: "07:00",
-  },
+  notificaciones: getDefaultNotificationSettings(),
 };
 
 const PASSWORD_RESET_EXPIRATION_MINUTES = 15;

@@ -224,8 +224,10 @@ CREATE TABLE IF NOT EXISTS usuario_reto (
 );
 
 -- =========================
--- TABLA: RECORDATORIO
+-- TABLA: RECORDATORIO (LEGACY)
 -- =========================
+-- Se conserva por compatibilidad historica, pero en el MVP actual
+-- la configuracion operativa de avisos vive en usuario.preferencias.notificaciones.
 CREATE TABLE IF NOT EXISTS recordatorio (
   id_recordatorio SERIAL PRIMARY KEY,
   id_usuario      INT NOT NULL,
@@ -268,6 +270,8 @@ CREATE INDEX IF NOT EXISTS idx_notificacion_user_programada
 CREATE INDEX IF NOT EXISTS idx_notificacion_user_created
   ON notificacion (id_usuario, created_at);
 
+-- Tabla disponible para una futura capa push.
+-- En el MVP actual no hay flujo operativo completo con expo_push_token.
 CREATE TABLE IF NOT EXISTS user_device (
   id_user_device SERIAL PRIMARY KEY,
   id_usuario INT NOT NULL,

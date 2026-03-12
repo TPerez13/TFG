@@ -72,20 +72,3 @@ export async function deleteNutritionEntry(entryId: number): Promise<void> {
     throw new Error(await parseErrorMessage(response, 'No se pudo eliminar el registro.'));
   }
 }
-
-export async function updateNutritionReminder(enabled: boolean): Promise<void> {
-  const response = await apiFetch('/users/me', {
-    method: 'PUT',
-    body: JSON.stringify({
-      preferencias: {
-        nutricion: {
-          recordatoriosComidas: enabled,
-        },
-      },
-    }),
-  });
-
-  if (!response.ok) {
-    throw new Error(await parseErrorMessage(response, 'No se pudo guardar el recordatorio.'));
-  }
-}

@@ -53,7 +53,6 @@ title Capitulo 4 - Mapa de Navegacion (React Navigation actual)
 ****** EditProfile
 ****** AchievementsScreen
 ****** NotificationSettings
-****** NotificationDetail
 ****** Privacy
 ****** HelpSupport
 ****** AboutApp
@@ -69,6 +68,7 @@ end note
 note bottom
 El tab bar se oculta en rutas no raiz segun shouldHideTabBar()
 de AppTabs (por ejemplo EditProfile, AchievementsScreen, etc.).
-end note'/
+end note
+'/
 
 @endwbs

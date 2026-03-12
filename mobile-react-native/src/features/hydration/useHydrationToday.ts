@@ -3,6 +3,7 @@ import type { HabitEntry, User } from '../../types/models';
 import { fetchHabitEntries } from '../habits/entriesApi';
 import { apiFetch } from '../../services/api';
 import { getHabitByKey } from '../habits/habitRegistry';
+import { normalizeNotificationSettingsFromPreferences } from '../notifications/settings';
 
 const ML_PER_GLASS = 250;
 const DEFAULT_GOAL_VALUE = 8;
@@ -29,6 +30,7 @@ type HydrationTodayData = {
   history: HydrationHistoryItem[];
   recentAmountsMl: number[];
   remindersEnabled: boolean;
+  reminderTime: string;
 };
 
 type UseHydrationTodayResult = {
@@ -99,6 +101,7 @@ const initialData: HydrationTodayData = {
   history: [],
   recentAmountsMl: [],
   remindersEnabled: true,
+  reminderTime: '10:00',
 };
 
 export function useHydrationToday(date: Date): UseHydrationTodayResult {
@@ -169,20 +172,10 @@ export function useHydrationToday(date: Date): UseHydrationTodayResult {
       .filter((value, index, array) => array.indexOf(value) === index)
       .slice(0, 6);
 
-    const preferences =
-      user?.preferencias && typeof user.preferencias === 'object'
-        ? (user.preferencias as Record<string, unknown>)
-        : null;
-    const notifications =
-      preferences?.notificaciones && typeof preferences.notificaciones === 'object'
-        ? (preferences.notificaciones as Record<string, unknown>)
-        : null;
+    const notificationSettings = normalizeNotificationSettingsFromPreferences(user?.preferencias);
     const remindersEnabled =
-      typeof notifications?.hidratacion === 'boolean'
-        ? Boolean(notifications.hidratacion)
-        : typeof notifications?.hydration === 'boolean'
-          ? Boolean(notifications.hydration)
-          : true;
+      notificationSettings.global.enabled && notificationSettings.habits.hidratacion.enabled;
+    const reminderTime = notificationSettings.habits.hidratacion.time;
 
     return {
       goal,
@@ -193,6 +186,7 @@ export function useHydrationToday(date: Date): UseHydrationTodayResult {
       history,
       recentAmountsMl,
       remindersEnabled,
+      reminderTime,
     };
   }, [entries, user, windowEntries]);
 

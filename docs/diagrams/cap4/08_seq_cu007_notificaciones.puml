@@ -17,9 +17,9 @@ skinparam sequence {
 skinparam noteBackgroundColor #FFF9E6
 skinparam noteBorderColor #D7C58A
 
-title CU007 - Gestion de notificaciones (listado, detalle y lectura)
+title CU007 - Gestion de notificaciones persistidas (backend)
 
-participant "UI (NotificationsScreen)" as UI
+participant "Cliente API (debug/export)" as UI
 participant "API Notifications" as API
 database "DB (notificacion)" as DB
 
@@ -68,6 +68,8 @@ end
 note right of API
 Rutas activas: /notifications, /notifications/unread-count,
 /:id, /:id/read, /read-all, /seed.
-end note'/
+En MVP actual no hay inbox mobile cableado.
+end note
+'/
 
 @enduml

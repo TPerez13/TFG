@@ -4,108 +4,105 @@ import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { ProfileStackParamList } from '../navigation/types';
 import { Screen } from '../components/layout/Screen';
-import { apiFetch } from '../services/api';
 import type { NotificationSettings } from '../features/notifications/types';
+import { DEFAULT_NOTIFICATION_SETTINGS, isValidTimeValue } from '../features/notifications/settings';
 import { colors, fontSizes, spacing } from '../theme/tokens';
 import { useAuth } from '../navigation/AuthContext';
 import { PillToggle } from '../components/settings/PillToggle';
+import {
+  fetchNotificationSettings,
+  NotificationSettingsApiError,
+  patchNotificationSettings,
+} from '../features/notifications/api';
 
 type SettingsProps = NativeStackScreenProps<ProfileStackParamList, 'NotificationSettings'>;
 
-type NotificationPreferences = NotificationSettings & {
-  hydration: boolean;
-  nutrition: boolean;
-  exercise: boolean;
-  sleep: boolean;
-  gamification: boolean;
-  weeklyReport: boolean;
-  weeklyDay: string;
-  weeklyTime: string;
-  pushEnabled: boolean;
-  emailEnabled: boolean;
-  quietHoursEnabled: boolean;
-  quietFrom: string;
-  quietTo: string;
-};
-
-const defaultSettings: NotificationPreferences = {
-  enabled: true,
-  reminders: true,
-  achievements: true,
-  challenges: true,
-  system: true,
-  hydration: true,
-  nutrition: true,
-  exercise: true,
-  sleep: true,
-  gamification: true,
-  weeklyReport: false,
-  weeklyDay: 'L',
-  weeklyTime: '08:00',
-  pushEnabled: true,
-  emailEnabled: false,
-  quietHoursEnabled: false,
-  quietFrom: '22:00',
-  quietTo: '07:00',
-};
-
 export default function NotificationSettingsScreen({ navigation }: SettingsProps) {
   const { signOut } = useAuth();
-  const [settings, setSettings] = useState<NotificationPreferences>(defaultSettings);
+  const [settings, setSettings] = useState<NotificationSettings>(DEFAULT_NOTIFICATION_SETTINGS);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
+
+  const [globalEnabled, setGlobalEnabled] = useState(DEFAULT_NOTIFICATION_SETTINGS.global.enabled);
+  const [summaryTime, setSummaryTime] = useState(DEFAULT_NOTIFICATION_SETTINGS.global.summaryTime);
+  const [quietEnabled, setQuietEnabled] = useState(DEFAULT_NOTIFICATION_SETTINGS.global.quietHoursEnabled);
+  const [quietFrom, setQuietFrom] = useState(DEFAULT_NOTIFICATION_SETTINGS.global.quietFrom);
+  const [quietTo, setQuietTo] = useState(DEFAULT_NOTIFICATION_SETTINGS.global.quietTo);
 
   useEffect(() => {
     let active = true;
     const load = async () => {
       try {
-        const res = await apiFetch('/users/me');
-        if (res.status === 401) {
+        const loadedSettings = await fetchNotificationSettings();
+        if (active) setSettings(loadedSettings);
+      } catch (error) {
+        if (error instanceof NotificationSettingsApiError && error.status === 401) {
           await signOut();
           return;
         }
-        if (!res.ok) return;
-        const payload = (await res.json()) as { user?: { preferencias?: Record<string, unknown> | null } };
-        const raw = payload.user?.preferencias as Record<string, unknown> | null;
-        const fromPrefs = raw?.notificaciones as Partial<NotificationPreferences> | undefined;
         if (active) {
-          setSettings({ ...defaultSettings, ...(fromPrefs ?? {}) });
+          setFeedback('No se pudo cargar la configuracion.');
         }
       } finally {
         if (active) setLoading(false);
       }
     };
-    load();
+    void load();
     return () => {
       active = false;
     };
-  }, []);
+  }, [signOut]);
 
-  const update = async (next: NotificationPreferences) => {
-    setSettings(next);
-    setSaving(true);
-    setFeedback(null);
-    const res = await apiFetch('/users/me', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ preferencias: { notificaciones: next } }),
-    });
-    if (res.status === 401) {
-      await signOut();
-      setSaving(false);
+  useEffect(() => {
+    setGlobalEnabled(settings.global.enabled);
+    setSummaryTime(settings.global.summaryTime);
+    setQuietEnabled(settings.global.quietHoursEnabled);
+    setQuietFrom(settings.global.quietFrom);
+    setQuietTo(settings.global.quietTo);
+  }, [settings]);
+
+  const saveGlobal = async () => {
+    const normalizedSummaryTime = summaryTime.trim();
+    const normalizedQuietFrom = quietFrom.trim();
+    const normalizedQuietTo = quietTo.trim();
+
+    if (!isValidTimeValue(normalizedSummaryTime)) {
+      setFeedback('Hora de resumen invalida. Usa HH:MM.');
       return;
     }
-    setSaving(false);
-    if (res.ok) {
-      setFeedback('Cambios guardados.');
-    } else {
-      setFeedback('No se pudieron guardar los cambios.');
+    if (!isValidTimeValue(normalizedQuietFrom)) {
+      setFeedback('Hora inicio silencio invalida. Usa HH:MM.');
+      return;
     }
-  };
+    if (!isValidTimeValue(normalizedQuietTo)) {
+      setFeedback('Hora fin silencio invalida. Usa HH:MM.');
+      return;
+    }
 
-  const updateField = (key: keyof NotificationPreferences, value: boolean | string) => {
-    setSettings((prev) => ({ ...prev, [key]: value }));
+    setSaving(true);
+    setFeedback(null);
+    try {
+      const nextSettings = await patchNotificationSettings({
+        global: {
+          enabled: globalEnabled,
+          summaryTime: normalizedSummaryTime,
+          quietHoursEnabled: quietEnabled,
+          quietFrom: normalizedQuietFrom,
+          quietTo: normalizedQuietTo,
+        },
+      });
+      setSettings(nextSettings);
+      setFeedback('Cambios guardados.');
+    } catch (error) {
+      if (error instanceof NotificationSettingsApiError && error.status === 401) {
+        await signOut();
+        return;
+      }
+      setFeedback('No se pudieron guardar los cambios.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -115,7 +112,7 @@ export default function NotificationSettingsScreen({ navigation }: SettingsProps
           <Pressable onPress={() => navigation.goBack()} style={styles.backButton}>
             <Ionicons name="chevron-back" size={22} color={colors.textPrimary} />
           </Pressable>
-          <Text style={styles.headerTitle}>Ajustes</Text>
+          <Text style={styles.headerTitle}>Notificaciones</Text>
           <View style={styles.headerSpacer} />
         </View>
 
@@ -123,160 +120,72 @@ export default function NotificationSettingsScreen({ navigation }: SettingsProps
           <ActivityIndicator size="large" color={colors.textAccent} style={styles.loading} />
         ) : (
           <>
-            <Text style={styles.sectionTitle}>Ajustes de notificaciones</Text>
+            <Text style={styles.sectionTitle}>Configuracion global</Text>
             <View style={styles.card}>
               <SettingRow
                 label="Activar notificaciones"
-                description="Control general para habilitar o silenciar todos los avisos."
-                value={settings.enabled}
+                description="Si esta desactivado, los avisos de habitos no se consideran activos."
+                value={globalEnabled}
                 disabled={saving}
-                onValueChange={(value) => {
-                  setSettings((prev) => ({
-                    ...prev,
-                    enabled: value,
-                    reminders: value,
-                    achievements: value,
-                    challenges: value,
-                    system: value,
-                    hydration: value,
-                    nutrition: value,
-                    exercise: value,
-                    sleep: value,
-                    gamification: value,
-                    weeklyReport: value ? prev.weeklyReport : false,
-                    pushEnabled: value,
-                    emailEnabled: value,
-                    quietHoursEnabled: value ? prev.quietHoursEnabled : false,
-                  }));
-                }}
+                onValueChange={setGlobalEnabled}
               />
-            </View>
 
-            <Text style={styles.sectionTitle}>Categorias</Text>
-            <View style={styles.card}>
-              <SettingRow
-                label="Hidratacion"
-                description="Recordatorios para cumplir tu objetivo de agua diario."
-                value={settings.hydration}
-                disabled={saving}
-                onValueChange={(v) => updateField('hydration', v)}
-              />
-              <SettingRow
-                label="Nutricion"
-                description="Avisos para registrar comidas y mantener constancia."
-                value={settings.nutrition}
-                disabled={saving}
-                onValueChange={(v) => updateField('nutrition', v)}
-              />
-              <SettingRow
-                label="Ejercicio"
-                description="Notificaciones para no olvidar sesiones de actividad."
-                value={settings.exercise}
-                disabled={saving}
-                onValueChange={(v) => updateField('exercise', v)}
-              />
-              <SettingRow
-                label="Sueno"
-                description="Recordatorios orientados a mejorar tu rutina de descanso."
-                value={settings.sleep}
-                disabled={saving}
-                onValueChange={(v) => updateField('sleep', v)}
-              />
-              <SettingRow
-                label="Gamificacion"
-                description="Avisos de logros, rachas y recompensas."
-                value={settings.gamification}
-                disabled={saving}
-                onValueChange={(v) => updateField('gamification', v)}
-              />
-              <SettingRow
-                label="Sistema"
-                description="Comunicaciones importantes de la aplicacion."
-                value={settings.system}
-                disabled={saving}
-                onValueChange={(v) => updateField('system', v)}
-              />
-            </View>
-
-            <Text style={styles.sectionTitle}>Resumen semanal</Text>
-            <View style={styles.card}>
-              <SettingRow
-                label="Recibir informe semanal"
-                description="Resumen automatico del progreso de tus habitos."
-                value={settings.weeklyReport}
-                disabled={saving}
-                onValueChange={(value) => updateField('weeklyReport', value)}
-              />
               <View style={styles.row}>
-                <Text style={styles.rowLabel}>Dia</Text>
+                <Text style={styles.rowLabel}>Hora resumen</Text>
                 <TextInput
                   style={styles.input}
-                  value={settings.weeklyDay}
-                  onChangeText={(value) => updateField('weeklyDay', value)}
-                  placeholder="L-D"
-                />
-              </View>
-              <View style={styles.row}>
-                <Text style={styles.rowLabel}>Hora</Text>
-                <TextInput
-                  style={styles.input}
-                  value={settings.weeklyTime}
-                  onChangeText={(value) => updateField('weeklyTime', value)}
+                  editable={!saving}
+                  value={summaryTime}
+                  onChangeText={setSummaryTime}
                   placeholder="HH:MM"
                 />
               </View>
-            </View>
-
-            <Text style={styles.sectionTitle}>Canales</Text>
-            <View style={styles.card}>
-              <SettingRow
-                label="Push en el movil"
-                description="Requiere permiso del sistema."
-                value={settings.pushEnabled}
-                disabled={saving}
-                onValueChange={(value) => updateField('pushEnabled', value)}
-              />
-              <SettingRow
-                label="Email"
-                description="Requiere configuracion de correo."
-                value={settings.emailEnabled}
-                disabled={saving}
-                onValueChange={(value) => updateField('emailEnabled', value)}
-              />
             </View>
 
             <Text style={styles.sectionTitle}>Horas silenciosas</Text>
             <View style={styles.card}>
               <SettingRow
                 label="Activar horas silenciosas"
-                description="Reduce interrupciones en el rango horario que definas."
-                value={settings.quietHoursEnabled}
+                description="Durante este rango se intenta no interrumpir."
+                value={quietEnabled}
                 disabled={saving}
-                onValueChange={(value) => updateField('quietHoursEnabled', value)}
+                onValueChange={setQuietEnabled}
               />
               <View style={styles.row}>
-                <Text style={styles.rowLabel}>Desde</Text>
+                <Text style={styles.rowLabel}>Inicio</Text>
                 <TextInput
                   style={styles.input}
-                  value={settings.quietFrom}
-                  onChangeText={(value) => updateField('quietFrom', value)}
+                  editable={!saving}
+                  value={quietFrom}
+                  onChangeText={setQuietFrom}
                   placeholder="HH:MM"
                 />
               </View>
               <View style={styles.row}>
-                <Text style={styles.rowLabel}>Hasta</Text>
+                <Text style={styles.rowLabel}>Fin</Text>
                 <TextInput
                   style={styles.input}
-                  value={settings.quietTo}
-                  onChangeText={(value) => updateField('quietTo', value)}
+                  editable={!saving}
+                  value={quietTo}
+                  onChangeText={setQuietTo}
                   placeholder="HH:MM"
                 />
               </View>
             </View>
 
+            <View style={styles.noteCard}>
+              <Text style={styles.noteTitle}>Configuracion por habito</Text>
+              <Text style={styles.noteText}>
+                Se edita en cada pantalla de habito (toggle + hora), pero se guarda en la misma fuente de
+                verdad que esta pantalla.
+              </Text>
+            </View>
+
             <Pressable
               accessibilityRole="button"
-              onPress={() => update(settings)}
+              onPress={() => {
+                void saveGlobal();
+              }}
               disabled={saving}
               style={({ pressed }) => [
                 styles.saveButton,
@@ -360,6 +269,24 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     marginBottom: spacing.xl,
   },
+  noteCard: {
+    backgroundColor: '#f3f6fb',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#d6deea',
+    padding: spacing.md,
+    marginBottom: spacing.lg,
+  },
+  noteTitle: {
+    fontSize: fontSizes.sm,
+    fontWeight: '700',
+    color: colors.textPrimary,
+    marginBottom: 4,
+  },
+  noteText: {
+    fontSize: fontSizes.sm,
+    color: colors.textMuted,
+  },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -386,7 +313,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
-    minWidth: 80,
+    minWidth: 90,
     textAlign: 'center',
     color: colors.textPrimary,
     backgroundColor: colors.surface,

@@ -10,6 +10,7 @@ import {
   StyleSheet,
   Switch,
   Text,
+  TextInput,
   View,
 } from 'react-native';
 import { ProgressBar } from '../components/ProgressBar';
@@ -20,8 +21,9 @@ import { useSleepToday } from '../features/sleep/useSleepToday';
 import { sleepQualityLabel } from '../features/sleep/types';
 import { formatHours } from '../features/sleep/utils';
 import { useDeleteHabitEntry } from '../features/habits/useDeleteHabitEntry';
+import { patchNotificationSettings } from '../features/notifications/api';
+import { isValidTimeValue } from '../features/notifications/settings';
 import type { HabitsStackParamList } from '../navigation/types';
-import { apiFetch } from '../services/api';
 import { baseStyles } from '../theme/components';
 import { colors, fontSizes, radius, spacing } from '../theme/tokens';
 
@@ -48,6 +50,7 @@ export default function SuenoScreen({ navigation }: SuenoScreenProps) {
   const today = useMemo(() => new Date(), []);
   const [showAll, setShowAll] = useState(false);
   const [reminderEnabled, setReminderEnabled] = useState(true);
+  const [reminderTime, setReminderTime] = useState('22:00');
   const [reminderSaving, setReminderSaving] = useState(false);
   const [snackbar, setSnackbar] = useState<SnackbarState>({
     visible: false,
@@ -59,7 +62,8 @@ export default function SuenoScreen({ navigation }: SuenoScreenProps) {
 
   useEffect(() => {
     setReminderEnabled(data.remindersEnabled);
-  }, [data.remindersEnabled]);
+    setReminderTime(data.reminderTime);
+  }, [data.remindersEnabled, data.reminderTime]);
 
   useEffect(() => {
     const unsubscribe = subscribeSleepFlash((payload) => {
@@ -92,23 +96,43 @@ export default function SuenoScreen({ navigation }: SuenoScreenProps) {
     setReminderEnabled(nextValue);
     setReminderSaving(true);
     try {
-      const response = await apiFetch('/users/me', {
-        method: 'PUT',
-        body: JSON.stringify({
-          preferencias: {
-            notificaciones: {
-              sueno: nextValue,
-            },
+      await patchNotificationSettings({
+        habits: {
+          sueno: {
+            enabled: nextValue,
           },
-        }),
+        },
       });
-      if (!response.ok) {
-        throw new Error('No se pudo guardar recordatorio de sueno.');
-      }
       await reload();
     } catch (err) {
       setReminderEnabled((current) => !current);
       Alert.alert('Error', err instanceof Error ? err.message : 'No se pudo guardar recordatorio.');
+    } finally {
+      setReminderSaving(false);
+    }
+  };
+
+  const saveReminderTime = async () => {
+    const normalized = reminderTime.trim();
+    if (!isValidTimeValue(normalized)) {
+      Alert.alert('Hora invalida', 'Usa formato HH:MM.');
+      setReminderTime(data.reminderTime);
+      return;
+    }
+
+    setReminderSaving(true);
+    try {
+      await patchNotificationSettings({
+        habits: {
+          sueno: {
+            time: normalized,
+          },
+        },
+      });
+      await reload();
+    } catch (err) {
+      Alert.alert('Error', err instanceof Error ? err.message : 'No se pudo guardar la hora.');
+      setReminderTime(data.reminderTime);
     } finally {
       setReminderSaving(false);
     }
@@ -204,6 +228,16 @@ export default function SuenoScreen({ navigation }: SuenoScreenProps) {
           <View style={styles.reminderText}>
             <Text style={styles.reminderTitle}>Recordatorios</Text>
             <Text style={styles.reminderSubtitle}>Recordatorios de sueno</Text>
+            <TextInput
+              value={reminderTime}
+              onChangeText={setReminderTime}
+              onEndEditing={() => {
+                void saveReminderTime();
+              }}
+              editable={!reminderSaving}
+              placeholder="HH:MM"
+              style={styles.reminderTimeInput}
+            />
           </View>
           <Switch
             value={reminderEnabled}
@@ -419,5 +453,18 @@ const styles = StyleSheet.create({
   reminderSubtitle: {
     color: colors.textMuted,
     fontSize: fontSizes.base,
+  },
+  reminderTimeInput: {
+    marginTop: spacing.xs,
+    borderWidth: 1,
+    borderColor: colors.surfaceBorder,
+    borderRadius: 10,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    minWidth: 96,
+    maxWidth: 112,
+    textAlign: 'center',
+    color: colors.textPrimary,
+    backgroundColor: colors.surface,
   },
 });

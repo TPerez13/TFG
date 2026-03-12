@@ -8,8 +8,8 @@
     "dist"
   ],
   "scripts": {
-    "build": "npx tsc -p tsconfig.json",
-    "build:watch": "npx tsc -p tsconfig.json --watch"
+    "build": "tsc -p tsconfig.json",
+    "build:watch": "tsc -p tsconfig.json --watch"
   },
   "devDependencies": {
     "typescript": "^5.4.5"

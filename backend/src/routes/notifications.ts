@@ -7,11 +7,15 @@ import {
   readAll,
   remove,
   seed,
+  getSettings,
+  updateSettings,
 } from "../controllers/notificationController";
 import { requireAuth } from "../middleware/auth";
 
 const router = Router();
 
+router.get("/notifications/settings", requireAuth, getSettings);
+router.patch("/notifications/settings", requireAuth, updateSettings);
 router.get("/notifications", requireAuth, list);
 router.get("/notifications/unread-count", requireAuth, unreadCount);
 router.get("/notifications/:id", requireAuth, getById);

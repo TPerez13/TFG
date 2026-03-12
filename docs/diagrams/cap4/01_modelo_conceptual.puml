@@ -80,7 +80,24 @@ package "Habitos y nutricion" {
   }
 }
 
-package "Notificaciones y dispositivos" {
+package "Avisos (MVP)" {
+  class ConfiguracionNotificaciones {
+    +enabled: boolean
+    +summaryTime: HH:MM
+    +quietHoursEnabled: boolean
+    +quietFrom: HH:MM
+    +quietTo: HH:MM
+    +source: usuario.preferencias.notificaciones.global
+  }
+
+  class ConfiguracionAvisoHabito {
+    +habitKey: enum(hidratacion,nutricion,ejercicio,sueno,meditacion)
+    +enabled: boolean
+    +time: HH:MM
+    +lastCompletedDate?: YYYY-MM-DD
+    +source: usuario.preferencias.notificaciones.habits
+  }
+
   class Notificacion {
     +id_notificacion: int
     +id_usuario: int
@@ -94,24 +111,6 @@ package "Notificaciones y dispositivos" {
     +deep_link?: string
     +created_at: timestamptz
     +updated_at: timestamptz
-  }
-
-  class UserDevice {
-    +id_user_device: int
-    +id_usuario: int
-    +platform: string
-    +expo_push_token: string
-    +created_at: timestamptz
-    +last_seen_at: timestamptz
-  }
-
-  class Recordatorio <<InfraLegacy>> {
-    +id_recordatorio: int
-    +id_usuario: int
-    +id_tipo_habito: int
-    +programacion: jsonb
-    +activo: boolean
-    +f_creacion: timestamptz
   }
 }
 
@@ -198,12 +197,12 @@ Usuario "1" -- "0..*" RegistroComida : registra
 Alimento "0..1" -- "0..*" RegistroComida : referencia opcional
 RegistroComida "1" <-- "0..1" RegistroHabito : vinculo nutricion
 
-Usuario "1" -- "0..*" Notificacion : recibe
-Usuario "1" -- "0..*" UserDevice : registra
-Usuario "1" -- "0..*" TicketSoporte : crea
+Usuario "1" -- "1" ConfiguracionNotificaciones : define
+ConfiguracionNotificaciones "1" -- "1..*" ConfiguracionAvisoHabito : contiene
+ConfiguracionAvisoHabito "..*" -- "1" TipoHabito : aplica por clave funcional
 
-Usuario "1" -- "0..*" Recordatorio : tabla legacy
-TipoHabito "1" -- "0..*" Recordatorio : objetivo
+Usuario "1" -- "0..*" Notificacion : recibe
+Usuario "1" -- "0..*" TicketSoporte : crea
 
 Usuario "1" -- "0..*" UsuarioLogro : desbloquea
 Logro "1" -- "0..*" UsuarioLogro : otorga
@@ -220,16 +219,32 @@ note right of RegistroHabito
 RB-001: cada registro pertenece a un usuario autenticado.
 RB-002: id_tipo_habito debe existir en tipo_habito.
 RB-003: consultas principales por rango de fechas.
+RB-003b: registrar comida no crea automaticamente
+un RegistroHabito de nutricion en el flujo actual.
 end note
 
 note right of Notificacion
-RB-004: API activa para listar, detalle, marcar leida,
-marcar todas como leidas, borrar y seed.
+RB-004: entidad persistida en backend (/notifications*),
+con operaciones listar/detalle/marcar/borrar/seed.
+En MVP actual no hay inbox mobile cableado.
 end note
 
-note bottom of Recordatorio
-Existe tabla en SQL, pero la configuracion operativa actual
-de avisos se guarda en usuario.preferencias.notificaciones.
+note right of ConfiguracionNotificaciones
+Fuente de verdad unica: usuario.preferencias.notificaciones.
+Se edita desde Perfil > Notificaciones y desde cada habito.
+Si enabled=false a nivel global, los avisos por habito no
+se consideran activos en el MVP.
+end note
+
+note right of ConfiguracionAvisoHabito
+Al registrar un habito/comida, se actualiza lastCompletedDate
+para coherencia MVP de cancelacion/reprogramacion logica.
+Sin motor de scheduling backend en esta fase.
+end note
+
+note bottom
+Las tablas recordatorio y user_device existen en SQL como
+infraestructura legacy/no operativa en el MVP actual.
 end note
 
 note bottom of "Gamificacion (persistencia existente sin API dedicada)"

@@ -5,6 +5,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { ProfileStackParamList } from '../navigation/types';
 import { useAuth } from '../navigation/AuthContext';
+import type { NotificationSettings } from '../features/notifications/types';
+import { normalizeNotificationSettingsFromPreferences } from '../features/notifications/settings';
 
 type FeedScreenProps = NativeStackScreenProps<ProfileStackParamList, 'Feed'>;
 
@@ -15,23 +17,10 @@ const formatDate = (value?: string) => {
   return parsed.toLocaleString();
 };
 
-type NotificationSettings = {
-  habilitadas?: boolean;
-  hidratacion?: boolean;
-  nutricion?: boolean;
-  ejercicio?: boolean;
-  sueno?: boolean;
-  meditacion?: boolean;
-};
-
 type Preferences = {
   tema?: string;
   idioma?: string;
-  quiet_hours?: {
-    desde?: string;
-    hasta?: string;
-  };
-  notificaciones?: NotificationSettings;
+  notificationSettings?: NotificationSettings;
 };
 
 const formatBoolean = (value?: boolean) => {
@@ -59,43 +48,14 @@ const normalizePreferences = (value?: Record<string, unknown> | string | null): 
   const tema = typeof raw.tema === 'string' ? raw.tema : undefined;
   const idioma = typeof raw.idioma === 'string' ? raw.idioma : undefined;
 
-  let quiet_hours: Preferences['quiet_hours'];
-  if (raw.quiet_hours && typeof raw.quiet_hours === 'object') {
-    const quietRaw = raw.quiet_hours as Record<string, unknown>;
-    const desde = typeof quietRaw.desde === 'string' ? quietRaw.desde : undefined;
-    const hasta = typeof quietRaw.hasta === 'string' ? quietRaw.hasta : undefined;
-    if (desde || hasta) {
-      quiet_hours = { desde, hasta };
-    }
-  }
+  const notificationSettings = normalizeNotificationSettingsFromPreferences(raw);
 
-  let notificaciones: NotificationSettings | undefined;
-  if (raw.notificaciones && typeof raw.notificaciones === 'object') {
-    const notifRaw = raw.notificaciones as Record<string, unknown>;
-    const getBool = (key: keyof NotificationSettings) =>
-      typeof notifRaw[key] === 'boolean' ? (notifRaw[key] as boolean) : undefined;
-
-    notificaciones = {
-      habilitadas: getBool('habilitadas'),
-      hidratacion: getBool('hidratacion'),
-      nutricion: getBool('nutricion'),
-      ejercicio: getBool('ejercicio'),
-      sueno: getBool('sueno'),
-      meditacion: getBool('meditacion'),
-    };
-
-    if (Object.values(notificaciones).every((value) => value === undefined)) {
-      notificaciones = undefined;
-    }
-  }
-
-  if (!tema && !idioma && !quiet_hours && !notificaciones) return null;
+  if (!tema && !idioma && !notificationSettings) return null;
 
   return {
     tema,
     idioma,
-    quiet_hours,
-    notificaciones,
+    notificationSettings,
   };
 };
 
@@ -109,13 +69,11 @@ export default function FeedScreen({ route, navigation }: FeedScreenProps) {
   const createdAt = formatDate(user?.f_creacion);
   const preferences = normalizePreferences(user?.preferencias ?? null);
   const greetingName = user?.nombre ?? user?.username ?? 'Usuario';
-  const quietHours = preferences?.quiet_hours;
-  const quietHoursText =
-    quietHours?.desde || quietHours?.hasta
-      ? `${quietHours?.desde ?? '--:--'} - ${quietHours?.hasta ?? '--:--'}`
-      : 'N/A';
-  const notificationItems: Array<{ key: keyof NotificationSettings; label: string }> = [
-    { key: 'habilitadas', label: 'Habilitadas' },
+  const notificationSettings = preferences?.notificationSettings;
+  const quietHoursText = notificationSettings
+    ? `${notificationSettings.global.quietFrom} - ${notificationSettings.global.quietTo}`
+    : 'N/A';
+  const habitItems: Array<{ key: keyof NotificationSettings['habits']; label: string }> = [
     { key: 'hidratacion', label: 'Hidratacion' },
     { key: 'nutricion', label: 'Nutricion' },
     { key: 'ejercicio', label: 'Ejercicio' },
@@ -179,24 +137,39 @@ export default function FeedScreen({ route, navigation }: FeedScreenProps) {
               </View>
               <View style={styles.sectionDivider} />
               <Text style={styles.sectionTitle}>Notificaciones</Text>
-              {preferences.notificaciones ? (
-                notificationItems.map((item) => {
-                  const status = preferences.notificaciones?.[item.key];
-                  return (
-                    <View key={item.key} style={styles.row}>
-                      <Text style={styles.label}>{item.label}</Text>
-                      <Text
-                        style={[
-                          styles.value,
-                          status === true ? styles.valueOn : null,
-                          status === false ? styles.valueOff : null,
-                        ]}
-                      >
-                        {formatBoolean(status)}
-                      </Text>
-                    </View>
-                  );
-                })
+              {notificationSettings ? (
+                <>
+                  <View style={styles.row}>
+                    <Text style={styles.label}>Global</Text>
+                    <Text
+                      style={[
+                        styles.value,
+                        notificationSettings.global.enabled ? styles.valueOn : styles.valueOff,
+                      ]}
+                    >
+                      {formatBoolean(notificationSettings.global.enabled)}
+                    </Text>
+                  </View>
+                  <View style={styles.row}>
+                    <Text style={styles.label}>Resumen</Text>
+                    <Text style={styles.value}>{notificationSettings.global.summaryTime}</Text>
+                  </View>
+                  <View style={styles.row}>
+                    <Text style={styles.label}>Silencio</Text>
+                    <Text style={styles.value}>{quietHoursText}</Text>
+                  </View>
+                  {habitItems.map((item) => {
+                    const habit = notificationSettings.habits[item.key];
+                    return (
+                      <View key={item.key} style={styles.row}>
+                        <Text style={styles.label}>{item.label}</Text>
+                        <Text style={[styles.value, habit.enabled ? styles.valueOn : styles.valueOff]}>
+                          {formatBoolean(habit.enabled)} ({habit.time})
+                        </Text>
+                      </View>
+                    );
+                  })}
+                </>
               ) : (
                 <Text style={styles.emptyText}>Sin datos de notificaciones</Text>
               )}

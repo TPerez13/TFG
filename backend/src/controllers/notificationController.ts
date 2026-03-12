@@ -1,4 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
+import type { NotificationSettingsPatch } from "@muchasvidas/shared";
 import type { AuthRequest } from "../middleware/auth";
 import { AppError } from "../utils/errors";
 import {
@@ -11,6 +12,10 @@ import {
 } from "../model/notificationModel";
 import type { NotificationType } from "../model/notificationModel";
 import { seedNotificationsForUser } from "../service/notificationService";
+import {
+  getNotificationSettingsForUser,
+  patchNotificationSettingsForUser,
+} from "../service/notificationSettingsService";
 
 const toIsoString = (value: unknown): string | null => {
   if (!value) return null;
@@ -189,6 +194,36 @@ export async function seed(req: Request, res: Response, next: NextFunction): Pro
     if (!userId) throw new AppError("Token invalido.", 401);
     await seedNotificationsForUser(userId);
     res.json({ ok: true });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function getSettings(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const authReq = req as AuthRequest;
+    const userId = authReq.userId;
+    if (!userId) throw new AppError("Token invalido.", 401);
+
+    const settings = await getNotificationSettingsForUser(userId);
+    res.json({ settings });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function updateSettings(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const authReq = req as AuthRequest;
+    const userId = authReq.userId;
+    if (!userId) throw new AppError("Token invalido.", 401);
+
+    const body = (req.body ?? {}) as {
+      settings?: NotificationSettingsPatch;
+    } & NotificationSettingsPatch;
+    const patch = (body.settings ?? body) as NotificationSettingsPatch;
+    const settings = await patchNotificationSettingsForUser(userId, patch);
+    res.json({ settings });
   } catch (error) {
     next(error);
   }

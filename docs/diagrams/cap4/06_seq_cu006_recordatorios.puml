@@ -1,5 +1,5 @@
-﻿@startuml
-' CAP4 - 06 Secuencia CU006 Recordatorios/Notificaciones
+@startuml
+' CAP4 - 06 Secuencia CU006 Avisos MVP
 
 skinparam backgroundColor #F8FAFC
 skinparam shadowing false
@@ -17,50 +17,57 @@ skinparam sequence {
 skinparam noteBackgroundColor #FFF9E6
 skinparam noteBorderColor #D7C58A
 
-title CU006 - Configurar recordatorios y gestionar notificaciones
+title CU006 - Configurar avisos (global + por habito) en MVP
 
-participant "UI (Perfil/Notificaciones)" as UI
+participant "UI Perfil (NotificationSettings)" as UI_PROFILE
+participant "UI Habito" as UI_HABIT
 participant "API (Backend)" as API
-database "DB (PostgreSQL)" as DB
+database "DB (usuario.preferencias)" as DB
 
-== Configuracion de recordatorios ==
-UI -> API: GET /api/users/me
+== Carga de configuracion global ==
+UI_PROFILE -> API: GET /api/notifications/settings
 API -> DB: SELECT preferencias FROM usuario
 DB --> API: preferencias actuales
-API --> UI: 200 {user.preferencias.notificaciones}
+API -> API: normalizeNotificationSettings(...)
+API --> UI_PROFILE: 200 {settings}
 
-UI -> API: PUT /api/users/me\n{preferencias.notificaciones = patch}
+== Edicion global desde Perfil ==
+UI_PROFILE -> API: PATCH /api/notifications/settings\n{settings.global = patch}
 API -> DB: SELECT preferencias actuales
 DB --> API: json actual
-API -> API: deepMerge(preferencias, patch)
-API -> DB: UPDATE usuario SET preferencias = jsonb
+API -> API: applyPatch(settings.global)
+API -> DB: UPDATE usuario.preferencias.notificaciones
 DB --> API: preferencias actualizadas
-API --> UI: 200 {user, preferencias}
+API --> UI_PROFILE: 200 {settings}
 
-== Centro de notificaciones ==
-UI -> API: GET /api/notifications/unread-count
-API -> DB: COUNT notificacion WHERE leida=false
-DB --> API: count
-API --> UI: 200 {count}
+== Edicion por habito desde pantalla de habito ==
+UI_HABIT -> API: PATCH /api/notifications/settings\n{settings.habits.<habitKey> = {enabled,time}}
+API -> DB: SELECT preferencias actuales
+DB --> API: json actual
+API -> API: applyPatch(settings.habits.<habitKey>)
+API -> DB: UPDATE usuario.preferencias.notificaciones
+DB --> API: preferencias actualizadas
+API --> UI_HABIT: 200 {settings}
 
-UI -> API: GET /api/notifications?limit&cursor&type&unreadOnly
-API -> DB: SELECT notificacion por usuario
-DB --> API: items[]
-API --> UI: 200 {items, nextCursor}
+== Registro de habito/comida ==
+UI_HABIT -> API: POST /api/habits/entries o /api/nutrition/entries
+alt /api/habits/entries
+  API -> DB: INSERT registro_habito
+else /api/nutrition/entries
+  API -> DB: INSERT registro_comida
+end
+DB --> API: registro creado
+API -> API: markHabitRecordedToday(habitKey)
+API -> DB: UPDATE usuario.preferencias.notificaciones.habits.<habitKey>.lastCompletedDate
+DB --> API: preferencias actualizadas
+API --> UI_HABIT: 201 {entry}
 
-UI -> API: PATCH /api/notifications/:id/read {read:true}
-API -> DB: UPDATE notificacion SET leida=true, f_leida=now()
-DB --> API: item actualizado
-API --> UI: 200 {item}
-/'
-note over API,DB
-La app usa preferencias JSON para recordatorios.
-La tabla recordatorio existe, pero no hay CRUD activo en rutas.
+note right of API
+MVP sin scheduler backend enterprise.
+La coherencia se mantiene en un estado unico:
+usuario.preferencias.notificaciones.
+TODO: integrar scheduling local (Expo) cuando se
+incorpore dependencia de notificaciones locales.
 end note
-
-note right of UI
-NotificationSettingsScreen consume /users/me.
-NotificationsScreen consume /notifications.*
-end note'/
 
 @enduml

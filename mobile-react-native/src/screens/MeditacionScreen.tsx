@@ -10,6 +10,7 @@ import {
   StyleSheet,
   Switch,
   Text,
+  TextInput,
   View,
 } from 'react-native';
 import { ProgressBar } from '../components/ProgressBar';
@@ -23,8 +24,9 @@ import {
   type MeditationSessionType,
 } from '../features/meditation/types';
 import { useMeditationToday } from '../features/meditation/useMeditationToday';
+import { patchNotificationSettings } from '../features/notifications/api';
+import { isValidTimeValue } from '../features/notifications/settings';
 import type { HabitsStackParamList } from '../navigation/types';
-import { apiFetch } from '../services/api';
 import { baseStyles } from '../theme/components';
 import { colors, fontSizes, radius, spacing } from '../theme/tokens';
 
@@ -48,6 +50,7 @@ export default function MeditacionScreen({ navigation, route }: MeditacionScreen
   const [selectedType, setSelectedType] = useState<MeditationSessionType | undefined>(initialType);
   const [showAll, setShowAll] = useState(false);
   const [reminderEnabled, setReminderEnabled] = useState(true);
+  const [reminderTime, setReminderTime] = useState('20:00');
   const [reminderSaving, setReminderSaving] = useState(false);
   const [snackbar, setSnackbar] = useState<SnackbarState>({
     visible: false,
@@ -65,7 +68,8 @@ export default function MeditacionScreen({ navigation, route }: MeditacionScreen
 
   useEffect(() => {
     setReminderEnabled(data.remindersEnabled);
-  }, [data.remindersEnabled]);
+    setReminderTime(data.reminderTime);
+  }, [data.remindersEnabled, data.reminderTime]);
 
   useEffect(() => {
     const unsubscribe = subscribeMeditationFlash((payload) => {
@@ -98,23 +102,43 @@ export default function MeditacionScreen({ navigation, route }: MeditacionScreen
     setReminderEnabled(nextValue);
     setReminderSaving(true);
     try {
-      const response = await apiFetch('/users/me', {
-        method: 'PUT',
-        body: JSON.stringify({
-          preferencias: {
-            notificaciones: {
-              meditacion: nextValue,
-            },
+      await patchNotificationSettings({
+        habits: {
+          meditacion: {
+            enabled: nextValue,
           },
-        }),
+        },
       });
-      if (!response.ok) {
-        throw new Error('No se pudo guardar recordatorio de meditacion.');
-      }
       await reload();
     } catch (err) {
       setReminderEnabled((current) => !current);
       Alert.alert('Error', err instanceof Error ? err.message : 'No se pudo guardar recordatorio.');
+    } finally {
+      setReminderSaving(false);
+    }
+  };
+
+  const saveReminderTime = async () => {
+    const normalized = reminderTime.trim();
+    if (!isValidTimeValue(normalized)) {
+      Alert.alert('Hora invalida', 'Usa formato HH:MM.');
+      setReminderTime(data.reminderTime);
+      return;
+    }
+
+    setReminderSaving(true);
+    try {
+      await patchNotificationSettings({
+        habits: {
+          meditacion: {
+            time: normalized,
+          },
+        },
+      });
+      await reload();
+    } catch (err) {
+      Alert.alert('Error', err instanceof Error ? err.message : 'No se pudo guardar la hora.');
+      setReminderTime(data.reminderTime);
     } finally {
       setReminderSaving(false);
     }
@@ -227,7 +251,9 @@ export default function MeditacionScreen({ navigation, route }: MeditacionScreen
               <Text style={styles.historyType}>{meditationTypeLabel(item.type)}</Text>
               <Text style={styles.historyDuration}>{Math.round(item.durationMin)} min</Text>
               {item.moodBefore || item.moodAfter ? (
-                <Text style={styles.historyMeta}>Mood: {item.moodBefore ?? '-'} -> {item.moodAfter ?? '-'}</Text>
+                <Text style={styles.historyMeta}>
+                  Mood: {item.moodBefore ?? '-'} {'->'} {item.moodAfter ?? '-'}
+                </Text>
               ) : null}
             </View>
             <Text style={styles.historyHour}>{formatHour(item.dateTime)}</Text>
@@ -241,6 +267,16 @@ export default function MeditacionScreen({ navigation, route }: MeditacionScreen
           <View style={styles.reminderText}>
             <Text style={styles.reminderTitle}>Recordatorios</Text>
             <Text style={styles.reminderSubtitle}>Recordatorios de meditacion</Text>
+            <TextInput
+              value={reminderTime}
+              onChangeText={setReminderTime}
+              onEndEditing={() => {
+                void saveReminderTime();
+              }}
+              editable={!reminderSaving}
+              placeholder="HH:MM"
+              style={styles.reminderTimeInput}
+            />
           </View>
           <Switch
             value={reminderEnabled}
@@ -488,5 +524,18 @@ const styles = StyleSheet.create({
   reminderSubtitle: {
     color: colors.textMuted,
     fontSize: fontSizes.base,
+  },
+  reminderTimeInput: {
+    marginTop: spacing.xs,
+    borderWidth: 1,
+    borderColor: colors.surfaceBorder,
+    borderRadius: 10,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    minWidth: 96,
+    maxWidth: 112,
+    textAlign: 'center',
+    color: colors.textPrimary,
+    backgroundColor: colors.surface,
   },
 });

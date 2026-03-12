@@ -10,6 +10,7 @@ import {
   StyleSheet,
   Switch,
   Text,
+  TextInput,
   View,
 } from 'react-native';
 import { ProgressBar } from '../components/ProgressBar';
@@ -18,7 +19,8 @@ import { Screen } from '../components/layout/Screen';
 import { Snackbar } from '../components/ui/Snackbar';
 import { mealTypeLabel, mealTypeOptions } from '../features/nutrition/constants';
 import { emitNutritionFlash, subscribeNutritionFlash } from '../features/nutrition/nutritionFlash';
-import { updateNutritionReminder } from '../features/nutrition/api';
+import { patchNotificationSettings } from '../features/notifications/api';
+import { isValidTimeValue } from '../features/notifications/settings';
 import { useNutritionMutations } from '../features/nutrition/useNutritionMutations';
 import { useNutritionToday } from '../features/nutrition/useNutritionToday';
 import type { MealType } from '../features/nutrition/types';
@@ -52,6 +54,7 @@ export default function NutritionScreen({ navigation, route }: NutritionScreenPr
   const [selectedType, setSelectedType] = useState<MealType>(initialType);
   const [showAllHistory, setShowAllHistory] = useState(false);
   const [reminderEnabled, setReminderEnabled] = useState(false);
+  const [reminderTime, setReminderTime] = useState('13:00');
   const [reminderSaving, setReminderSaving] = useState(false);
   const [snackbar, setSnackbar] = useState<SnackbarState>({
     visible: false,
@@ -71,6 +74,7 @@ export default function NutritionScreen({ navigation, route }: NutritionScreenPr
   useEffect(() => {
     if (data) {
       setReminderEnabled(data.reminderEnabled);
+      setReminderTime(data.reminderTime);
     }
   }, [data]);
 
@@ -108,11 +112,43 @@ export default function NutritionScreen({ navigation, route }: NutritionScreenPr
     setReminderEnabled(value);
     setReminderSaving(true);
     try {
-      await updateNutritionReminder(value);
+      await patchNotificationSettings({
+        habits: {
+          nutricion: {
+            enabled: value,
+          },
+        },
+      });
       await reload();
     } catch (err) {
       setReminderEnabled(!value);
       Alert.alert('Error', err instanceof Error ? err.message : 'No se pudo guardar el recordatorio.');
+    } finally {
+      setReminderSaving(false);
+    }
+  };
+
+  const saveReminderTime = async () => {
+    const normalized = reminderTime.trim();
+    if (!isValidTimeValue(normalized)) {
+      Alert.alert('Hora invalida', 'Usa formato HH:MM.');
+      setReminderTime(data?.reminderTime ?? '13:00');
+      return;
+    }
+
+    setReminderSaving(true);
+    try {
+      await patchNotificationSettings({
+        habits: {
+          nutricion: {
+            time: normalized,
+          },
+        },
+      });
+      await reload();
+    } catch (err) {
+      Alert.alert('Error', err instanceof Error ? err.message : 'No se pudo guardar la hora.');
+      setReminderTime(data?.reminderTime ?? '13:00');
     } finally {
       setReminderSaving(false);
     }
@@ -233,6 +269,16 @@ export default function NutritionScreen({ navigation, route }: NutritionScreenPr
           <View style={styles.reminderTextWrap}>
             <Text style={styles.reminderTitle}>Recordatorios</Text>
             <Text style={styles.reminderSubtitle}>Notificar horas de comida</Text>
+            <TextInput
+              value={reminderTime}
+              onChangeText={setReminderTime}
+              onEndEditing={() => {
+                void saveReminderTime();
+              }}
+              editable={!reminderSaving}
+              placeholder="HH:MM"
+              style={styles.reminderTimeInput}
+            />
           </View>
           <Switch
             value={reminderEnabled}
@@ -495,5 +541,18 @@ const styles = StyleSheet.create({
   reminderSubtitle: {
     color: colors.textMuted,
     fontSize: fontSizes.base,
+  },
+  reminderTimeInput: {
+    marginTop: spacing.xs,
+    borderWidth: 1,
+    borderColor: colors.surfaceBorder,
+    borderRadius: 10,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    minWidth: 96,
+    maxWidth: 112,
+    textAlign: 'center',
+    color: colors.textPrimary,
+    backgroundColor: colors.surface,
   },
 });

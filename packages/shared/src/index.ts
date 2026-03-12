@@ -71,12 +71,35 @@ export type Notification = {
   updatedAt: string;
 };
 
-export type NotificationSettings = {
+export type HabitNotificationKey =
+  | "hidratacion"
+  | "nutricion"
+  | "ejercicio"
+  | "sueno"
+  | "meditacion";
+
+export type NotificationGlobalSettings = {
   enabled: boolean;
-  reminders: boolean;
-  achievements: boolean;
-  challenges: boolean;
-  system: boolean;
+  summaryTime: string;
+  quietHoursEnabled: boolean;
+  quietFrom: string;
+  quietTo: string;
+};
+
+export type NotificationHabitSettings = {
+  enabled: boolean;
+  time: string;
+  lastCompletedDate?: string | null;
+};
+
+export type NotificationSettings = {
+  global: NotificationGlobalSettings;
+  habits: Record<HabitNotificationKey, NotificationHabitSettings>;
+};
+
+export type NotificationSettingsPatch = {
+  global?: Partial<NotificationGlobalSettings>;
+  habits?: Partial<Record<HabitNotificationKey, Partial<NotificationHabitSettings>>>;
 };
 
 export type NotificationListResponse = {

@@ -32,8 +32,9 @@ rectangle "MuchasVidas" {
   usecase "Restablecer contrasena" as UC_RESET
 
   usecase "Gestionar perfil y privacidad" as UC_PROFILE
-  usecase "Configurar notificaciones" as UC_NOTIFICATION_PREFS
-  usecase "Consultar centro de notificaciones" as UC_NOTIFICATION_CENTER
+  usecase "Configurar avisos globales" as UC_NOTIFICATION_PREFS
+  usecase "Configurar aviso por habito" as UC_HABIT_ALERT
+  usecase "Gestionar notificaciones persistidas (API)" as UC_NOTIFICATION_CENTER
 
   usecase "Registrar habito" as UC_HABIT_ENTRY
   usecase "Registrar comida (nutricion)" as UC_NUTRITION_ENTRY
@@ -57,7 +58,7 @@ A_GUEST --> UC_RESET
 
 A_USER --> UC_PROFILE
 A_USER --> UC_NOTIFICATION_PREFS
-A_USER --> UC_NOTIFICATION_CENTER
+A_USER --> UC_HABIT_ALERT
 A_USER --> UC_HABIT_ENTRY
 A_USER --> UC_NUTRITION_ENTRY
 A_USER --> UC_HISTORY
@@ -71,10 +72,10 @@ UC_LOGIN .> UC_AUTH_CORE : <<include>>
 UC_REGISTER .> UC_AUTH_CORE : <<include>>
 UC_PROFILE .> UC_SAVE_PREFS : <<include>>
 UC_NOTIFICATION_PREFS .> UC_SAVE_PREFS : <<include>>
+UC_HABIT_ALERT .> UC_SAVE_PREFS : <<include>>
 UC_PROGRESS .> UC_CLIENT_AGG : <<include>>
 UC_HISTORY .> UC_CLIENT_AGG : <<include>>
 UC_ACHIEVEMENTS .> UC_CLIENT_AGG : <<include>>
-UC_NUTRITION_ENTRY .> UC_HABIT_ENTRY : <<include>>
 UC_DELETE .> UC_PROFILE : <<extend>>
 
 A_DB --> UC_AUTH_CORE
@@ -88,8 +89,24 @@ con datos de /habits/entries + /users/me.
 end note
 
 note right of UC_NOTIFICATION_PREFS
-Se usa PUT /api/users/me con patch de
-preferencias.notificaciones.
+Se usa GET/PATCH /api/notifications/settings
+como contrato unico para avisos MVP.
+end note
+
+note right of UC_HABIT_ALERT
+Cada pantalla de habito edita el mismo estado
+de preferencias.notificaciones.habits.
+end note
+
+note right of UC_NUTRITION_ENTRY
+En implementacion actual, registrar comida NO crea
+automaticamente un registro_habito de nutricion.
+Solo actualiza estado de avisos (lastCompletedDate).
+end note
+
+note right of UC_NOTIFICATION_CENTER
+Entidad notificacion persistida en backend.
+No hay inbox mobile cableado en el MVP actual.
 end note
 
 note bottom

@@ -13,15 +13,16 @@ import {
   type MealType,
   type NutritionEntryRecord,
 } from "../model/nutritionModel";
+import {
+  markHabitRecordedToday,
+  normalizeNotificationSettingsFromPreferences,
+} from "../service/notificationSettingsService";
 
 type NutritionPreferences = {
   goals?: {
     comidas?: {
       value?: number;
     };
-  };
-  nutricion?: {
-    recordatoriosComidas?: boolean;
   };
 };
 
@@ -85,12 +86,6 @@ const readGoalFromPreferences = (preferences: unknown): number => {
   return Math.round(value);
 };
 
-const readReminderFromPreferences = (preferences: unknown): boolean => {
-  if (!isRecord(preferences)) return false;
-  const prefs = preferences as NutritionPreferences;
-  return Boolean(prefs.nutricion?.recordatoriosComidas);
-};
-
 export async function nutritionToday(
   req: AuthRequest,
   res: Response,
@@ -125,6 +120,7 @@ export async function nutritionToday(
     }
 
     const goal = readGoalFromPreferences(user.preferencias);
+    const notificationSettings = normalizeNotificationSettingsFromPreferences(user.preferencias);
     const progress =
       goal > 0 ? Math.max(0, Math.min(summary.comidas_registradas / goal, 1)) : 0;
 
@@ -140,7 +136,9 @@ export async function nutritionToday(
         grasasG: Number(summary.grasas_total_g) || 0,
       },
       historial: entries.map(toNutritionEntry),
-      reminderEnabled: readReminderFromPreferences(user.preferencias),
+      reminderEnabled:
+        notificationSettings.global.enabled && notificationSettings.habits.nutricion.enabled,
+      reminderTime: notificationSettings.habits.nutricion.time,
     });
   } catch (error) {
     next(error);
@@ -236,6 +234,8 @@ export async function createNutritionEntry(
           ? body.f_registro
           : undefined,
     });
+
+    await markHabitRecordedToday(userId, "nutricion", toIsoString(created.f_registro));
 
     res.status(201).json({ entry: toNutritionEntry(created) });
   } catch (error) {

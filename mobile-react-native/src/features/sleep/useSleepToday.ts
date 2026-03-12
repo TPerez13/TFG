@@ -5,6 +5,7 @@ import { fetchHabitEntries } from '../habits/entriesApi';
 import { getHabitByKey } from '../habits/habitRegistry';
 import type { SleepHistoryItem, SleepQuality } from './types';
 import { toSleepHistoryItem } from './utils';
+import { normalizeNotificationSettingsFromPreferences } from '../notifications/settings';
 
 const DEFAULT_GOAL_HOURS = 8;
 
@@ -14,6 +15,7 @@ type SleepTodayData = {
   progress: number;
   history: SleepHistoryItem[];
   remindersEnabled: boolean;
+  reminderTime: string;
   averageQuality?: SleepQuality;
 };
 
@@ -41,18 +43,13 @@ const getGoalHours = (preferences: unknown) => {
   return value;
 };
 
-const getReminderEnabled = (preferences: unknown) => {
-  if (!preferences || typeof preferences !== 'object') return true;
-  const prefs = preferences as Record<string, unknown>;
-  const notifications = prefs.notificaciones as Record<string, unknown> | undefined;
-  if (!notifications) return true;
-  const value =
-    typeof notifications.sueno === 'boolean'
-      ? notifications.sueno
-      : typeof notifications.sleep === 'boolean'
-        ? notifications.sleep
-        : undefined;
-  return typeof value === 'boolean' ? value : true;
+const getReminderConfig = (preferences: unknown) => {
+  const settings = normalizeNotificationSettingsFromPreferences(preferences);
+  const habit = settings.habits.sueno;
+  return {
+    enabled: settings.global.enabled && habit.enabled,
+    time: habit.time,
+  };
 };
 
 const qualityToScore = (quality?: SleepQuality) => {
@@ -74,6 +71,7 @@ const initialData: SleepTodayData = {
   progress: 0,
   history: [],
   remindersEnabled: true,
+  reminderTime: '22:00',
 };
 
 export function useSleepToday(date: Date): UseSleepTodayResult {
@@ -129,12 +127,15 @@ export function useSleepToday(date: Date): UseSleepTodayResult {
         ? scoreToQuality(qualityScores.reduce((sum, item) => sum + item, 0) / qualityScores.length)
         : undefined;
 
+    const reminder = getReminderConfig(user?.preferencias);
+
     return {
       goalHours,
       totalHours,
       progress,
       history,
-      remindersEnabled: getReminderEnabled(user?.preferencias),
+      remindersEnabled: reminder.enabled,
+      reminderTime: reminder.time,
       averageQuality,
     };
   }, [entries, user?.preferencias]);
