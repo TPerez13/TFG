@@ -1,0 +1,261 @@
+@startuml
+' CAP4 - 01 Modelo Conceptual
+
+left to right direction
+
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 13
+skinparam ArrowColor #5B7083
+skinparam ArrowThickness 1
+skinparam packageStyle rectangle
+skinparam packageBorderColor #9FB3C8
+skinparam packageBackgroundColor #EEF4FA
+skinparam classBackgroundColor #FFFFFF
+skinparam classBorderColor #6E879D
+skinparam classAttributeIconSize 0
+skinparam noteBackgroundColor #FFF9E6
+skinparam noteBorderColor #D7C58A
+skinparam linetype ortho
+
+hide methods
+
+title Capitulo 4 - Modelo Conceptual del sistema
+
+package "Cuenta y autenticacion" {
+  together {
+    class Usuario {
+      +id_usuario: entero
+      +correo: texto
+      +nombre: texto
+      +clave_cifrada: texto
+      +preferencias: configuracion
+      +fecha_creacion: fechaHora
+    }
+
+    class RecuperacionClave {
+      +id_recuperacion_clave: entero
+      +id_usuario: entero
+      +codigo_recuperacion: texto
+      +fecha_expiracion: fechaHora
+      +fecha_uso?: fechaHora
+      +fecha_creacion: fechaHora
+    }
+  }
+}
+
+package "Habitos y nutricion" {
+  together {
+    class TipoHabito {
+      +id_tipo_habito: entero
+      +nombre: texto
+      +descripcion: texto
+    }
+
+    class RegistroHabito {
+      +id_registro_habito: entero
+      +id_usuario: entero
+      +id_tipo_habito: entero
+      +fecha_registro: fechaHora
+      +valor: decimal
+      +unidad?: texto
+      +notas?: texto
+      +id_registro_comida?: entero
+    }
+
+    class Alimento {
+      +id_alimento: entero
+      +nombre: texto
+      +kcal: decimal
+      +proteinas_g?: decimal
+      +carbohidratos_g?: decimal
+      +grasas_g?: decimal
+      +fuente?: texto
+    }
+
+    class RegistroComida {
+      +id_registro_comida: entero
+      +id_usuario: entero
+      +fecha_registro: fechaHora
+      +tipo_comida: enumerado
+      +nombre_registrado: texto
+      +kcal: decimal
+      +id_alimento?: entero
+    }
+  }
+}
+
+package "Avisos" {
+  together {
+    class ConfiguracionNotificaciones {
+      +activadas: booleano
+      +hora_resumen: hora
+      +silencio_activo: booleano
+      +hora_inicio_silencio: hora
+      +hora_fin_silencio: hora
+    }
+
+    class ConfiguracionAvisoHabito {
+      +tipo_habito: enumerado
+      +activado: booleano
+      +hora: hora
+      +ultima_fecha_cumplimiento?: fecha
+    }
+
+    class Notificacion {
+      +id_notificacion: entero
+      +id_usuario: entero
+      +titulo: texto
+      +mensaje: texto
+      +tipo: enumerado
+      +leida: booleano
+      +fecha_programada?: fechaHora
+      +fecha_lectura?: fechaHora
+      +estado?: texto
+      +enlace?: texto
+      +fecha_creacion: fechaHora
+      +fecha_actualizacion: fechaHora
+    }
+  }
+}
+
+package "Soporte" {
+  class TicketSoporte {
+    +id_ticket: entero
+    +id_usuario: entero
+    +asunto: texto
+    +descripcion: texto
+    +tipo: enumerado
+    +estado: enumerado
+    +correo_contacto?: texto
+    +fecha_creacion: fechaHora
+  }
+}
+
+package "Gamificacion" {
+  together {
+    class Logro {
+      +id_logro: entero
+      +nombre: texto
+      +descripcion: texto
+      +criterio: texto
+      +puntos: entero
+    }
+
+    class UsuarioLogro {
+      +id_usuario_logro: entero
+      +id_usuario: entero
+      +id_logro: entero
+      +fecha_obtencion: fechaHora
+      +puntos: entero
+    }
+
+    class Reto {
+      +id_reto: entero
+      +nombre: texto
+      +descripcion: texto
+      +objetivo: texto
+      +fecha_inicio: fecha
+      +fecha_fin: fecha
+    }
+
+    class UsuarioReto {
+      +id_usuario_reto: entero
+      +id_usuario: entero
+      +id_reto: entero
+      +estado: enumerado
+      +progreso: decimal
+      +fecha_inscripcion: fechaHora
+    }
+  }
+}
+
+package "Clases derivadas" {
+  together {
+    class ProgresoMensual <<Derivada>> {
+      +mes: texto
+      +dias_consecutivos: entero
+      +media_mensual: entero
+      +habitos_completados: entero
+      +mejor_semana_pct: entero
+    }
+
+    class HistorialDiario <<Derivada>> {
+      +dia: fecha
+      +numero_registros: entero
+      +metas_cumplidas: entero
+      +tipo_habito_filtrado?: entero
+    }
+
+    class EstadoLogro <<Derivada>> {
+      +id: texto
+      +titulo: texto
+      +desbloqueado: booleano
+      +fecha_desbloqueo?: fecha
+      +progreso?: texto
+    }
+  }
+}
+
+' --- Relaciones del dominio ---
+Usuario "1" -- "0..*" RecuperacionClave : GEN
+
+Usuario "1" -- "0..*" RegistroHabito : REG
+TipoHabito "1" -- "0..*" RegistroHabito : CLA
+
+Usuario "1" -- "0..*" RegistroComida : REG
+Alimento "0..1" -- "0..*" RegistroComida : REF
+RegistroComida "1" <-- "0..1" RegistroHabito : ASO
+
+Usuario "1" -- "1" ConfiguracionNotificaciones : CFG
+ConfiguracionNotificaciones "1" -- "1..*" ConfiguracionAvisoHabito : CON
+ConfiguracionAvisoHabito "0..*" -- "1" TipoHabito : APL
+
+Usuario "1" -- "0..*" Notificacion : REC
+Usuario "1" -- "0..*" TicketSoporte : CRE
+
+Usuario "1" -- "0..*" UsuarioLogro : OBT
+Logro "1" -- "0..*" UsuarioLogro : MAT
+Usuario "1" -- "0..*" UsuarioReto : PAR
+Reto "1" -- "0..*" UsuarioReto : MAT
+
+ProgresoMensual ..> RegistroHabito : DER
+ProgresoMensual ..> Usuario : USP
+HistorialDiario ..> RegistroHabito : DER
+EstadoLogro ..> RegistroHabito : EVP
+EstadoLogro ..> Usuario : USP
+
+' --- Guias invisibles para mejorar distribucion ---
+Usuario -[hidden]-> TipoHabito
+TipoHabito -[hidden]-> ConfiguracionNotificaciones
+
+TicketSoporte -[hidden]-> Logro
+Logro -[hidden]-> ProgresoMensual
+
+Usuario -[hidden]down-> TicketSoporte
+TipoHabito -[hidden]down-> Logro
+ConfiguracionNotificaciones -[hidden]down-> ProgresoMensual
+
+legend right
+|= Código |= Significado |
+| GEN | genera |
+| REG | registra |
+| CLA | clasifica |
+| REF | referencia opcional |
+| ASO | puede asociarse |
+| CFG | configura |
+| CON | contiene |
+| APL | se aplica a |
+| REC | recibe |
+| CRE | crea |
+| OBT | obtiene |
+| MAT | se materializa en |
+| PAR | participa |
+| DER | se deriva de |
+| USP | usa preferencias |
+| EVP | evalua progreso |
+endlegend
+
+@enduml

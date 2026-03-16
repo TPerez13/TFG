@@ -1,0 +1,289 @@
+@startuml
+' CAP4 - 01 Modelo Conceptual
+
+left to right direction
+
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 13
+skinparam ArrowColor #5B7083
+skinparam ArrowThickness 1
+skinparam packageStyle rectangle
+skinparam packageBorderColor #9FB3C8
+skinparam packageBackgroundColor #EEF4FA
+skinparam classBackgroundColor #FFFFFF
+skinparam classBorderColor #6E879D
+skinparam classAttributeIconSize 0
+skinparam noteBackgroundColor #FFF9E6
+skinparam noteBorderColor #D7C58A
+skinparam linetype ortho
+
+hide methods
+
+title Capitulo 4 - Modelo Conceptual (estado actual del repositorio)
+
+package "Cuenta y autenticacion" {
+  together {
+    class Usuario {
+      +id_usuario: int
+      +correo: string
+      +nombre: string
+      +hash_clave: string
+      +preferencias: jsonb
+      +f_creacion: timestamptz
+    }
+
+    class PasswordResetToken {
+      +id_password_reset_token: int
+      +id_usuario: int
+      +token_hash: string
+      +expires_at: timestamptz
+      +consumed_at?: timestamptz
+      +created_at: timestamptz
+    }
+  }
+}
+
+package "Habitos y nutricion" {
+  together {
+    class TipoHabito {
+      +id_tipo_habito: int
+      +nombre: string
+      +descripcion: string
+    }
+
+    class RegistroHabito {
+      +id_registro_habito: int
+      +id_usuario: int
+      +id_tipo_habito: int
+      +f_registro: timestamptz
+      +valor: decimal
+      +unidad?: string
+      +notas?: string
+      +id_registro_comida?: int
+    }
+
+    class Alimento {
+      +id_alimento: int
+      +nombre: string
+      +kcal: decimal
+      +proteina_g?: decimal
+      +carbohidratos_g?: decimal
+      +grasas_g?: decimal
+      +fuente?: string
+    }
+
+    class RegistroComida {
+      +id_registro_comida: int
+      +id_usuario: int
+      +f_registro: timestamptz
+      +tipo_comida: enum
+      +nombre_snapshot: string
+      +kcal: decimal
+      +id_alimento?: int
+    }
+  }
+}
+
+package "Avisos" {
+  together {
+    class ConfiguracionNotificaciones {
+      +enabled: boolean
+      +summaryTime: HH:MM
+      +quietHoursEnabled: boolean
+      +quietFrom: HH:MM
+      +quietTo: HH:MM
+      +source: usuario.preferencias.notificaciones.global
+    }
+
+    class ConfiguracionAvisoHabito {
+      +habitKey: enum(hidratacion,nutricion,ejercicio,sueno,meditacion)
+      +enabled: boolean
+      +time: HH:MM
+      +lastCompletedDate?: YYYY-MM-DD
+      +source: usuario.preferencias.notificaciones.habits
+    }
+
+    class Notificacion {
+      +id_notificacion: int
+      +id_usuario: int
+      +titulo: string
+      +cuerpo: string
+      +tipo: enum
+      +leida: boolean
+      +f_programada?: timestamptz
+      +f_leida?: timestamptz
+      +estado?: string
+      +deep_link?: string
+      +created_at: timestamptz
+      +updated_at: timestamptz
+    }
+  }
+}
+
+package "Soporte" {
+  class TicketSoporte {
+    +id_ticket: int
+    +id_usuario: int
+    +asunto: string
+    +descripcion: string
+    +tipo: enum
+    +estado: enum
+    +contacto_email?: string
+    +f_creacion: timestamptz
+  }
+}
+
+package "Gamificacion" {
+  together {
+    class Logro {
+      +id_logro: int
+      +nombre: string
+      +descripcion: string
+      +criterio: jsonb
+      +puntos: int
+    }
+
+    class UsuarioLogro {
+      +id_usuario_logro: int
+      +id_usuario: int
+      +id_logro: int
+      +f_obtencion: timestamptz
+      +puntos: int
+    }
+
+    class Reto {
+      +id_reto: int
+      +nombre: string
+      +descripcion: string
+      +objetivo: jsonb
+      +f_inicio: timestamptz
+      +f_fin: timestamptz
+    }
+
+    class UsuarioReto {
+      +id_usuario_reto: int
+      +id_usuario: int
+      +id_reto: int
+      +estado: string
+      +progreso: decimal
+      +f_inscripcion: timestamptz
+    }
+  }
+}
+
+package "Lecturas calculadas en cliente" {
+  together {
+    class ProgresoMensual <<ReadModel>> {
+      +monthLabel: string
+      +streakDays: int
+      +monthlyAvg: int
+      +habitsCompleted: int
+      +bestWeekPct: int
+    }
+
+    class HistorialDiario <<ReadModel>> {
+      +dayKey: string
+      +entriesCount: int
+      +goalsReached: int
+      +filterTypeId?: int
+    }
+
+    class LogroCliente <<ReadModel>> {
+      +id: string
+      +title: string
+      +unlocked: boolean
+      +unlockedAt?: YYYY-MM-DD
+      +progress?: X/Y
+    }
+  }
+}
+
+' --- Relaciones del dominio ---
+Usuario "1" -- "0..*" PasswordResetToken : genera
+
+Usuario "1" -- "0..*" RegistroHabito : registra
+TipoHabito "1" -- "0..*" RegistroHabito : clasifica
+
+Usuario "1" -- "0..*" RegistroComida : registra
+Alimento "0..1" -- "0..*" RegistroComida : referencia opcional
+RegistroComida "1" <-- "0..1" RegistroHabito : vinculo nutricion
+
+Usuario "1" -- "1" ConfiguracionNotificaciones : define
+ConfiguracionNotificaciones "1" -- "1..*" ConfiguracionAvisoHabito : contiene
+ConfiguracionAvisoHabito "..*" -- "1" TipoHabito : aplica por clave funcional
+
+Usuario "1" -- "0..*" Notificacion : recibe
+Usuario "1" -- "0..*" TicketSoporte : crea
+
+Usuario "1" -- "0..*" UsuarioLogro : desbloquea
+Logro "1" -- "0..*" UsuarioLogro : otorga
+Usuario "1" -- "0..*" UsuarioReto : participa
+Reto "1" -- "0..*" UsuarioReto : define
+
+ProgresoMensual ..> RegistroHabito : agrega
+ProgresoMensual ..> Usuario : usa metas/preferencias
+HistorialDiario ..> RegistroHabito : agrupa por dia
+LogroCliente ..> RegistroHabito : evalua reglas MVP
+LogroCliente ..> Usuario : usa metas activas
+
+' --- Guias invisibles para mejorar distribucion ---
+Usuario -[hidden]-> TipoHabito
+TipoHabito -[hidden]-> ConfiguracionNotificaciones
+
+TicketSoporte -[hidden]-> Logro
+Logro -[hidden]-> ProgresoMensual
+
+Usuario -[hidden]down-> TicketSoporte
+TipoHabito -[hidden]down-> Logro
+ConfiguracionNotificaciones -[hidden]down-> ProgresoMensual
+
+/'
+' --- Notas ---
+note right of RegistroHabito
+RB-001: cada registro pertenece a un usuario autenticado.
+RB-002: id_tipo_habito debe existir en tipo_habito.
+RB-003: consultas principales por rango de fechas.
+RB-003b: registrar comida no crea automaticamente
+un RegistroHabito de nutricion en el flujo actual.
+end note
+
+note right of Notificacion
+RB-004: entidad persistida en backend (/notifications*),
+con operaciones listar/detalle/marcar/borrar/seed.
+En MVP actual no hay inbox mobile cableado.
+end note
+
+note right of ConfiguracionNotificaciones
+Fuente de verdad unica: usuario.preferencias.notificaciones.
+Se edita desde Perfil > Notificaciones y desde cada habito.
+Si enabled=false a nivel global, los avisos por habito no
+se consideran activos en el MVP.
+end note
+
+note right of ConfiguracionAvisoHabito
+Al registrar un habito/comida, se actualiza lastCompletedDate
+para coherencia MVP de cancelacion/reprogramacion logica.
+Sin motor de scheduling backend en esta fase;
+la programacion activa se ejecuta en mobile con
+notificaciones locales.
+end note
+
+note bottom
+Las tablas recordatorio y user_device existen en SQL como
+infraestructura legacy/no operativa en el MVP actual.
+end note
+
+note bottom of Logro
+Las tablas logro/reto existen en BD; hoy no hay rutas REST
+dedicadas para gestion de gamificacion en backend.
+end note
+
+note bottom
+No se detecto modulo social (posts/comentarios/reacciones)
+en la version actual del backend ni de la app mobile.
+end note
+*/
+@enduml

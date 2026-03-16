@@ -1,5 +1,5 @@
 ﻿@startuml
-' CAP4 - 03 Secuencia CU001 Autenticacion
+' CAP4 - 03 Secuencia CU-001 Login / Registro
 
 skinparam backgroundColor #F8FAFC
 skinparam shadowing false
@@ -8,76 +8,49 @@ skinparam defaultFontName Segoe UI
 skinparam defaultFontSize 13
 skinparam ArrowColor #5B7083
 skinparam ArrowThickness 1
-skinparam sequence {
-  LifeLineBorderColor #6E879D
-  LifeLineBackgroundColor #FFFFFF
-  ParticipantBorderColor #6E879D
-  ParticipantBackgroundColor #FFFFFF
-  ActorBorderColor #6E879D
-  ActorBackgroundColor #FFFFFF
-}
+skinparam sequenceLifeLineBorderColor #6E879D
+skinparam sequenceLifeLineBackgroundColor #FFFFFF
+skinparam participantBorderColor #6E879D
+skinparam participantBackgroundColor #FFFFFF
+skinparam actorBorderColor #6E879D
+skinparam actorBackgroundColor #FFFFFF
 skinparam noteBackgroundColor #FFF9E6
 skinparam noteBorderColor #D7C58A
 
-title CU001 - Autenticacion y recuperacion de contrasena
+title Capitulo 4 - Secuencia CU-001 Autenticacion
 
-participant "UI (App)" as UI
-participant "API (Backend)" as API
-database "DB (PostgreSQL)" as DB
+actor Usuario
+participant "App movil" as App
+participant "API" as API
+database "Base de datos" as DB
 
-alt Login
-  UI -> API: POST /api/login\n{correo|username, password}
-  API -> DB: SELECT usuario por correo
-  DB --> API: usuario + hash_clave
-  API -> API: bcrypt.compare(password, hash)
-  alt Credenciales validas
-    API -> API: signAccessToken(id_usuario)
-    API --> UI: 200 {user, token}
-  else Credenciales invalidas
-    API --> UI: 401 {message}
-  end
-
-else Registro
-  UI -> API: POST /api/register\n{correo, nombre, password}
-  API -> DB: SELECT usuario por correo
-  DB --> API: existe?/null
-  alt Correo ya registrado
-    API --> UI: 409 {message}
-  else Nuevo usuario
-    API -> API: bcrypt.hash(password)
-    API -> DB: INSERT usuario con preferencias por defecto
-    DB --> API: usuario creado
-    API -> API: signAccessToken(id_usuario)
-    API --> UI: 201 {user, token}
-  end
-
-else Recuperar contrasena
-  UI -> API: POST /api/password/forgot\n{correo}
-  API -> DB: SELECT usuario por correo
-  alt Usuario existe
-    API -> API: generar codigo temporal + hash
-    API -> DB: INSERT password_reset_token
-    DB --> API: token persistido
-    API --> UI: 200 {message, devResetCode?}
-  else Usuario no existe
-    API --> UI: 200 {message generico}
-  end
-
-else Restablecer contrasena
-  UI -> API: POST /api/password/reset\n{correo, code, newPassword}
-  API -> DB: validar y consumir password_reset_token
-  alt Codigo valido
-    API -> API: bcrypt.hash(newPassword)
-    API -> DB: UPDATE usuario.hash_clave
-    API --> UI: 200 {message}
-  else Codigo invalido/expirado
-    API --> UI: 400 {message}
-  end
+alt Iniciar sesion
+    Usuario -> App : Introduce correo y contrasena
+    App -> API : POST /auth/login
+    API -> DB : Consultar usuario por correo
+    DB --> API : Datos del usuario
+    API -> API : Validar credenciales
+    alt Credenciales validas
+        API --> App : Token + datos basicos
+        App --> Usuario : Acceso concedido
+    else Credenciales invalidas
+        API --> App : Error de autenticacion
+        App --> Usuario : Mostrar error
+    end
+else Registrarse
+    Usuario -> App : Introduce datos de registro
+    App -> API : POST /auth/register
+    API -> DB : Comprobar correo existente
+    DB --> API : Resultado
+    alt Correo no registrado
+        API -> DB : Insertar nuevo usuario
+        DB --> API : Usuario creado
+        API --> App : Confirmacion + token
+        App --> Usuario : Cuenta creada
+    else Correo ya registrado
+        API --> App : Error de registro
+        App --> Usuario : Mostrar error
+    end
 end
-/'
-note right of API
-Basado en authController.ts + authService.ts +
-password_reset_token.
-end note
-'/
+
 @enduml

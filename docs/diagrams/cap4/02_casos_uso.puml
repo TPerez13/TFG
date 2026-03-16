@@ -14,16 +14,13 @@ skinparam packageBackgroundColor #EEF4FA
 skinparam usecaseBackgroundColor #FFFFFF
 skinparam usecaseBorderColor #6E879D
 skinparam actorStyle awesome
-skinparam noteBackgroundColor #FFF9E6
-skinparam noteBorderColor #D7C58A
 
-title Capitulo 4 - Casos de Uso (implementacion actual)
+title Capitulo 4 - Casos de uso principales
 
 left to right direction
 
 actor "Usuario no autenticado" as A_GUEST
 actor "Usuario autenticado" as A_USER
-actor "Sistema de datos (DB)" as A_DB
 
 rectangle "MuchasVidas" {
   usecase "Iniciar sesion" as UC_LOGIN
@@ -32,23 +29,17 @@ rectangle "MuchasVidas" {
   usecase "Restablecer contrasena" as UC_RESET
 
   usecase "Gestionar perfil y privacidad" as UC_PROFILE
-  usecase "Configurar avisos globales" as UC_NOTIFICATION_PREFS
-  usecase "Configurar aviso por habito" as UC_HABIT_ALERT
-  usecase "Gestionar notificaciones persistidas (API)" as UC_NOTIFICATION_CENTER
+  usecase "Configurar avisos" as UC_ALERTS
 
   usecase "Registrar habito" as UC_HABIT_ENTRY
   usecase "Registrar comida (nutricion)" as UC_NUTRITION_ENTRY
-  usecase "Consultar historial y detalle diario" as UC_HISTORY
+  usecase "Consultar historial" as UC_HISTORY
   usecase "Ver progreso mensual" as UC_PROGRESS
-  usecase "Consultar logros" as UC_ACHIEVEMENTS
+  usecase "Compartir progreso mensual" as UC_SHARE_PROGRESS
 
-  usecase "Gestionar soporte (FAQ/tickets)" as UC_SUPPORT
+  usecase "Crear ticket de soporte" as UC_SUPPORT
   usecase "Exportar datos" as UC_EXPORT
   usecase "Eliminar cuenta" as UC_DELETE
-
-  usecase "Validar credenciales y token" as UC_AUTH_CORE
-  usecase "Persistir preferencias" as UC_SAVE_PREFS
-  usecase "Agregar estadisticas en cliente" as UC_CLIENT_AGG
 }
 
 A_GUEST --> UC_LOGIN
@@ -57,61 +48,15 @@ A_GUEST --> UC_FORGOT
 A_GUEST --> UC_RESET
 
 A_USER --> UC_PROFILE
-A_USER --> UC_NOTIFICATION_PREFS
-A_USER --> UC_HABIT_ALERT
+A_USER --> UC_ALERTS
 A_USER --> UC_HABIT_ENTRY
 A_USER --> UC_NUTRITION_ENTRY
 A_USER --> UC_HISTORY
 A_USER --> UC_PROGRESS
-A_USER --> UC_ACHIEVEMENTS
+A_USER --> UC_SHARE_PROGRESS
 A_USER --> UC_SUPPORT
 A_USER --> UC_EXPORT
 A_USER --> UC_DELETE
 
-UC_LOGIN .> UC_AUTH_CORE : <<include>>
-UC_REGISTER .> UC_AUTH_CORE : <<include>>
-UC_PROFILE .> UC_SAVE_PREFS : <<include>>
-UC_NOTIFICATION_PREFS .> UC_SAVE_PREFS : <<include>>
-UC_HABIT_ALERT .> UC_SAVE_PREFS : <<include>>
-UC_PROGRESS .> UC_CLIENT_AGG : <<include>>
-UC_HISTORY .> UC_CLIENT_AGG : <<include>>
-UC_ACHIEVEMENTS .> UC_CLIENT_AGG : <<include>>
-UC_DELETE .> UC_PROFILE : <<extend>>
-
-A_DB --> UC_AUTH_CORE
-A_DB --> UC_SAVE_PREFS
-A_DB --> UC_HABIT_ENTRY
-A_DB --> UC_NOTIFICATION_CENTER
-/'
-note right of UC_CLIENT_AGG
-Progreso, historial y logros se calculan en la app mobile
-con datos de /habits/entries + /users/me.
-end note
-
-note right of UC_NOTIFICATION_PREFS
-Se usa GET/PATCH /api/notifications/settings
-como contrato unico para avisos MVP.
-end note
-
-note right of UC_HABIT_ALERT
-Cada pantalla de habito edita el mismo estado
-de preferencias.notificaciones.habits.
-end note
-
-note right of UC_NUTRITION_ENTRY
-En implementacion actual, registrar comida NO crea
-automaticamente un registro_habito de nutricion.
-Solo actualiza estado de avisos (lastCompletedDate).
-end note
-
-note right of UC_NOTIFICATION_CENTER
-Entidad notificacion persistida en backend.
-No hay inbox mobile cableado en el MVP actual.
-end note
-
-note bottom
-No se detecto modulo de comunidad/social en la version actual.
-Las tablas de gamificacion existen en DB, pero sin API dedicada.
-end note
-'/
+UC_SHARE_PROGRESS .> UC_PROGRESS : <<include>>
 @enduml

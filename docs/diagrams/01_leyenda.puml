@@ -1,0 +1,19 @@
+legend right
+|= Código |= Significado |
+| GEN | genera |
+| REG | registra |
+| CLA | clasifica |
+| REF | referencia opcional |
+| ASO | puede asociarse |
+| CFG | configura |
+| CON | contiene |
+| APL | se aplica a |
+| REC | recibe |
+| CRE | crea |
+| OBT | obtiene |
+| MAT | se materializa en |
+| PAR | participa |
+| DER | se deriva de |
+| USP | usa preferencias |
+| EVP | evalua progreso |
+endlegend

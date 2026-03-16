@@ -1,4 +1,4 @@
-﻿@startwbs
+@startwbs
 ' CAP4 - 07 Mapa de Navegacion
 
 skinparam backgroundColor #F8FAFC
@@ -8,67 +8,37 @@ skinparam defaultFontName Segoe UI
 skinparam defaultFontSize 13
 skinparam ArrowColor #5B7083
 skinparam ArrowThickness 1
-skinparam noteBackgroundColor #FFF9E6
-skinparam noteBorderColor #D7C58A
+title Capitulo 4 - Mapa de navegacion
 
-title Capitulo 4 - Mapa de Navegacion (React Navigation actual)
+* Aplicacion movil
+** Acceso
+*** Inicio de sesion
+*** Registro
+*** Recuperacion de contrasena
 
-* RootNavigator
-** Sin token
-*** AuthStack
-**** Login
-***** Registro (modo signup dentro de LoginScreen)
-***** Recuperar contrasena (ForgotPassword)
-** Con token
-*** AppTabs
-**** InicioTab
-***** HomeStack
-****** PanelDiario
-**** HabitosTab
-***** HabitsStack
-****** Habits
-****** HabitGoals
-****** HabitDetail
-****** Nutrition
-******* NutritionQuickAdd
-******* NutritionManualEntry
-****** Hidratacion
-******* RegistrarAgua
-****** Ejercicio
-******* RegistrarEjercicio
-****** Sueno
-******* RegistrarSueno
-****** Meditacion
-******* RegistrarMeditacion
-**** ProgresoTab
-***** ProgressStack
-****** Progress (MonthlyProgressScreen)
-****** History
-******* DayHistoryDetail
-******* HabitHistory
-******* HabitDetail (stack de progreso)
-**** PerfilTab
-***** ProfileStack
-****** Profile
-****** EditProfile
-****** AchievementsScreen
-****** NotificationSettings
-****** Privacy
-****** HelpSupport
-****** AboutApp
-****** PrivacyPolicy
-****** TermsOfUse
-****** Feed
-/'
-note right
-Fuente: RootNavigator + AppTabs + AuthStack +
-HomeStack + HabitsStack + ProgressStack + ProfileStack.
-end note
+** Navegacion principal
+*** Inicio
+**** Panel diario
 
-note bottom
-El tab bar se oculta en rutas no raiz segun shouldHideTabBar()
-de AppTabs (por ejemplo EditProfile, AchievementsScreen, etc.).
-end note
-'/
+*** Habitos
+**** Vista general de habitos
+**** Nutricion
+**** Hidratacion
+**** Ejercicio
+**** Sueno
+**** Meditacion
 
+*** Progreso
+**** Progreso mensual
+**** Historial
+**** Detalle diario
+**** Detalle por habito
+
+*** Perfil
+**** Perfil de usuario
+**** Logros
+**** Configuracion de notificaciones
+**** Privacidad
+**** Soporte
+**** Informacion legal
 @endwbs

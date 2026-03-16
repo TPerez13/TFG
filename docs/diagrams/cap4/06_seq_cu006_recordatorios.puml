@@ -1,5 +1,5 @@
 @startuml
-' CAP4 - 06 Secuencia CU006 Avisos MVP
+' CAP4 - 06 Secuencia CU-006 Configurar avisos
 
 skinparam backgroundColor #F8FAFC
 skinparam shadowing false
@@ -8,67 +8,48 @@ skinparam defaultFontName Segoe UI
 skinparam defaultFontSize 13
 skinparam ArrowColor #5B7083
 skinparam ArrowThickness 1
-skinparam sequence {
-  LifeLineBorderColor #6E879D
-  LifeLineBackgroundColor #FFFFFF
-  ParticipantBorderColor #6E879D
-  ParticipantBackgroundColor #FFFFFF
-}
+skinparam sequenceLifeLineBorderColor #6E879D
+skinparam sequenceLifeLineBackgroundColor #FFFFFF
+skinparam participantBorderColor #6E879D
+skinparam participantBackgroundColor #FFFFFF
+skinparam actorBorderColor #6E879D
+skinparam actorBackgroundColor #FFFFFF
 skinparam noteBackgroundColor #FFF9E6
 skinparam noteBorderColor #D7C58A
 
-title CU006 - Configurar avisos (global + por habito) en MVP
+title Capitulo 4 - Secuencia CU-006 Configurar avisos y recordatorios
 
-participant "UI Perfil (NotificationSettings)" as UI_PROFILE
-participant "UI Habito" as UI_HABIT
-participant "API (Backend)" as API
-database "DB (usuario.preferencias)" as DB
+actor Usuario
+participant "App movil" as App
+participant "API" as API
+database "Base de datos" as DB
+participant "Sistema de notificaciones locales" as NotifLocal
 
-== Carga de configuracion global ==
-UI_PROFILE -> API: GET /api/notifications/settings
-API -> DB: SELECT preferencias FROM usuario
-DB --> API: preferencias actuales
-API -> API: normalizeNotificationSettings(...)
-API --> UI_PROFILE: 200 {settings}
+Usuario -> App : Modificar configuracion de avisos
+App -> API : PATCH /notifications/settings
+API -> DB : Actualizar preferencias.notificaciones
+DB --> API : Confirmacion
+API --> App : Configuracion actualizada
 
-== Edicion global desde Perfil ==
-UI_PROFILE -> API: PATCH /api/notifications/settings\n{settings.global = patch}
-API -> DB: SELECT preferencias actuales
-DB --> API: json actual
-API -> API: applyPatch(settings.global)
-API -> DB: UPDATE usuario.preferencias.notificaciones
-DB --> API: preferencias actualizadas
-API --> UI_PROFILE: 200 {settings}
+App -> NotifLocal : Cancelar avisos gestionados
+NotifLocal --> App : Cancelacion realizada
 
-== Edicion por habito desde pantalla de habito ==
-UI_HABIT -> API: PATCH /api/notifications/settings\n{settings.habits.<habitKey> = {enabled,time}}
-API -> DB: SELECT preferencias actuales
-DB --> API: json actual
-API -> API: applyPatch(settings.habits.<habitKey>)
-API -> DB: UPDATE usuario.preferencias.notificaciones
-DB --> API: preferencias actualizadas
-API --> UI_HABIT: 200 {settings}
-
-== Registro de habito/comida ==
-UI_HABIT -> API: POST /api/habits/entries o /api/nutrition/entries
-alt /api/habits/entries
-  API -> DB: INSERT registro_habito
-else /api/nutrition/entries
-  API -> DB: INSERT registro_comida
+alt Avisos globales activados
+    App -> App : Evaluar configuracion global y por habito
+    App -> NotifLocal : Programar avisos validos
+    NotifLocal --> App : Avisos programados
+else Avisos globales desactivados
+    App --> Usuario : Avisos desactivados
 end
-DB --> API: registro creado
-API -> API: markHabitRecordedToday(habitKey)
-API -> DB: UPDATE usuario.preferencias.notificaciones.habits.<habitKey>.lastCompletedDate
-DB --> API: preferencias actualizadas
-API --> UI_HABIT: 201 {entry}
 
-note right of API
-MVP sin scheduler backend enterprise.
-La coherencia se mantiene en un estado unico:
-usuario.preferencias.notificaciones.
-Scheduling local en mobile (expo-notifications):
-una notificacion activa por habito y resincronizacion
-al abrir app, editar ajustes o registrar habitos.
+opt Permisos no concedidos
+    App --> Usuario : Informar falta de permisos
+end
+
+note right of NotifLocal
+Se mantiene una notificacion activa por habito.
+La hora se ajusta segun configuracion global,
+avisos por habito y periodo de silencio.
 end note
 
 @enduml

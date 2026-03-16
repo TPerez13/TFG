@@ -1,5 +1,5 @@
 ﻿@startuml
-' CAP4 - 05 Secuencia CU005 Progreso
+' CAP4 - 05 Secuencia CU-005 Consultar progreso
 
 skinparam backgroundColor #F8FAFC
 skinparam shadowing false
@@ -8,50 +8,40 @@ skinparam defaultFontName Segoe UI
 skinparam defaultFontSize 13
 skinparam ArrowColor #5B7083
 skinparam ArrowThickness 1
-skinparam sequence {
-  LifeLineBorderColor #6E879D
-  LifeLineBackgroundColor #FFFFFF
-  ParticipantBorderColor #6E879D
-  ParticipantBackgroundColor #FFFFFF
-}
+skinparam sequenceLifeLineBorderColor #6E879D
+skinparam sequenceLifeLineBackgroundColor #FFFFFF
+skinparam participantBorderColor #6E879D
+skinparam participantBackgroundColor #FFFFFF
+skinparam actorBorderColor #6E879D
+skinparam actorBackgroundColor #FFFFFF
 skinparam noteBackgroundColor #FFF9E6
 skinparam noteBorderColor #D7C58A
 
-title CU005 - Progreso, historial y logros (calculo en cliente)
+title Capitulo 4 - Secuencia CU-005 Consultar progreso
 
-participant "UI (App mobile)" as UI
-participant "API (Backend)" as API
-database "DB (PostgreSQL)" as DB
+actor Usuario
+participant "App movil" as App
+participant "API" as API
+database "Base de datos" as DB
 
-par Carga de registros por rango
-  UI -> API: GET /api/habits/entries?from&to&typeId?
-  API -> DB: SELECT registro_habito por usuario + rango
-  DB --> API: entries[]
-  API --> UI: 200 {entries}
-else Carga de perfil/metas
-  UI -> API: GET /api/users/me
-  API -> DB: SELECT usuario(preferencias)
-  DB --> API: user
-  API --> UI: 200 {user}
-end
+Usuario -> App : Solicitar progreso mensual
+App -> API : GET /habits/entries?from,to
+API -> DB : Consultar registros del usuario
+DB --> API : Registros del periodo
+API --> App : Registros
 
-UI -> UI: Agregar por dia y tipo (historyUtils)
-UI -> UI: Calcular progreso mensual (useMonthlyProgress)
-UI -> UI: Calcular historial/filtros (useHistoryRange/useHabitTrend)
-UI -> UI: Calcular logros y unlockedAt (useAchievements)
-UI --> UI: Render Progress, History y AchievementsScreen
+App -> API : GET /users/me
+API -> DB : Consultar preferencias del usuario
+DB --> API : Preferencias
+API --> App : Preferencias
 
-loop Cambio de mes o filtros
-  UI -> API: GET /api/habits/entries con nuevo rango
-  API -> DB: SELECT por nuevo rango
-  DB --> API: entries[]
-  API --> UI: 200 {entries}
-  UI -> UI: Recalcular vistas
-end
-/'
-note right of UI
-No existe endpoint dedicado de progreso/logros.
-Todo el agregado se realiza en cliente.
-end note'/
+App -> App : Calcular agregados y tendencias
+App -> App : Derivar progreso mensual
+App --> Usuario : Mostrar estadisticas y resumen
+
+note right of App
+El calculo del progreso se realiza en cliente
+a partir de registros y preferencias del usuario.
+end note
 
 @enduml

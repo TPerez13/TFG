@@ -1,5 +1,5 @@
 ﻿@startuml
-' CAP4 - 04 Secuencia CU003 Registro de Habito
+' CAP4 - 04 Secuencia CU-003 Registrar habito
 
 skinparam backgroundColor #F8FAFC
 skinparam shadowing false
@@ -8,61 +8,47 @@ skinparam defaultFontName Segoe UI
 skinparam defaultFontSize 13
 skinparam ArrowColor #5B7083
 skinparam ArrowThickness 1
-skinparam sequence {
-  LifeLineBorderColor #6E879D
-  LifeLineBackgroundColor #FFFFFF
-  ParticipantBorderColor #6E879D
-  ParticipantBackgroundColor #FFFFFF
-}
+skinparam sequenceLifeLineBorderColor #6E879D
+skinparam sequenceLifeLineBackgroundColor #FFFFFF
+skinparam participantBorderColor #6E879D
+skinparam participantBackgroundColor #FFFFFF
+skinparam actorBorderColor #6E879D
+skinparam actorBackgroundColor #FFFFFF
 skinparam noteBackgroundColor #FFF9E6
 skinparam noteBorderColor #D7C58A
 
-title CU003 - Registrar habito y registro nutricional
+title Capitulo 4 - Secuencia CU-003 Registrar habito
 
-participant "UI (App)" as UI
-participant "API Habits/Nutrition" as API
-database "DB (PostgreSQL)" as DB
+actor Usuario
+participant "App movil" as App
+participant "API" as API
+database "Base de datos" as DB
+participant "Sincronizacion avisos" as Avisos
 
-alt Registro de habito general
-  UI -> API: POST /api/habits/entries\n{typeId, value, unit?, dateTime?, notes?}
-  API -> API: validar token + contrato de body
-  alt Datos invalidos
-    API --> UI: 400/401 {message}
-  else Datos validos
-    API -> DB: INSERT registro_habito
-    DB --> API: entry creada
-    API --> UI: 201 {entry}
-  end
+Usuario -> App : Introduce datos del habito
 
-else Registro de comida (nutricion)
-  UI -> API: POST /api/nutrition/entries\n{tipoComida, alimentoId?, nombre?, kcal?, ...}
-  API -> API: validar token + payload
-  API -> DB: BEGIN
-  API -> DB: INSERT registro_comida
-  API -> DB: INSERT registro_habito (id_tipo_habito=2, valor=1, id_registro_comida)
-  API -> DB: COMMIT
-  DB --> API: entry nutricion creada
-  API --> UI: 201 {entry}
-
-  alt Error de validacion o persistencia
-    API -> DB: ROLLBACK
-    API --> UI: 400/500 {message}
-  end
+alt Registrar habito generico
+    App -> API : POST /habits/entries
+    API -> API : Validar datos y token
+    API -> DB : Insertar registro_habito
+    DB --> API : Confirmacion
+    API -> DB : Actualizar preferencias / ultima fecha
+    DB --> API : Confirmacion
+    API --> App : Registro correcto
+else Registrar comida (nutricion)
+    App -> API : POST /nutrition/entries
+    API -> API : Validar datos y token
+    API -> DB : Insertar registro_comida
+    DB --> API : id_registro_comida
+    API -> DB : Insertar registro_habito asociado
+    DB --> API : Confirmacion
+    API -> DB : Actualizar preferencias / ultima fecha
+    DB --> API : Confirmacion
+    API --> App : Registro correcto
 end
 
-opt Eliminar registro
-  UI -> API: DELETE /api/habits/entries/:id
-  API -> DB: DELETE registro_habito por id_usuario + id
-  alt Existe registro
-    API --> UI: 200 {ok, entry}
-  else No encontrado
-    API --> UI: 404 {message}
-  end
-end
-/'
-note over API,DB
-En nutricion la creacion es transaccional para mantener
-consistencia entre registro_comida y registro_habito.
-end note'/
+App -> Avisos : Resincronizar avisos locales
+Avisos --> App : Estado actualizado
+App --> Usuario : Confirmacion de registro
 
 @enduml
