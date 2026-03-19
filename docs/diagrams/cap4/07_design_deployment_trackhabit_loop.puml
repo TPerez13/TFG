@@ -1,0 +1,80 @@
+@startuml
+allowmixing
+
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 13
+skinparam ArrowColor #5B7083
+skinparam ArrowThickness 1
+skinparam packageStyle rectangle
+skinparam componentStyle rectangle
+skinparam linetype ortho
+
+title Capitulo 5 - Despliegue de TrackHabit Loop
+
+left to right direction
+
+
+node "Dispositivo movil\nAndroid / iOS" as device {
+
+  node "App TrackHabit Loop" as mobileApp {
+    component "Frontend + React Native + Expo" as Application
+  }
+  node "SO movil" as mobileOs {
+    component "Notificaciones" as deviceNotifications
+  }
+}
+
+frame "Entorno de desarrollo" as dev {
+  node "Host local" as host {
+    node "Backend API\nNode.js + Express" as backend
+  }
+
+  node "Docker Compose" as compose {
+    database "PostgreSQL" as pg
+    component "pgAdmin" as pgadmin
+  }
+}
+
+mobileApp -[hidden]-> backend
+/'Backend -[hidden]-> pg'/
+pg -[hidden]-> pgadmin
+mobileOs -[hidden]-> compose
+
+mobileApp <--> backend 
+backend <--> pg 
+mobileApp <--> deviceNotifications 
+
+pgadmin --> pg 
+
+
+'/
+
+/'
+-----
+user --> mobileApp : Interaccion diaria
+mobileApp --> backend : HTTPS/REST + JSON\n(prod; HTTP localhost en dev)
+backend --> pg : SQL
+mobileApp --> deviceNotifications : API local de avisos
+deviceNotifications --> user : Recordatorios y alertas
+
+pgadmin --> pg : SQL (administracion)
+------
+note right of backend
+API unica para autenticacion, usuarios,
+habitos, nutricion, notificaciones
+y soporte.
+end note
+'/
+
+/'
+note bottom of dev
+En este repositorio, el entorno local
+ejecuta el backend como proceso Node.js
+y levanta PostgreSQL y pgAdmin con Docker Compose.
+end note
+'/
+
+@enduml

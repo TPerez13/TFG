@@ -1,0 +1,111 @@
+@startuml
+hide circle
+hide methods
+hide stereotypes
+
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam roundcorner 10
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 11
+skinparam ArrowColor #5B7083
+skinparam ArrowThickness 1
+skinparam packageStyle rectangle
+skinparam packageBorderColor #9FB3C8
+skinparam classBackgroundColor #FFFFFF
+skinparam classBorderColor #6E879D
+skinparam noteBackgroundColor #FFF9E6
+skinparam noteBorderColor #D7C58A
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam nodesep 75
+skinparam ranksep 45
+
+title Capitulo 5 - Detalle relacional de habitos y nutricion
+
+left to right direction
+
+package "Referencia basica" #EAF2FF {
+  together {
+    entity "usuario" as usuario {
+      * id_usuario : SERIAL <<PK>>
+      --
+      * correo : TEXT <<UQ>>
+      * nombre : TEXT
+      preferencias : JSONB
+    }
+
+    entity "tipo_habito" as tipo_habito {
+      * id_tipo_habito : SERIAL <<PK>>
+      --
+      * nombre : TEXT <<UQ>>
+      descripcion : TEXT
+    }
+  }
+}
+
+package "Nucleo de seguimiento" #EAF7EA {
+  entity "registro_habito" as registro_habito {
+    * id_registro_habito : SERIAL <<PK>>
+    --
+    * id_usuario : INT <<FK>>
+    * id_tipo_habito : INT <<FK>>
+    id_registro_comida : INT <<FK, NULL>>
+    * f_registro : TIMESTAMPTZ
+    * valor : NUMERIC
+    unidad : TEXT
+    notas : TEXT
+  }
+}
+
+package "Especializacion nutricional" #FFF5E8 {
+  together {
+    entity "registro_comida" as registro_comida {
+      * id_registro_comida : SERIAL <<PK>>
+      --
+      * id_usuario : INT <<FK>>
+      id_alimento : INT <<FK, NULL>>
+      * f_registro : TIMESTAMPTZ
+      * tipo_comida : TEXT <<CHECK>>
+      * nombre_snapshot : TEXT
+      * kcal : NUMERIC
+      proteina_g : NUMERIC
+      carbohidratos_g : NUMERIC
+      grasas_g : NUMERIC
+    }
+
+    entity "alimento" as alimento {
+      * id_alimento : SERIAL <<PK>>
+      --
+      * nombre : TEXT <<UQ>>
+      * kcal : NUMERIC
+      proteina_g : NUMERIC
+      carbohidratos_g : NUMERIC
+      grasas_g : NUMERIC
+      fuente : TEXT
+    }
+  }
+}
+
+usuario ||--o{ registro_habito
+tipo_habito ||--o{ registro_habito
+usuario ||--o{ registro_comida
+alimento ||--o{ registro_comida : catalogo opcional
+registro_comida ||--o{ registro_habito : FK nullable
+
+tipo_habito -[hidden]-> registro_comida
+usuario -[hidden]-> alimento
+
+note right of registro_habito
+id_registro_comida es nullable.
+Solo se utiliza cuando el registro
+de habito representa una comida.
+end note
+
+note bottom of registro_comida
+La relacion con alimento es opcional.
+nombre_snapshot y macros conservan el historico
+aunque el catalogo cambie o no exista FK.
+end note
+
+@enduml

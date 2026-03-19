@@ -1,0 +1,66 @@
+@startuml
+hide circle
+hide methods
+hide stereotypes
+
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam roundcorner 10
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 11
+skinparam ArrowColor #5B7083
+skinparam ArrowThickness 1
+skinparam packageStyle rectangle
+skinparam componentStyle rectangle
+skinparam componentBackgroundColor #FFFFFF
+skinparam componentBorderColor #6E879D
+skinparam linetype ortho
+skinparam nodesep 42
+skinparam ranksep 46
+
+title Diseno resumido de componentes del backend de TrackHabit Loop
+
+top to bottom direction
+
+component "Bootstrap e\ninfraestructura\nserver.ts, app.ts, db.ts" as be_boot
+component "Configuracion\nconfig.ts y entorno" as be_config
+component "API Express" as be_api
+component "Middleware\ntransversal" as be_mw
+component "Modulo Auth / Users" as be_account
+component "Modulo Habits /\nNutrition" as be_tracking
+component "Modulo\nNotifications" as be_notif
+component "Modulo Support /\nAppInfo" as be_support
+component "Shared DTOs\npackages/shared" as be_shared
+database "PostgreSQL" as be_pg
+
+be_boot --> be_config
+be_boot --> be_api
+be_boot --> be_pg
+
+be_api --> be_mw
+be_api --> be_account
+be_api --> be_tracking
+be_api --> be_notif
+be_api --> be_support
+
+be_account ..> be_notif
+be_tracking ..> be_notif
+
+be_account ..> be_shared
+be_notif ..> be_shared
+be_support ..> be_shared
+
+be_account --> be_pg
+be_tracking --> be_pg
+be_notif --> be_pg
+be_support --> be_pg
+
+be_boot -[hidden]down-> be_api
+be_api -[hidden]down-> be_account
+be_account -[hidden]right-> be_tracking
+be_tracking -[hidden]right-> be_notif
+be_notif -[hidden]right-> be_support
+be_support -[hidden]right-> be_shared
+be_shared -[hidden]down-> be_pg
+
+@enduml

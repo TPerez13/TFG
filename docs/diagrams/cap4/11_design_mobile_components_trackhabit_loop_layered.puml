@@ -1,0 +1,99 @@
+@startuml
+hide circle
+hide methods
+hide stereotypes
+
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam roundcorner 10
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 11
+skinparam ArrowColor #5B7083
+skinparam ArrowThickness 1
+skinparam packageStyle rectangle
+skinparam packageBorderColor #9FB3C8
+skinparam componentStyle rectangle
+skinparam componentBackgroundColor #FFFFFF
+skinparam componentBorderColor #6E879D
+skinparam componentFontColor #22313F
+skinparam linetype ortho
+skinparam nodesep 36
+skinparam ranksep 36
+
+title Diseno de componentes de la aplicacion movil de TrackHabit Loop
+
+top to bottom direction
+
+package "Shell y sesion" as mo_shell_box #EAF2FF {
+  component "App.tsx" as mo_app
+  component "AuthProvider" as mo_auth_provider
+  component "NavigationContainer" as mo_nav_container
+
+  mo_app -[hidden]right-> mo_auth_provider
+  mo_auth_provider -[hidden]right-> mo_nav_container
+}
+
+package "Navegacion" as mo_nav_box #EAF7EA {
+  component "RootNavigator" as mo_root
+  component "AuthStack" as mo_auth_stack
+  component "AppTabs" as mo_tabs
+
+  mo_root -[hidden]right-> mo_auth_stack
+  mo_auth_stack -[hidden]right-> mo_tabs
+}
+
+package "Modulos funcionales" as mo_features #F4EEFF {
+  component "Habitos /\nNutricion" as mo_habits
+  component "Progreso /\nLogros" as mo_progress
+  component "Perfil / Ajustes /\nSoporte" as mo_profile
+  component "Notificaciones" as mo_notifications
+
+  mo_habits -[hidden]right-> mo_progress
+  mo_progress -[hidden]right-> mo_profile
+  mo_profile -[hidden]right-> mo_notifications
+}
+
+package "Infraestructura cliente" as mo_infra_box #FFF5E8 {
+  component "api.ts" as mo_api
+  component "AsyncStorage" as mo_storage
+  component "packages/shared" as mo_shared
+  component "Sistema local de\nnotificaciones" as mo_local_notif
+  cloud "Backend API" as mo_backend
+
+  mo_api -[hidden]right-> mo_storage
+  mo_storage -[hidden]right-> mo_shared
+  mo_shared -[hidden]right-> mo_local_notif
+  mo_local_notif -[hidden]right-> mo_backend
+}
+
+mo_app --> mo_auth_provider
+mo_auth_provider --> mo_nav_container
+mo_nav_container --> mo_root
+
+mo_root --> mo_auth_stack
+mo_root --> mo_tabs
+
+mo_tabs --> mo_habits
+mo_tabs --> mo_progress
+mo_tabs --> mo_profile
+mo_tabs --> mo_notifications
+
+mo_auth_provider --> mo_storage
+mo_auth_stack --> mo_api
+
+mo_habits --> mo_api
+mo_progress --> mo_api
+mo_profile --> mo_api
+mo_notifications --> mo_api
+
+mo_notifications --> mo_local_notif
+mo_profile ..> mo_local_notif
+
+mo_api --> mo_backend
+mo_api ..> mo_shared
+
+mo_shell_box -[hidden]down-> mo_nav_box
+mo_nav_box -[hidden]down-> mo_features
+mo_features -[hidden]down-> mo_infra_box
+
+@enduml

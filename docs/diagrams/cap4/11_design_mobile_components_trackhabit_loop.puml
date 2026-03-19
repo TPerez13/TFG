@@ -1,0 +1,139 @@
+@startuml
+hide circle
+hide methods
+hide stereotypes
+
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam roundcorner 10
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 11
+skinparam ArrowColor #5B7083
+skinparam ArrowThickness 1
+skinparam ArrowFontSize 10
+skinparam packageStyle rectangle
+skinparam packageBorderColor #9FB3C8
+skinparam componentStyle rectangle
+skinparam componentBackgroundColor #FFFFFF
+skinparam componentBorderColor #6E879D
+skinparam linetype ortho
+skinparam nodesep 40
+skinparam ranksep 42
+
+title Diseno detallado de componentes de la aplicacion movil de TrackHabit Loop
+
+top to bottom direction
+
+package "Shell y sesion" as mo_shell #EAF2FF {
+  component "App.tsx" as mo_app
+  component "AuthProvider / AuthContext" as mo_auth_ctx
+  component "NavigationContainer" as mo_nav_container
+  component "RootNavigator" as mo_root
+  component "NotificationRuntime" as mo_runtime
+
+  mo_app -[hidden]right-> mo_auth_ctx
+  mo_auth_ctx -[hidden]right-> mo_nav_container
+  mo_nav_container -[hidden]right-> mo_root
+  mo_root -[hidden]right-> mo_runtime
+}
+
+package "Navegacion" as mo_nav #EAF7EA {
+  component "AuthStack\nLogin / ForgotPassword" as mo_nav_auth
+  component "AppTabs" as mo_tabs
+  component "HomeStack\nPanelDiario" as mo_nav_home
+  component "HabitsStack\nhabitos y nutricion" as mo_nav_habits
+  component "ProgressStack\nhistorico y progreso" as mo_nav_progress
+  component "ProfileStack\nperfil, ajustes y soporte" as mo_nav_profile
+
+  mo_nav_auth -[hidden]right-> mo_tabs
+  mo_tabs -[hidden]right-> mo_nav_home
+  mo_nav_home -[hidden]right-> mo_nav_habits
+  mo_nav_habits -[hidden]right-> mo_nav_progress
+  mo_nav_progress -[hidden]right-> mo_nav_profile
+}
+
+package "Modulos funcionales" as mo_modules #F4EEFF {
+  component "Acceso publico\nLoginScreen\nForgotPasswordScreen" as mo_mod_auth
+  component "Inicio y panel diario\nPanelDiarioScreen\nhabitRegistry" as mo_mod_home
+  component "Habitos y registro\nentriesApi\nuseCreateHabitEntry / useDeleteHabitEntry\nhydration / exercise / sleep / meditation" as mo_mod_habits
+  component "Nutricion\nnutrition/api.ts\nuseNutritionToday / useNutritionMutations\nquick add / manual entry" as mo_mod_nutrition
+  component "Progreso y logros\nuseHistoryRange / useHabitTrend\nuseMonthlyProgress / useAchievements" as mo_mod_progress
+  component "Perfil, privacidad y soporte\nuseMe / useUpdatePreferences\nProfile, EditProfile, Privacy,\nSupport, About, Feed, legal" as mo_mod_profile
+  component "Subsistema de notificaciones\nNotificationSettingsScreen\nfeatures/notifications/api.ts\nreminderSettings.ts\nlocalNotifications.ts" as mo_mod_notifications
+
+  mo_mod_auth -[hidden]right-> mo_mod_home
+  mo_mod_home -[hidden]right-> mo_mod_habits
+  mo_mod_habits -[hidden]right-> mo_mod_nutrition
+  mo_mod_nutrition -[hidden]right-> mo_mod_progress
+  mo_mod_progress -[hidden]right-> mo_mod_profile
+  mo_mod_profile -[hidden]right-> mo_mod_notifications
+}
+
+package "Infraestructura y contratos" as mo_infra #FFF5E8 {
+  component "services/api.ts\ncliente REST + Bearer token" as mo_api
+  component "Tipado y contratos\npackages/shared\nsrc/types/models.ts\nnavigation/types.ts" as mo_contracts
+  database "AsyncStorage" as mo_storage
+  node "Sistema de notificaciones\nExpo / dispositivo" as mo_device
+  cloud "Backend API" as mo_backend
+
+  mo_api -[hidden]right-> mo_contracts
+  mo_contracts -[hidden]right-> mo_storage
+  mo_storage -[hidden]right-> mo_device
+  mo_device -[hidden]right-> mo_backend
+}
+
+mo_app --> mo_auth_ctx
+mo_app --> mo_runtime
+mo_app --> mo_nav_container
+
+mo_nav_container --> mo_root
+mo_root --> mo_auth_ctx : estado de sesion
+mo_root --> mo_nav_auth : sin token
+mo_root --> mo_tabs : con token
+
+mo_tabs --> mo_nav_home
+mo_tabs --> mo_nav_habits
+mo_tabs --> mo_nav_progress
+mo_tabs --> mo_nav_profile
+
+mo_nav_auth --> mo_mod_auth
+mo_nav_home --> mo_mod_home
+mo_nav_habits --> mo_mod_habits
+mo_nav_habits --> mo_mod_nutrition
+mo_nav_progress --> mo_mod_progress
+mo_nav_profile --> mo_mod_profile
+mo_nav_profile --> mo_mod_notifications : ajustes / feed
+
+mo_auth_ctx --> mo_storage : restaura / persiste token
+mo_auth_ctx --> mo_api : setAuthToken()
+mo_runtime --> mo_auth_ctx : observa sesion
+mo_runtime --> mo_mod_notifications : sincroniza avisos
+
+mo_mod_auth --> mo_api
+mo_mod_auth --> mo_auth_ctx : signIn / signOut
+
+mo_mod_home --> mo_mod_habits : estado diario
+mo_mod_home --> mo_mod_progress : teaser de logros
+
+mo_mod_habits --> mo_api
+mo_mod_habits --> mo_mod_notifications : resincroniza recordatorios
+
+mo_mod_nutrition --> mo_api
+mo_mod_nutrition --> mo_mod_notifications : resincroniza recordatorios
+
+mo_mod_progress --> mo_api
+mo_mod_profile --> mo_api
+mo_mod_profile --> mo_auth_ctx : signOut
+mo_mod_notifications --> mo_api
+mo_mod_notifications --> mo_storage : ids locales
+mo_mod_notifications --> mo_device : permisos y agenda
+
+mo_api --> mo_backend
+mo_modules ..> mo_contracts : DTOs y tipos
+mo_nav ..> mo_contracts : params de navegacion
+
+mo_shell -[hidden]down-> mo_nav
+mo_nav -[hidden]down-> mo_modules
+mo_modules -[hidden]down-> mo_infra
+
+@enduml

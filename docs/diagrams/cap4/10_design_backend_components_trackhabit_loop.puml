@@ -1,0 +1,180 @@
+@startuml
+hide circle
+hide methods
+hide stereotypes
+
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam roundcorner 10
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 11
+skinparam ArrowColor #5B7083
+skinparam ArrowThickness 1
+skinparam ArrowFontSize 10
+skinparam packageStyle rectangle
+skinparam packageBorderColor #9FB3C8
+skinparam componentStyle rectangle
+skinparam componentBackgroundColor #FFFFFF
+skinparam componentBorderColor #6E879D
+skinparam noteBackgroundColor #FFF9E6
+skinparam noteBorderColor #D7C58A
+skinparam linetype ortho
+skinparam nodesep 40
+skinparam ranksep 42
+
+title Diseno detallado de componentes del backend de TrackHabit Loop
+
+top to bottom direction
+
+package "Bootstrap e infraestructura" as be_boot #EAF2FF {
+  component "server.ts\nbootstrap HTTP" as be_server
+  component "app.ts\nExpress app\nCORS, JSON, health check\nregistro de routers" as be_app
+  component "config.ts\nentorno y secretos" as be_config
+  component "db.ts\npool PostgreSQL\nverifyConnection()" as be_db
+
+  be_server -[hidden]right-> be_app
+  be_app -[hidden]right-> be_config
+  be_config -[hidden]right-> be_db
+}
+
+package "Transversal" as be_cross #FDEEEE {
+  component "requireAuth\nmiddleware/auth.ts" as be_mw_auth
+  component "errorHandler\nmiddleware/errorHandler.ts" as be_mw_error
+  component "jwt.ts" as be_jwt
+  component "AppError\nutils/errors.ts" as be_error
+
+  be_mw_auth -[hidden]right-> be_mw_error
+  be_mw_error -[hidden]right-> be_jwt
+  be_jwt -[hidden]right-> be_error
+}
+
+package "Exposicion API" as be_http #EAF7EA {
+  package "Routers" as be_routes #F7FBFF {
+    component "auth" as be_r_auth
+    component "users" as be_r_users
+    component "habits" as be_r_habits
+    component "nutrition" as be_r_nutrition
+    component "notifications" as be_r_notifications
+    component "support" as be_r_support
+    component "appInfo" as be_r_appinfo
+
+    be_r_auth -[hidden]right-> be_r_users
+    be_r_users -[hidden]right-> be_r_habits
+    be_r_habits -[hidden]right-> be_r_nutrition
+    be_r_nutrition -[hidden]right-> be_r_notifications
+    be_r_notifications -[hidden]right-> be_r_support
+    be_r_support -[hidden]right-> be_r_appinfo
+  }
+
+  package "Controllers" as be_ctrl #F7FBFF {
+    component "authController" as be_c_auth
+    component "userController" as be_c_users
+    component "habitController" as be_c_habits
+    component "nutritionController" as be_c_nutrition
+    component "notificationController" as be_c_notifications
+    component "supportController" as be_c_support
+    component "appController" as be_c_appinfo
+
+    be_c_auth -[hidden]right-> be_c_users
+    be_c_users -[hidden]right-> be_c_habits
+    be_c_habits -[hidden]right-> be_c_nutrition
+    be_c_nutrition -[hidden]right-> be_c_notifications
+    be_c_notifications -[hidden]right-> be_c_support
+    be_c_support -[hidden]right-> be_c_appinfo
+  }
+}
+
+package "Aplicacion y persistencia" as be_domain #F4EEFF {
+  package "Cuenta y acceso" as be_account #FAF7FF {
+    component "authService" as be_s_auth
+    component "userModel\npasswordResetModel" as be_m_account
+  }
+
+  package "Seguimiento" as be_tracking #FAF7FF {
+    component "habitModel" as be_m_habit
+    component "nutritionModel" as be_m_nutrition
+  }
+
+  package "Notificaciones" as be_notifications #FAF7FF {
+    component "notificationSettingsService" as be_s_notif_settings
+    component "notificationService" as be_s_notif
+    component "notificationModel" as be_m_notif
+  }
+
+  package "Soporte" as be_support #FAF7FF {
+    component "supportModel" as be_m_support
+  }
+
+  component "packages/shared\nDTOs y tipos compartidos" as be_shared
+  database "PostgreSQL" as be_pg
+}
+
+be_server --> be_db : verifyConnection()
+be_server --> be_app : listen()
+be_db --> be_config : DATABASE_URL
+be_jwt --> be_config : SESSION_SECRET
+
+be_app --> be_routes : /api
+be_app ..> be_mw_error : middleware final
+
+be_r_auth --> be_c_auth
+be_r_users --> be_c_users
+be_r_habits --> be_c_habits
+be_r_nutrition --> be_c_nutrition
+be_r_notifications --> be_c_notifications
+be_r_support --> be_c_support
+be_r_appinfo --> be_c_appinfo
+
+be_r_users ..> be_mw_auth
+be_r_habits ..> be_mw_auth
+be_r_nutrition ..> be_mw_auth
+be_r_notifications ..> be_mw_auth
+be_r_support ..> be_mw_auth
+
+be_mw_auth --> be_jwt
+be_mw_error --> be_error
+
+be_c_auth --> be_s_auth
+be_s_auth --> be_m_account
+be_s_auth --> be_jwt : firma JWT
+be_s_auth --> be_s_notif_settings : preferencias por defecto
+
+be_c_users --> be_m_account
+be_c_users --> be_m_habit : exportacion
+be_c_users --> be_m_notif : exportacion
+
+be_c_habits --> be_m_habit
+be_c_habits --> be_s_notif_settings : marca completado
+
+be_c_nutrition --> be_m_nutrition
+be_c_nutrition --> be_m_account : lee preferencias
+be_c_nutrition --> be_s_notif_settings : marca completado
+
+be_c_notifications --> be_m_notif
+be_c_notifications --> be_s_notif_settings
+be_c_notifications --> be_s_notif : seed demo
+
+be_c_support --> be_m_support
+be_s_notif --> be_m_notif
+be_s_notif_settings --> be_m_account
+
+be_m_account --> be_db
+be_m_habit --> be_db
+be_m_nutrition --> be_db
+be_m_notif --> be_db
+be_m_support --> be_db
+be_db --> be_pg
+
+be_ctrl ..> be_shared : DTOs y contratos
+be_s_auth ..> be_shared : auth contracts
+
+be_boot -[hidden]down-> be_cross
+be_cross -[hidden]down-> be_http
+be_http -[hidden]down-> be_domain
+be_account -[hidden]right-> be_tracking
+be_tracking -[hidden]right-> be_notifications
+be_notifications -[hidden]right-> be_support
+be_support -[hidden]right-> be_shared
+be_shared -[hidden]right-> be_pg
+
+@enduml

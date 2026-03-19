@@ -1,0 +1,66 @@
+@startuml
+allowmixing
+
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 13
+skinparam ArrowColor #5B7083
+skinparam ArrowThickness 1
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+skinparam rectangle<<Mobile>> {
+  BackgroundColor #E8F3FF
+  BorderColor #5B7083
+}
+
+skinparam rectangle<<Backend>> {
+  BackgroundColor #EAF7EA
+  BorderColor #5B7083
+}
+
+skinparam rectangle<<External>> {
+  BackgroundColor #FFF6E5
+  BorderColor #5B7083
+}
+
+skinparam rectangle<<Shared>> {
+  BackgroundColor #F3ECFF
+  BorderColor #5B7083
+}
+
+title Capitulo 5 - C4 de contenedores de TrackHabit Loop
+
+top to bottom direction
+
+actor "Usuario" as user
+
+rectangle "Aplicacion movil\n<<Container>>\nExpo + React Native\n\nResponsabilidades:\n- UI y navegacion\n- Gestion de sesion JWT\n- Consulta y registro de habitos\n- Sincronizacion de ajustes\n- Programacion local de recordatorios" as mobile <<Mobile>>
+
+rectangle "Backend API\n<<Container>>\nNode.js + Express\n\nResponsabilidades:\n- Exponer endpoints REST\n- Validar autenticacion\n- Orquestar usuarios, habitos,\n  nutricion, notificaciones y soporte\n- Persistir preferencias y actividad" as api <<Backend>>
+
+database "Base de datos\n<<Container>>\nPostgreSQL\n\nResponsabilidades:\n- Persistencia relacional\n- Preferencias JSONB\n- Historial de habitos,\n  comidas, tickets y notificaciones" as db
+
+rectangle "Sistema de notificaciones\ndel dispositivo\n<<External System>>\n\nResponsabilidades:\n- Gestion de permisos\n- Agenda avisos locales\n- Entrega alertas al usuario" as deviceSystem <<External>>
+
+rectangle "Shared DTOs\n<<Shared Library>>\npackages/shared\n\nResponsabilidades:\n- Tipos TS compartidos\n- Request / response DTOs\n- Contratos base entre cliente y API" as shared <<Shared>>
+
+user --> mobile 
+mobile --> api 
+api --> db 
+mobile --> deviceSystem 
+deviceSystem --> user
+mobile ..> shared 
+api ..> shared 
+
+/'
+note bottom of mobile
+La configuracion de avisos
+se guarda en backend y la app agenda
+las notificaciones en el propio dispositivo.
+end note
+'/
+
+@enduml

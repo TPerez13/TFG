@@ -1,0 +1,68 @@
+@startuml
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam roundcorner 10
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 12
+skinparam ArrowColor #5B7083
+skinparam ArrowThickness 1
+skinparam sequenceLifeLineBorderColor #6E879D
+skinparam sequenceLifeLineBackgroundColor #FFFFFF
+skinparam participantBorderColor #6E879D
+skinparam participantBackgroundColor #FFFFFF
+skinparam actorBorderColor #6E879D
+skinparam actorBackgroundColor #FFFFFF
+skinparam noteBackgroundColor #FFF9E6
+skinparam noteBorderColor #D7C58A
+
+title Secuencia de registro de habito de TrackHabit Loop
+
+autonumber
+
+actor Usuario as user
+participant "Pantalla de registro\n(agua, ejercicio,\nsueno o meditacion)" as screen
+participant "useCreateHabitEntry" as hook
+participant "entriesApi.ts / api.ts" as clientapi
+participant "Habits module\nrouter + controller" as habitsmod
+participant "habitModel" as habitmodel
+participant "notificationSettingsService" as notifsvc
+participant "userModel" as usermodel
+database "PostgreSQL" as pg
+participant "Notifications API\nsyncLocalNotificationsWithServer" as notifapi
+participant "localNotifications" as localnotif
+
+user -> screen : Introduce datos y confirma
+screen -> hook : createEntry(payload)
+hook -> clientapi : POST /habits/entries
+clientapi -> habitsmod : Solicitud autenticada
+habitsmod -> habitmodel : createHabitEntryForUser(...)
+habitmodel -> pg : INSERT registro_habito
+pg --> habitmodel : Entry creada
+habitmodel --> habitsmod : HabitEntryRecord
+habitsmod -> notifsvc : resolveHabitKeyFromTypeId()\nmarkHabitRecordedToday()
+notifsvc -> usermodel : updatePreferences(lastCompletedDate)
+usermodel -> pg : UPDATE usuario.preferencias
+pg --> usermodel : Confirmacion
+usermodel --> notifsvc : Preferencias actualizadas
+notifsvc --> habitsmod : OK
+habitsmod --> clientapi : 201 + entry
+clientapi --> hook : Entry creada
+
+opt Resincronizacion local posterior
+  hook -> notifapi : syncLocalNotificationsWithServer()
+  notifapi -> clientapi : GET /notifications/settings
+  clientapi -> notifsvc : getNotificationSettingsForUser()
+  notifsvc -> usermodel : findById(userId)
+  usermodel -> pg : SELECT usuario.preferencias
+  pg --> usermodel : Preferencias
+  usermodel --> notifsvc : Usuario
+  notifsvc --> clientapi : NotificationSettings
+  clientapi --> notifapi : Settings remotos
+  notifapi -> localnotif : syncAllHabitNotifications(settings)
+  localnotif --> notifapi : Agenda local actualizada
+end
+
+hook --> screen : Resultado correcto
+screen --> user : Confirmacion y refresco de vista
+
+@enduml

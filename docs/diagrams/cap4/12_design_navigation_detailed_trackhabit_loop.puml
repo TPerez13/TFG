@@ -1,0 +1,115 @@
+@startuml
+allowmixing
+
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 12
+skinparam ArrowColor #5B7083
+skinparam ArrowThickness 1
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+title Capitulo 4 - Navegacion detallada de TrackHabit Loop
+
+left to right direction
+
+rectangle "Login" as login
+rectangle "Recuperar acceso" as forgotPassword
+
+frame "App autenticada" as authed {
+  rectangle "Tabs\nInicio | Habitos | Progreso | Perfil" as tabs
+
+  frame "Inicio" {
+    rectangle "Panel diario" as panelDiario
+  }
+
+  frame "Habitos" {
+    rectangle "Catalogo de habitos" as habitsHome
+    rectangle "Detalle / metas del habito" as habitDetail
+    rectangle "Nutricion" as nutrition
+    rectangle "Registro rapido / manual\nde comida" as nutritionEntry
+    rectangle "Hidratacion" as hydration
+    rectangle "Registrar agua" as hydrationEntry
+    rectangle "Ejercicio" as exercise
+    rectangle "Registrar ejercicio" as exerciseEntry
+    rectangle "Sueno" as sleep
+    rectangle "Registrar sueno" as sleepEntry
+    rectangle "Meditacion" as meditation
+    rectangle "Registrar meditacion" as meditationEntry
+  }
+
+  frame "Progreso" {
+    rectangle "Resumen mensual" as monthlyProgress
+    rectangle "Historico" as history
+    rectangle "Detalle por dia" as dayHistoryDetail
+    rectangle "Historico por habito" as habitHistory
+    rectangle "Detalle de habito" as progressHabitDetail
+  }
+
+  frame "Perfil" {
+    rectangle "Perfil" as profile
+    rectangle "Editar perfil" as editProfile
+    rectangle "Logros" as achievements
+    rectangle "Ajustes de notificaciones" as notificationSettings
+    rectangle "Privacidad" as privacy
+    rectangle "Soporte" as support
+    rectangle "About" as about
+    rectangle "Politica de privacidad" as privacyPolicy
+    rectangle "Terminos de uso" as termsOfUse
+  }
+}
+
+login --> forgotPassword : recuperar acceso
+forgotPassword --> login : volver / completar reseteo
+login --> tabs : autenticacion correcta
+
+tabs --> panelDiario : tab Inicio
+tabs --> habitsHome : tab Habitos
+tabs --> monthlyProgress : tab Progreso
+tabs --> profile : tab Perfil
+
+panelDiario --> hydration : acceso rapido
+panelDiario --> nutrition : acceso rapido
+panelDiario --> exercise : acceso rapido
+panelDiario --> sleep : acceso rapido
+panelDiario --> meditation : acceso rapido
+panelDiario --> achievements : teaser de logros
+
+habitsHome --> habitDetail : ver detalle general
+habitsHome --> nutrition : abrir nutricion
+habitsHome --> hydration : abrir hidratacion
+habitsHome --> exercise : abrir ejercicio
+habitsHome --> sleep : abrir sueno
+habitsHome --> meditation : abrir meditacion
+
+nutrition --> nutritionEntry : registrar comida
+hydration --> hydrationEntry : registrar
+exercise --> exerciseEntry : registrar
+sleep --> sleepEntry : registrar
+meditation --> meditationEntry : registrar
+
+monthlyProgress --> history : ver historico
+history --> dayHistoryDetail : explorar un dia
+history --> habitHistory : filtrar por habito
+habitHistory --> progressHabitDetail : ver detalle
+
+profile --> editProfile
+profile --> achievements
+profile --> notificationSettings
+profile --> privacy
+profile --> support
+profile --> about
+profile --> privacyPolicy
+profile --> termsOfUse
+about --> privacyPolicy : acceso legal
+about --> termsOfUse : acceso legal
+
+note bottom of authed
+Diagrama orientado a memoria del producto:
+resume flujos de pantalla y no detalles
+de implementacion interna de React Navigation.
+end note
+
+@enduml

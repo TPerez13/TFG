@@ -1,0 +1,216 @@
+@startuml
+hide circle
+hide methods
+hide stereotypes
+
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam roundcorner 10
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 11
+skinparam ArrowColor #5B7083
+skinparam ArrowThickness 1
+skinparam packageStyle rectangle
+skinparam packageBorderColor #9FB3C8
+skinparam classBackgroundColor #FFFFFF
+skinparam classBorderColor #6E879D
+skinparam noteBackgroundColor #FFF9E6
+skinparam noteBorderColor #D7C58A
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam nodesep 70
+skinparam ranksep 45
+
+title Capitulo 5 - Modelo relacional fisico de TrackHabit Loop
+
+top to bottom direction
+
+package "Cuenta y acceso" #EAF2FF {
+  together {
+    entity "usuario" as usuario {
+      * id_usuario : SERIAL <<PK>>
+      --
+      * correo : TEXT <<UQ>>
+      * nombre : TEXT
+      * hash_clave : TEXT
+      preferencias : JSONB
+      * f_creacion : TIMESTAMPTZ
+    }
+
+    entity "password_reset_token" as password_reset_token {
+      * id_password_reset : SERIAL <<PK>>
+      --
+      * id_usuario : INT <<FK>>
+      * token_hash : TEXT <<UQ>>
+      * expires_at : TIMESTAMPTZ
+      used_at : TIMESTAMPTZ
+      * created_at : TIMESTAMPTZ
+    }
+  }
+}
+
+package "Habitos y nutricion" #EAF7EA {
+  together {
+    entity "tipo_habito" as tipo_habito {
+      * id_tipo_habito : SERIAL <<PK>>
+      --
+      * nombre : TEXT <<UQ>>
+      descripcion : TEXT
+    }
+
+    entity "registro_habito" as registro_habito {
+      * id_registro_habito : SERIAL <<PK>>
+      --
+      * id_usuario : INT <<FK>>
+      * id_tipo_habito : INT <<FK>>
+      id_registro_comida : INT <<FK, NULL>>
+      * f_registro : TIMESTAMPTZ
+      * valor : NUMERIC
+      unidad : TEXT
+      notas : TEXT
+    }
+
+    entity "alimento" as alimento {
+      * id_alimento : SERIAL <<PK>>
+      --
+      * nombre : TEXT <<UQ>>
+      * kcal : NUMERIC
+      proteina_g : NUMERIC
+      carbohidratos_g : NUMERIC
+      grasas_g : NUMERIC
+      fuente : TEXT
+    }
+
+    entity "registro_comida" as registro_comida {
+      * id_registro_comida : SERIAL <<PK>>
+      --
+      * id_usuario : INT <<FK>>
+      id_alimento : INT <<FK, NULL>>
+      * f_registro : TIMESTAMPTZ
+      * tipo_comida : TEXT <<CHECK>>
+      * nombre_snapshot : TEXT
+      * kcal : NUMERIC
+      proteina_g : NUMERIC
+      carbohidratos_g : NUMERIC
+      grasas_g : NUMERIC
+    }
+  }
+}
+
+package "Gamificacion" #F4EEFF {
+  together {
+    entity "logro" as logro {
+      * id_logro : SERIAL <<PK>>
+      --
+      * nombre : TEXT <<UQ>>
+      descripcion : TEXT
+      criterio : JSONB
+      * puntos : INT
+    }
+
+    entity "usuario_logro" as usuario_logro {
+      * id_usuario_logro : SERIAL <<PK>>
+      --
+      * id_usuario : INT <<FK>>
+      * id_logro : INT <<FK>>
+      * f_obtencion : TIMESTAMPTZ
+      * puntos : INT
+      uq_usuario_logro : UNIQUE (id_usuario, id_logro)
+    }
+
+    entity "reto" as reto {
+      * id_reto : SERIAL <<PK>>
+      --
+      * nombre : TEXT <<UQ>>
+      descripcion : TEXT
+      objetivo : JSONB
+      f_inicio : TIMESTAMPTZ
+      f_fin : TIMESTAMPTZ
+    }
+
+    entity "usuario_reto" as usuario_reto {
+      * id_usuario_reto : SERIAL <<PK>>
+      --
+      * id_usuario : INT <<FK>>
+      * id_reto : INT <<FK>>
+      * estado : TEXT <<CHECK>>
+      * progreso : NUMERIC
+      * f_inscripcion : TIMESTAMPTZ
+      uq_usuario_reto : UNIQUE (id_usuario, id_reto)
+    }
+  }
+}
+
+package "Avisos, dispositivos y soporte" #FFF5E8 {
+  together {
+    entity "recordatorio" as recordatorio {
+      * id_recordatorio : SERIAL <<PK>>
+      --
+      * id_usuario : INT <<FK>>
+      * id_tipo_habito : INT <<FK>>
+      * programacion : JSONB
+      * activo : BOOLEAN
+      * f_creacion : TIMESTAMPTZ
+    }
+
+    entity "notificacion" as notificacion {
+      * id_notificacion : SERIAL <<PK>>
+      --
+      * id_usuario : INT <<FK>>
+      * titulo : TEXT
+      * cuerpo : TEXT
+      * tipo : TEXT <<CHECK>>
+      * estado : TEXT <<CHECK>>
+      * leida : BOOLEAN
+      f_programada : TIMESTAMPTZ
+      f_envio : TIMESTAMPTZ
+      metadatos : JSONB
+      deep_link : TEXT
+      * created_at : TIMESTAMPTZ
+    }
+
+    entity "user_device" as user_device {
+      * id_user_device : SERIAL <<PK>>
+      --
+      * id_usuario : INT <<FK>>
+      * platform : TEXT
+      * expo_push_token : TEXT
+      * created_at : TIMESTAMPTZ
+      last_seen_at : TIMESTAMPTZ
+    }
+
+    entity "ticket_soporte" as ticket_soporte {
+      * id_ticket : SERIAL <<PK>>
+      --
+      * id_usuario : INT <<FK>>
+      * asunto : TEXT
+      * descripcion : TEXT
+      * tipo : TEXT <<CHECK>>
+      * estado : TEXT <<CHECK>>
+      contacto_email : TEXT
+      * f_creacion : TIMESTAMPTZ
+    }
+  }
+}
+
+usuario ||--o{ password_reset_token
+usuario ||--o{ registro_habito
+tipo_habito ||--o{ registro_habito
+usuario ||--o{ registro_comida
+alimento ||--o{ registro_comida
+registro_comida ||--o{ registro_habito
+usuario ||--o{ usuario_logro
+logro ||--o{ usuario_logro
+usuario ||--o{ usuario_reto
+reto ||--o{ usuario_reto
+usuario ||--o{ recordatorio
+tipo_habito ||--o{ recordatorio
+usuario ||--o{ notificacion
+usuario ||--o{ user_device
+usuario ||--o{ ticket_soporte
+
+password_reset_token -[hidden]-> tipo_habito
+registro_comida -[hidden]-> logro
+usuario_reto -[hidden]-> recordatorio
+
+@enduml

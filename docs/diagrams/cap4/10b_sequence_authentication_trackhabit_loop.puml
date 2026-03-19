@@ -1,0 +1,62 @@
+@startuml
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam roundcorner 10
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 12
+skinparam ArrowColor #5B7083
+skinparam ArrowThickness 1
+skinparam sequenceLifeLineBorderColor #6E879D
+skinparam sequenceLifeLineBackgroundColor #FFFFFF
+skinparam participantBorderColor #6E879D
+skinparam participantBackgroundColor #FFFFFF
+skinparam actorBorderColor #6E879D
+skinparam actorBackgroundColor #FFFFFF
+skinparam noteBackgroundColor #FFF9E6
+skinparam noteBorderColor #D7C58A
+
+title Secuencia de autenticacion de TrackHabit Loop
+
+autonumber
+
+actor Usuario as user
+participant "LoginScreen" as login
+participant "api.ts" as api
+participant "Auth module\nrouter + controller" as authmod
+participant "authService" as authsvc
+participant "userModel" as usermodel
+database "PostgreSQL" as pg
+participant "jwt.ts" as jwt
+participant "AuthProvider" as authctx
+database "AsyncStorage" as storage
+participant "RootNavigator" as root
+
+user -> login : Introduce correo y contrasena
+login -> api : POST /login
+api -> authmod : Solicitud HTTP
+authmod -> authsvc : login(payload)
+authsvc -> usermodel : findByEmail(correo)
+usermodel -> pg : SELECT usuario
+pg --> usermodel : UserRecord
+usermodel --> authsvc : Datos del usuario
+authsvc -> authsvc : Verifica hash de contrasena
+
+alt Credenciales validas
+  authsvc -> jwt : signAccessToken(userId)
+  jwt --> authsvc : JWT
+  authsvc --> authmod : LoginResponse
+  authmod --> api : 200 + user + token
+  api --> login : Respuesta correcta
+  login -> authctx : signIn(token)
+  authctx -> api : setAuthToken(token)
+  authctx -> storage : Persistir token
+  authctx --> root : Actualizar sesion
+  root --> user : Activa flujo autenticado
+else Credenciales invalidas
+  authsvc --> authmod : AppError(401)
+  authmod --> api : Error de autenticacion
+  api --> login : 401 Unauthorized
+  login --> user : Mostrar mensaje de error
+end
+
+@enduml

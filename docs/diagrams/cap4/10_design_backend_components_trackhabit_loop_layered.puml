@@ -1,0 +1,106 @@
+@startuml
+hide circle
+hide methods
+hide stereotypes
+
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam roundcorner 10
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 11
+skinparam ArrowColor #5B7083
+skinparam ArrowThickness 1
+skinparam packageStyle rectangle
+skinparam packageBorderColor #9FB3C8
+skinparam componentStyle rectangle
+skinparam componentBackgroundColor #FFFFFF
+skinparam componentBorderColor #6E879D
+skinparam componentFontColor #22313F
+skinparam linetype ortho
+skinparam nodesep 36
+skinparam ranksep 36
+
+title Diseno de componentes del backend de TrackHabit Loop
+
+top to bottom direction
+
+package "Entrada HTTP" as be_http #EAF2FF {
+  component "server.ts\nbootstrap" as be_server
+  component "app.ts\nExpress app" as be_app
+  component "Routers\npor dominio" as be_routes
+  component "Controladores" as be_ctrl
+
+  be_server -[hidden]right-> be_app
+  be_app -[hidden]right-> be_routes
+  be_routes -[hidden]right-> be_ctrl
+}
+
+package "Servicios de aplicacion" as be_services #EAF7EA {
+  component "Auth / Users" as be_s_account
+  component "Habits /\nNutrition" as be_s_tracking
+  component "Notifications" as be_s_notifications
+  component "Support /\nAppInfo" as be_s_support
+
+  be_s_account -[hidden]right-> be_s_tracking
+  be_s_tracking -[hidden]right-> be_s_notifications
+  be_s_notifications -[hidden]right-> be_s_support
+}
+
+package "Transversal" as be_cross #FDEEEE {
+  component "requireAuth" as be_auth
+  component "errorHandler" as be_errors
+  component "jwt" as be_jwt
+
+  be_auth -[hidden]right-> be_errors
+  be_errors -[hidden]right-> be_jwt
+}
+
+package "Persistencia e infraestructura" as be_infra #F4EEFF {
+  component "Modelos de acceso\na datos" as be_models
+  component "db.ts\npool PostgreSQL" as be_db
+  component "config.ts\nentorno" as be_config
+  database "PostgreSQL" as be_pg
+
+  be_models -[hidden]right-> be_db
+  be_db -[hidden]right-> be_config
+  be_config -[hidden]right-> be_pg
+}
+
+package "Contratos compartidos" as be_shared_box #FFF5E8 {
+  component "packages/shared\nDTOs y tipos" as be_shared
+}
+
+be_server --> be_app
+be_app --> be_routes
+be_routes --> be_ctrl
+be_routes ..> be_auth
+be_app ..> be_errors
+
+be_ctrl --> be_s_account
+be_ctrl --> be_s_tracking
+be_ctrl --> be_s_notifications
+be_ctrl --> be_s_support
+
+be_auth --> be_jwt
+be_jwt --> be_config
+
+be_s_account --> be_models
+be_s_tracking --> be_models
+be_s_notifications --> be_models
+be_s_support --> be_models
+
+be_s_account ..> be_shared
+be_s_notifications ..> be_shared
+be_s_support ..> be_shared
+
+be_models --> be_db
+be_db --> be_pg
+be_db ..> be_config
+
+be_http -[hidden]down-> be_services
+be_services -[hidden]down-> be_infra
+be_cross -[hidden]down-> be_shared_box
+be_services -[hidden]right-> be_cross
+be_infra -[hidden]right-> be_shared_box
+
+@enduml

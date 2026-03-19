@@ -68,7 +68,8 @@ end
 note right of API
 Rutas activas: /notifications, /notifications/unread-count,
 /:id, /:id/read, /read-all, /seed.
-En MVP actual no hay inbox mobile cableado.
+Disponible para clientes integrados
+que consuman el modulo de notificaciones.
 end note
 '/
 

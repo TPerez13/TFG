@@ -19,7 +19,7 @@ skinparam noteBorderColor #D7C58A
 
 hide methods
 
-title Capitulo 4 - Modelo Conceptual (estado actual del repositorio)
+title Capitulo 4 - Modelo Conceptual de TrackHabit Loop
 
 package "Cuenta y autenticacion" {
   class Usuario {
@@ -80,7 +80,7 @@ package "Habitos y nutricion" {
   }
 }
 
-package "Avisos (MVP)" {
+package "Avisos" {
   class ConfiguracionNotificaciones {
     +enabled: boolean
     +summaryTime: HH:MM
@@ -152,7 +152,7 @@ package "Lecturas calculadas en cliente (mobile)" {
   }
 }
 
-package "Gamificacion (persistencia existente sin API dedicada)" {
+package "Gamificacion" {
   class Logro {
     +id_logro: int
     +nombre: string
@@ -212,7 +212,7 @@ Reto "1" -- "0..*" UsuarioReto : define
 ProgresoMensual ..> RegistroHabito : agrega
 ProgresoMensual ..> Usuario : usa metas/preferencias
 HistorialDiario ..> RegistroHabito : agrupa por dia
-LogroCliente ..> RegistroHabito : evalua reglas MVP
+LogroCliente ..> RegistroHabito : evalua reglas
 LogroCliente ..> Usuario : usa metas activas
 /'
 note right of RegistroHabito
@@ -226,37 +226,36 @@ end note
 note right of Notificacion
 RB-004: entidad persistida en backend (/notifications*),
 con operaciones listar/detalle/marcar/borrar/seed.
-En MVP actual no hay inbox mobile cableado.
+Disponible para consulta y seguimiento de avisos.
 end note
 
 note right of ConfiguracionNotificaciones
 Fuente de verdad unica: usuario.preferencias.notificaciones.
 Se edita desde Perfil > Notificaciones y desde cada habito.
 Si enabled=false a nivel global, los avisos por habito no
-se consideran activos en el MVP.
+se consideran activos.
 end note
 
 note right of ConfiguracionAvisoHabito
 Al registrar un habito/comida, se actualiza lastCompletedDate
-para coherencia MVP de cancelacion/reprogramacion logica.
-Sin motor de scheduling backend en esta fase;
-la programacion activa se ejecuta en mobile con
+para coherencia de cancelacion/reprogramacion logica.
+La programacion activa se ejecuta en mobile con
 notificaciones locales.
 end note
 
 note bottom
-Las tablas recordatorio y user_device existen en SQL como
-infraestructura legacy/no operativa en el MVP actual.
+Las tablas recordatorio y user_device
+forman parte del modelo de avisos y dispositivos.
 end note
 
 note bottom of "Gamificacion (persistencia existente sin API dedicada)"
-Las tablas logro/reto existen en BD; hoy no hay rutas REST
-dedicadas para gestion de gamificacion en backend.
+Las tablas logro/reto almacenan
+reglas, puntos y participaciones.
 end note
 
 note bottom
-No se detecto modulo social (posts/comentarios/reacciones)
-en la version actual del backend ni de la app mobile.
+El alcance del modelo se centra en salud,
+progreso, avisos, gamificacion y soporte.
 end note
 '/
 @enduml
