@@ -22,7 +22,7 @@ skinparam linetype ortho
 skinparam nodesep 40
 skinparam ranksep 42
 
-title Diseno detallado de componentes del backend de TrackHabit Loop
+title Diseño detallado de componentes del backend de TrackHabit Loop
 
 top to bottom direction
 
@@ -48,7 +48,7 @@ package "Transversal" as be_cross #FDEEEE {
   be_jwt -[hidden]right-> be_error
 }
 
-package "Exposicion API" as be_http #EAF7EA {
+package "Exposición API" as be_http #EAF7EA {
   package "Routers" as be_routes #F7FBFF {
     component "auth" as be_r_auth
     component "users" as be_r_users
@@ -84,7 +84,7 @@ package "Exposicion API" as be_http #EAF7EA {
   }
 }
 
-package "Aplicacion y persistencia" as be_domain #F4EEFF {
+package "Aplicación y persistencia" as be_domain #F4EEFF {
   package "Cuenta y acceso" as be_account #FAF7FF {
     component "authService" as be_s_auth
     component "userModel\npasswordResetModel" as be_m_account
@@ -140,8 +140,8 @@ be_s_auth --> be_jwt : firma JWT
 be_s_auth --> be_s_notif_settings : preferencias por defecto
 
 be_c_users --> be_m_account
-be_c_users --> be_m_habit : exportacion
-be_c_users --> be_m_notif : exportacion
+be_c_users --> be_m_habit : exportación
+be_c_users --> be_m_notif : exportación
 
 be_c_habits --> be_m_habit
 be_c_habits --> be_s_notif_settings : marca completado

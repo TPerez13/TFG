@@ -101,7 +101,7 @@ export default function RegistrarAguaScreen({ navigation, route }: RegistrarAgua
             style={({ pressed }) => [styles.switchButton, pressed ? styles.buttonPressed : null]}
           >
             <Text style={styles.switchButtonText}>
-              {mode === 'quick' ? 'Cambiar a Manual' : 'Cambiar a Registro Rapido'}
+              {mode === 'quick' ? 'Cambiar a Manual' : 'Cambiar a Registro Rápido'}
             </Text>
           </Pressable>
         </View>
@@ -144,7 +144,7 @@ export default function RegistrarAguaScreen({ navigation, route }: RegistrarAgua
                   onPress={() => onQuickAdd(ml)}
                   style={({ pressed }) => [styles.recentAddButton, pressed ? styles.buttonPressed : null]}
                 >
-                  <Text style={styles.recentAddText}>Anadir +</Text>
+                  <Text style={styles.recentAddText}>Añadir +</Text>
                 </Pressable>
               </View>
             ))}
@@ -195,7 +195,7 @@ export default function RegistrarAguaScreen({ navigation, route }: RegistrarAgua
             <TextInput
               value={notes}
               onChangeText={setNotes}
-              placeholder="Ej. despues de entrenar"
+              placeholder="Ej. después de entrenar"
               placeholderTextColor={colors.placeholder}
               style={styles.input}
             />
@@ -206,7 +206,7 @@ export default function RegistrarAguaScreen({ navigation, route }: RegistrarAgua
               style={styles.saveButton}
             />
             <Button
-              title="Cambiar a Registro Rapido"
+              title="Cambiar a Registro Rápido"
               variant="outline"
               onPress={() => setMode('quick')}
               style={styles.switchModeButton}

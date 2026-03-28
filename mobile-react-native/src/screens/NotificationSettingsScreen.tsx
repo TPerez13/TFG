@@ -43,7 +43,7 @@ export default function NotificationSettingsScreen({ navigation }: SettingsProps
           return;
         }
         if (active) {
-          setFeedback('No se pudo cargar la configuracion.');
+          setFeedback('No se pudo cargar la configuración.');
         }
       } finally {
         if (active) setLoading(false);
@@ -115,18 +115,18 @@ export default function NotificationSettingsScreen({ navigation }: SettingsProps
           <ActivityIndicator size="large" color={colors.textAccent} style={styles.loading} />
         ) : (
           <>
-            <Text style={styles.sectionTitle}>Configuracion global</Text>
+            <Text style={styles.sectionTitle}>Configuración global</Text>
             <View style={styles.card}>
               <SettingRow
                 label="Activar notificaciones"
-                description="Si esta desactivado, los avisos de habitos no se consideran activos."
+                description="Si está desactivado, los avisos de hábitos no se consideran activos."
                 value={globalEnabled}
                 disabled={saving}
                 onValueChange={setGlobalEnabled}
               />
 
               <Text style={styles.helperBlock}>
-                La hora concreta de cada aviso se configura dentro de cada habito. Aqui solo activas o
+                La hora concreta de cada aviso se configura dentro de cada hábito. Aquí solo activas o
                 desactivas el sistema de avisos y las horas de silencio.
               </Text>
             </View>
@@ -148,7 +148,7 @@ export default function NotificationSettingsScreen({ navigation }: SettingsProps
                   onConfirm={setQuietFrom}
                   disabled={saving}
                   modalTitle="Inicio de horas silenciosas"
-                  modalDescription="Durante este tramo se intenta aplazar los avisos de habitos."
+                  modalDescription="Durante este tramo se intenta aplazar los avisos de hábitos."
                 />
               </View>
               <View style={styles.row}>
@@ -165,9 +165,9 @@ export default function NotificationSettingsScreen({ navigation }: SettingsProps
             </View>
 
             <View style={styles.noteCard}>
-              <Text style={styles.noteTitle}>Configuracion por habito</Text>
+              <Text style={styles.noteTitle}>Configuración por hábito</Text>
               <Text style={styles.noteText}>
-                Se edita en cada pantalla de habito (toggle + hora), pero se guarda en la misma fuente de
+                Se edita en cada pantalla de hábito (toggle + hora), pero se guarda en la misma fuente de
                 verdad que esta pantalla.
               </Text>
             </View>

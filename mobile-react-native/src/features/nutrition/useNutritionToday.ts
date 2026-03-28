@@ -21,7 +21,7 @@ export function useNutritionToday(date: string, tipoComida?: MealType): UseNutri
       const payload = await fetchNutritionToday(date, tipoComida);
       setData(payload);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'No se pudo cargar la alimentacion.');
+      setError(err instanceof Error ? err.message : 'No se pudo cargar la alimentación.');
     } finally {
       setLoading(false);
     }

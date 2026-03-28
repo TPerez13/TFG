@@ -18,18 +18,18 @@ skinparam linetype ortho
 skinparam nodesep 42
 skinparam ranksep 46
 
-title Diseno resumido de componentes del backend de TrackHabit Loop
+title Diseño resumido de componentes del backend de TrackHabit Loop
 
 top to bottom direction
 
 component "Bootstrap e\ninfraestructura\nserver.ts, app.ts, db.ts" as be_boot
-component "Configuracion\nconfig.ts y entorno" as be_config
+component "Configuración\nconfig.ts y entorno" as be_config
 component "API Express" as be_api
 component "Middleware\ntransversal" as be_mw
-component "Modulo Auth / Users" as be_account
-component "Modulo Habits /\nNutrition" as be_tracking
-component "Modulo\nNotifications" as be_notif
-component "Modulo Support /\nAppInfo" as be_support
+component "Módulo Auth / Users" as be_account
+component "Módulo Habits /\nNutrition" as be_tracking
+component "Módulo\nNotifications" as be_notif
+component "Módulo Support /\nAppInfo" as be_support
 component "Shared DTOs\npackages/shared" as be_shared
 database "PostgreSQL" as be_pg
 

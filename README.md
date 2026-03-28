@@ -10,7 +10,7 @@ Repositorio unificado de TrackHabit Loop con:
 - Node.js 18+ y npm >= 8.
 - Docker Desktop (con Docker Compose).
 
-## Instalacion
+## Instalación
 
 ```bash
 npm install
@@ -26,7 +26,7 @@ El backend usa `DATABASE_URL` para conectarse a PostgreSQL.
 
 ## Base de datos
 
-Comandos utiles:
+Comandos útiles:
 
 ```bash
 npm run db:up
@@ -36,12 +36,12 @@ npm run db:logs
 ```
 
 - `db:up`: levanta PostgreSQL y pgAdmin en Docker.
-- `db:reset`: borra volumenes y vuelve a ejecutar `database/init.sql` (util para volver a sembrar datos).
+- `db:reset`: borra volúmenes y vuelve a ejecutar `database/init.sql` (útil para volver a sembrar datos).
 
-Configuracion actual de PostgreSQL en `docker-compose.yml`:
+Configuración actual de PostgreSQL en `docker-compose.yml`:
 - Host: `localhost`
 - Puerto: `5432`
-- Database: `muchasvidas` (identificador tecnico legacy)
+- Database: `muchasvidas` (identificador técnico legacy)
 - Usuario: `postgres`
 - Password: `postgres`
 
@@ -49,26 +49,26 @@ Configuracion actual de PostgreSQL en `docker-compose.yml`:
 
 Acceso a pgAdmin:
 - URL: `http://localhost:5050`
-- Email: `admin@muchasvidas.com` (identificador tecnico legacy)
+- Email: `admin@muchasvidas.com` (identificador técnico legacy)
 - Password: `admin`
 
 Dentro de pgAdmin, crea un servidor nuevo con:
-- Name: `muchasvidas-db` (identificador tecnico legacy; puedes usar cualquier etiqueta visual)
+- Name: `muchasvidas-db` (identificador técnico legacy; puedes usar cualquier etiqueta visual)
 - Host name/address: `db`
 - Port: `5432`
-- Maintenance database: `muchasvidas` (identificador tecnico legacy)
+- Maintenance database: `muchasvidas` (identificador técnico legacy)
 - Username: `postgres`
 - Password: `postgres`
 
 Si no ves tablas en `public`:
 1. Ejecuta `npm run db:up`.
-2. Si la BD ya existia y no cargo el script inicial, ejecuta `npm run db:reset`.
+2. Si la BD ya existía y no cargó el script inicial, ejecuta `npm run db:reset`.
 3. En pgAdmin refresca `Schemas > public > Tables`.
 
 Si `http://localhost:5050` no abre (connection refused):
-1. Verifica que Docker Desktop este iniciado.
+1. Verifica que Docker Desktop esté iniciado.
 2. Ejecuta `npm run db:up`.
-3. Revisa `npm run db:logs` y confirma que `muchasvidas-pgadmin` (nombre tecnico legacy) este en estado `running`.
+3. Revisa `npm run db:logs` y confirma que `muchasvidas-pgadmin` (nombre técnico legacy) esté en estado `running`.
 
 ## API
 
@@ -87,7 +87,7 @@ Endpoints de referencia:
 - `DELETE /api/notifications/:id`
 - `PUT /api/notifications/settings`
 
-## App movil
+## App móvil
 
 ```bash
 npm run start:mobile

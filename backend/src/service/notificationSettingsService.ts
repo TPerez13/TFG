@@ -93,7 +93,7 @@ const readLegacyHabitEnabled = (
 const assertTime = (value: unknown, fieldName: string): string => {
   const parsed = parseTime(value);
   if (!parsed) {
-    throw new AppError(`${fieldName} invalido. Usa formato HH:MM.`, 400);
+    throw new AppError(`${fieldName} inválido. Usa formato HH:MM.`, 400);
   }
   return parsed;
 };
@@ -202,7 +202,7 @@ function applyPatch(
 
   if (patch.global !== undefined) {
     if (!isRecord(patch.global)) {
-      throw new AppError("global invalido.", 400);
+      throw new AppError("global inválido.", 400);
     }
     const globalPatch = patch.global as Record<string, unknown>;
     const enabled = parseBool(globalPatch.enabled);
@@ -230,7 +230,7 @@ function applyPatch(
 
   if (patch.habits !== undefined) {
     if (!isRecord(patch.habits)) {
-      throw new AppError("habits invalido.", 400);
+      throw new AppError("habits inválido.", 400);
     }
 
     for (const [habitKey, partial] of Object.entries(patch.habits)) {
@@ -238,7 +238,7 @@ function applyPatch(
         throw new AppError(`Habit no soportado: ${habitKey}.`, 400);
       }
       if (!isRecord(partial)) {
-        throw new AppError(`Configuracion invalida para ${habitKey}.`, 400);
+        throw new AppError(`Configuración inválida para ${habitKey}.`, 400);
       }
 
       const typedKey = habitKey as HabitNotificationKey;
@@ -255,7 +255,7 @@ function applyPatch(
         const parsedDate = parseDateKey(partial.lastCompletedDate);
         if (parsedDate === undefined) {
           throw new AppError(
-            `habits.${typedKey}.lastCompletedDate invalido. Usa YYYY-MM-DD o null.`,
+            `habits.${typedKey}.lastCompletedDate inválido. Usa YYYY-MM-DD o null.`,
             400
           );
         }

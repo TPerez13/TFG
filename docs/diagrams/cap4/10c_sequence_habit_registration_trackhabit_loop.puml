@@ -15,12 +15,12 @@ skinparam actorBackgroundColor #FFFFFF
 skinparam noteBackgroundColor #FFF9E6
 skinparam noteBorderColor #D7C58A
 
-title Secuencia de registro de habito de TrackHabit Loop
+title Secuencia de registro de hábito de TrackHabit Loop
 
 autonumber
 
 actor Usuario as user
-participant "Pantalla de registro\n(agua, ejercicio,\nsueno o meditacion)" as screen
+participant "Pantalla de registro\n(agua, ejercicio,\nsueño o meditación)" as screen
 participant "useCreateHabitEntry" as hook
 participant "entriesApi.ts / api.ts" as clientapi
 participant "Habits module\nrouter + controller" as habitsmod
@@ -42,13 +42,13 @@ habitmodel --> habitsmod : HabitEntryRecord
 habitsmod -> notifsvc : resolveHabitKeyFromTypeId()\nmarkHabitRecordedToday()
 notifsvc -> usermodel : updatePreferences(lastCompletedDate)
 usermodel -> pg : UPDATE usuario.preferencias
-pg --> usermodel : Confirmacion
+pg --> usermodel : Confirmación
 usermodel --> notifsvc : Preferencias actualizadas
 notifsvc --> habitsmod : OK
 habitsmod --> clientapi : 201 + entry
 clientapi --> hook : Entry creada
 
-opt Resincronizacion local posterior
+opt Resincronización local posterior
   hook -> notifapi : syncLocalNotificationsWithServer()
   notifapi -> clientapi : GET /notifications/settings
   clientapi -> notifsvc : getNotificationSettingsForUser()
@@ -63,6 +63,6 @@ opt Resincronizacion local posterior
 end
 
 hook --> screen : Resultado correcto
-screen --> user : Confirmacion y refresco de vista
+screen --> user : Confirmación y refresco de vista
 
 @enduml

@@ -79,7 +79,7 @@ const ErrorState = ({ onBack, onRetry }: { onBack: () => void; onRetry: () => vo
     <Header onBack={onBack} />
     <View style={styles.errorCard}>
       <Text style={styles.errorTitle}>No se pudieron cargar los logros</Text>
-      <Text style={styles.errorSubtitle}>Comprueba tu conexion y vuelve a intentarlo.</Text>
+      <Text style={styles.errorSubtitle}>Comprueba tu conexión y vuelve a intentarlo.</Text>
       <Pressable onPress={onRetry} style={({ pressed }) => [styles.retryButton, pressed ? styles.pressed : null]}>
         <Text style={styles.retryText}>Reintentar</Text>
       </Pressable>
@@ -146,9 +146,9 @@ export default function AchievementsScreen({ navigation }: AchievementsScreenPro
 
             {isEmpty ? (
               <View style={styles.emptyCard}>
-                <Text style={styles.emptyTitle}>Aun no hay registros</Text>
+                <Text style={styles.emptyTitle}>Aún no hay registros</Text>
                 <Text style={styles.emptySubtitle}>
-                  Empieza creando un habito y registrando tu primer dia.
+                  Empieza creando un hábito y registrando tu primer día.
                 </Text>
               </View>
             ) : null}

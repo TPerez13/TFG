@@ -28,8 +28,8 @@ const FILTER_OPTIONS: Array<{ key: HistoryFilterKey; label: string }> = [
   { key: 'todos', label: 'Todos' },
   { key: 'agua', label: 'Agua' },
   { key: 'ejercicio', label: 'Ejercicio' },
-  { key: 'sueno', label: 'Sueno' },
-  { key: 'meditacion', label: 'Meditacion' },
+  { key: 'sueno', label: 'Sueño' },
+  { key: 'meditacion', label: 'Meditación' },
   { key: 'comidas', label: 'Comidas' },
 ];
 
@@ -151,7 +151,7 @@ export default function HistoryScreen({ navigation }: HistoryScreenProps) {
           </View>
         ) : null}
 
-        {isEmpty ? <Text style={styles.emptyText}>Aun no hay registros.</Text> : null}
+        {isEmpty ? <Text style={styles.emptyText}>Aún no hay registros.</Text> : null}
 
         {!loading && !error
           ? dayListDesc.map((date) => {

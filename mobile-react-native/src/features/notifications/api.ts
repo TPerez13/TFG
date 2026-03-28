@@ -25,14 +25,14 @@ export async function fetchNotificationSettings(): Promise<NotificationSettings>
   const response = await apiFetch('/notifications/settings');
   if (!response.ok) {
     throw new NotificationSettingsApiError(
-      await parseErrorMessage(response, 'No se pudo cargar la configuracion de avisos.'),
+      await parseErrorMessage(response, 'No se pudo cargar la configuración de avisos.'),
       response.status
     );
   }
 
   const payload = (await response.json()) as { settings?: NotificationSettings };
   if (!payload.settings) {
-    throw new NotificationSettingsApiError('Respuesta invalida al cargar configuracion de avisos.');
+    throw new NotificationSettingsApiError('Respuesta inválida al cargar configuración de avisos.');
   }
   return payload.settings;
 }
@@ -47,14 +47,14 @@ export async function patchNotificationSettings(
   });
   if (!response.ok) {
     throw new NotificationSettingsApiError(
-      await parseErrorMessage(response, 'No se pudo guardar la configuracion de avisos.'),
+      await parseErrorMessage(response, 'No se pudo guardar la configuración de avisos.'),
       response.status
     );
   }
 
   const payload = (await response.json()) as { settings?: NotificationSettings };
   if (!payload.settings) {
-    throw new NotificationSettingsApiError('Respuesta invalida al guardar configuracion de avisos.');
+    throw new NotificationSettingsApiError('Respuesta inválida al guardar configuración de avisos.');
   }
   if (options.syncLocal !== false) {
     try {
@@ -62,7 +62,7 @@ export async function patchNotificationSettings(
         requestPermissions: options.requestPermissions ?? false,
       });
     } catch {
-      // La configuracion remota ya se guardo; no bloqueamos por error local.
+      // La configuración remota ya se guardó; no bloqueamos por error local.
     }
   }
   return payload.settings;
@@ -77,7 +77,7 @@ export async function syncLocalNotificationsWithServer(
       requestPermissions: options.requestPermissions ?? false,
     });
   } catch {
-    // noop: el caller decide si quiere actuar ante fallos de sincronizacion local.
+    // noop: el caller decide si quiere actuar ante fallos de sincronización local.
   }
   return settings;
 }

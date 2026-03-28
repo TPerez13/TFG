@@ -12,7 +12,7 @@ type AboutScreenProps = NativeStackScreenProps<ProfileStackParamList, 'AboutApp'
 type ScreenState = 'loading' | 'success' | 'error';
 
 const CHANGELOG_ITEMS = [
-  'v0.2 - Panel diario y registro de habitos.',
+  'v0.2 - Panel diario y registro de hábitos.',
   'v0.3 - Sistema de notificaciones y centro de avisos.',
   'v0.4 - Ajustes de privacidad, ayuda y soporte.',
 ];
@@ -64,8 +64,8 @@ export default function AboutScreen({ navigation }: AboutScreenProps) {
 
         {screenState === 'error' ? (
           <View style={styles.statusCard}>
-            <Text style={styles.statusTitle}>No se pudo cargar informacion remota</Text>
-            <Text style={styles.statusSubtitle}>Se mostraran datos locales de la app.</Text>
+            <Text style={styles.statusTitle}>No se pudo cargar información remota</Text>
+            <Text style={styles.statusSubtitle}>Se mostrarán datos locales de la app.</Text>
             <Pressable style={styles.retryButton} onPress={() => void handleLoadAppInfo()}>
               <Text style={styles.retryText}>Reintentar</Text>
             </Pressable>
@@ -74,7 +74,7 @@ export default function AboutScreen({ navigation }: AboutScreenProps) {
 
         {screenState !== 'loading' ? (
           <>
-            <Text style={styles.sectionTitle}>Version</Text>
+            <Text style={styles.sectionTitle}>Versión</Text>
             <View style={styles.card}>
               <InfoRow label="VersionName" value={localVersion} />
               <InfoRow label="BuildNumber" value={localBuild} />
@@ -82,19 +82,19 @@ export default function AboutScreen({ navigation }: AboutScreenProps) {
               <InfoRow label="Commit" value={appInfo?.commitHash ?? 'N/D'} />
             </View>
 
-            <Text style={styles.sectionTitle}>Descripcion</Text>
+            <Text style={styles.sectionTitle}>Descripción</Text>
             <View style={styles.card}>
               <Text style={styles.paragraph}>
-                TrackHabit Loop ayuda a registrar habitos diarios, visualizar progreso y mantener rutinas saludables
+                TrackHabit Loop ayuda a registrar hábitos diarios, visualizar progreso y mantener rutinas saludables
                 con feedback simple.
               </Text>
             </View>
 
-            <Text style={styles.sectionTitle}>Creditos</Text>
+            <Text style={styles.sectionTitle}>Créditos</Text>
             <View style={styles.card}>
               <InfoRow label="Autor" value="Pablo" />
               <InfoRow label="Tutor" value="(placeholder) Tutor TFG" />
-              <InfoRow label="Tecnologias" value="React Native, TypeScript, Node/Express, PostgreSQL" />
+              <InfoRow label="Tecnologías" value="React Native, TypeScript, Node/Express, PostgreSQL" />
             </View>
 
             <Text style={styles.sectionTitle}>Changelog</Text>
@@ -113,7 +113,7 @@ export default function AboutScreen({ navigation }: AboutScreenProps) {
                 onPress={() =>
                   Alert.alert(
                     'Licencias',
-                    'Placeholder MVP: aqui se mostrara una lista de licencias de dependencias.'
+                    'Placeholder MVP: aquí se mostrará una lista de licencias de dependencias.'
                   )
                 }
               >

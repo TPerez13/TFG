@@ -10,8 +10,8 @@ type InsightCardProps = {
 };
 
 export function InsightCard({ bestWeekIndex, bestWeekPct, isEmpty }: InsightCardProps) {
-  const title = isEmpty ? 'Aun no hay semanas registradas' : `¡Tu mejor semana fue la S${bestWeekIndex + 1}!`;
-  const subtitle = isEmpty ? 'Comienza a registrar habitos para ver tus tendencias.' : `Mantuviste un ${bestWeekPct}% de cumplimiento.`;
+  const title = isEmpty ? 'Aún no hay semanas registradas' : `¡Tu mejor semana fue la S${bestWeekIndex + 1}!`;
+  const subtitle = isEmpty ? 'Comienza a registrar hábitos para ver tus tendencias.' : `Mantuviste un ${bestWeekPct}% de cumplimiento.`;
 
   return (
     <View style={styles.card}>

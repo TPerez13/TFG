@@ -21,7 +21,7 @@ export function useNutritionMutations(): UseNutritionMutationsResult {
       try {
         await syncLocalNotificationsWithServer({ requestPermissions: false });
       } catch {
-        // La creacion del registro no debe fallar por sincronizacion local.
+        // La creación del registro no debe fallar por sincronización local.
       }
       return entry;
     } finally {

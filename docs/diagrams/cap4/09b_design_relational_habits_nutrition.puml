@@ -21,11 +21,11 @@ skinparam linetype ortho
 skinparam nodesep 75
 skinparam ranksep 45
 
-title Capitulo 5 - Detalle relacional de habitos y nutricion
+title Capítulo 5 - Detalle relacional de hábitos y nutrición
 
 left to right direction
 
-package "Referencia basica" #EAF2FF {
+package "Referencia básica" #EAF2FF {
   together {
     entity "usuario" as usuario {
       * id_usuario : SERIAL <<PK>>
@@ -44,7 +44,7 @@ package "Referencia basica" #EAF2FF {
   }
 }
 
-package "Nucleo de seguimiento" #EAF7EA {
+package "Núcleo de seguimiento" #EAF7EA {
   entity "registro_habito" as registro_habito {
     * id_registro_habito : SERIAL <<PK>>
     --
@@ -58,7 +58,7 @@ package "Nucleo de seguimiento" #EAF7EA {
   }
 }
 
-package "Especializacion nutricional" #FFF5E8 {
+package "Especialización nutricional" #FFF5E8 {
   together {
     entity "registro_comida" as registro_comida {
       * id_registro_comida : SERIAL <<PK>>
@@ -90,7 +90,7 @@ package "Especializacion nutricional" #FFF5E8 {
 usuario ||--o{ registro_habito
 tipo_habito ||--o{ registro_habito
 usuario ||--o{ registro_comida
-alimento ||--o{ registro_comida : catalogo opcional
+alimento ||--o{ registro_comida : catálogo opcional
 registro_comida ||--o{ registro_habito : FK nullable
 
 tipo_habito -[hidden]-> registro_comida
@@ -99,13 +99,13 @@ usuario -[hidden]-> alimento
 note right of registro_habito
 id_registro_comida es nullable.
 Solo se utiliza cuando el registro
-de habito representa una comida.
+de hábito representa una comida.
 end note
 
 note bottom of registro_comida
-La relacion con alimento es opcional.
-nombre_snapshot y macros conservan el historico
-aunque el catalogo cambie o no exista FK.
+La relación con alimento es opcional.
+nombre_snapshot y macros conservan el histórico
+aunque el catálogo cambie o no exista FK.
 end note
 
 @enduml

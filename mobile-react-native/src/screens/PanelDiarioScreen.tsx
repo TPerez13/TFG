@@ -42,7 +42,7 @@ const endOfDay = (baseDate: Date) =>
 const progressMessage = (percent: number) => {
   if (percent >= 80) return 'Tu progreso de hoy va muy bien.';
   if (percent >= 55) return 'Buen ritmo. Sigue asi.';
-  return 'Aun hay tiempo para avanzar hoy.';
+  return 'Aún hay tiempo para avanzar hoy.';
 };
 
 const defaultMealType = 'DESAYUNO' as const;
@@ -134,7 +134,7 @@ export default function PanelDiarioScreen({ navigation }: PanelDiarioScreenProps
       ]);
 
       if (userRes.status === 401 || entriesRes.status === 401) {
-        setError('Sesion expirada. Inicia sesion nuevamente.');
+        setError('Sesión expirada. Inicia sesión nuevamente.');
         return;
       }
 
@@ -259,7 +259,7 @@ export default function PanelDiarioScreen({ navigation }: PanelDiarioScreenProps
           <Text style={styles.headerTitle}>Panel Diario</Text>
           <View style={styles.headerSpacer} />
         </View>
-        <Text style={styles.greeting}>Buenos dias, {greetingName}</Text>
+        <Text style={styles.greeting}>Buenos días, {greetingName}</Text>
         <Text style={styles.subtitle}>Es un dia hermoso para estar saludable.</Text>
 
         <View style={styles.progressSection}>
@@ -281,7 +281,7 @@ export default function PanelDiarioScreen({ navigation }: PanelDiarioScreenProps
         />
 
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Habitos de hoy</Text>
+          <Text style={styles.sectionTitle}>Hábitos de hoy</Text>
           <Text style={styles.sectionMeta}>{globalPercent}% completado</Text>
         </View>
 

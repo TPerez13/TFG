@@ -96,7 +96,7 @@ export default function RegistrarSuenoScreen({ navigation, route }: RegistrarSue
       });
 
       emitSleepFlash({
-        message: 'Sueno registrado correctamente!',
+        message: '¡Sueño registrado correctamente!',
         undoEntryId: created.id_registro_habito,
       });
       navigation.reset({
@@ -104,7 +104,7 @@ export default function RegistrarSuenoScreen({ navigation, route }: RegistrarSue
         routes: [
           { name: 'Habits' },
           {
-            name: 'Sueno',
+            name: 'Sueño',
             params: {
               refreshToken: Date.now(),
             },
@@ -112,7 +112,7 @@ export default function RegistrarSuenoScreen({ navigation, route }: RegistrarSue
         ],
       });
     } catch (err) {
-      Alert.alert('Error', err instanceof Error ? err.message : 'No se pudo registrar sueno.');
+      Alert.alert('Error', err instanceof Error ? err.message : 'No se pudo registrar sueño.');
     }
   };
 
@@ -143,7 +143,7 @@ export default function RegistrarSuenoScreen({ navigation, route }: RegistrarSue
           >
             <Ionicons name="chevron-back" size={24} color={colors.textPrimary} />
           </Pressable>
-          <Text style={styles.headerTitle}>Registro de Sueno</Text>
+          <Text style={styles.headerTitle}>Registro de Sueño</Text>
           <Pressable onPress={() => Alert.alert('Ayuda', 'Disponible pronto.')}>
             <Text style={styles.helpText}>Ayuda</Text>
           </Pressable>
@@ -153,7 +153,7 @@ export default function RegistrarSuenoScreen({ navigation, route }: RegistrarSue
           <View style={styles.modeInfo}>
             <Ionicons name="moon-outline" size={24} color={colors.textAccent} />
             <View>
-              <Text style={styles.modeTitle}>Sueno</Text>
+              <Text style={styles.modeTitle}>Sueño</Text>
               <Text style={styles.modeMeta}>Hoy, {timeLabel}</Text>
             </View>
           </View>
@@ -162,7 +162,7 @@ export default function RegistrarSuenoScreen({ navigation, route }: RegistrarSue
             style={({ pressed }) => [styles.switchButton, pressed ? styles.buttonPressed : null]}
           >
             <Text style={styles.switchButtonText}>
-              {mode === 'quick' ? 'Cambiar a Manual' : 'Cambiar a Registro Rapido'}
+              {mode === 'quick' ? 'Cambiar a Manual' : 'Cambiar a Registro Rápido'}
             </Text>
           </Pressable>
         </View>
@@ -173,7 +173,7 @@ export default function RegistrarSuenoScreen({ navigation, route }: RegistrarSue
             {suggested.map((template) => (
               <SleepTemplateCard
                 key={`suggested-${template.label}`}
-                title={`Dormi ${formatHours(template.hours)} h`}
+                title={`Dormí ${formatHours(template.hours)} h`}
                 hours={template.hours}
                 subtitle={templateSubtitle(template)}
                 onAdd={() => void saveSleep(template)}
@@ -184,12 +184,12 @@ export default function RegistrarSuenoScreen({ navigation, route }: RegistrarSue
             {loadingRecent ? <ActivityIndicator size="small" color={colors.textAccent} /> : null}
             {recentError ? <Text style={styles.errorText}>{recentError}</Text> : null}
             {!loadingRecent && recent.length === 0 ? (
-              <Text style={styles.emptyText}>No hay registros recientes de sueno.</Text>
+              <Text style={styles.emptyText}>No hay registros recientes de sueño.</Text>
             ) : null}
             {recent.map((template, index) => (
               <SleepTemplateCard
                 key={`recent-${template.label}-${index}`}
-                title={template.start && template.end ? `${template.start} - ${template.end}` : `Dormi ${formatHours(template.hours)} h`}
+                title={template.start && template.end ? `${template.start} - ${template.end}` : `Dormí ${formatHours(template.hours)} h`}
                 hours={template.hours}
                 subtitle={templateSubtitle(template)}
                 onAdd={() => void saveSleep(template)}
@@ -213,7 +213,7 @@ export default function RegistrarSuenoScreen({ navigation, route }: RegistrarSue
               placeholderTextColor={colors.placeholder}
               style={[styles.input, showHoursError ? styles.inputError : null]}
             />
-            {showHoursError ? <Text style={styles.errorText}>Introduce horas validas entre 0 y 24.</Text> : null}
+            {showHoursError ? <Text style={styles.errorText}>Introduce horas válidas entre 0 y 24.</Text> : null}
 
             <View style={styles.row}>
               <View style={styles.fieldFlex}>
@@ -271,7 +271,7 @@ export default function RegistrarSuenoScreen({ navigation, route }: RegistrarSue
             <TextInput
               value={notes}
               onChangeText={setNotes}
-              placeholder="Ej. me desperte una vez"
+              placeholder="Ej. me desperté una vez"
               placeholderTextColor={colors.placeholder}
               style={styles.input}
             />
@@ -282,7 +282,7 @@ export default function RegistrarSuenoScreen({ navigation, route }: RegistrarSue
               style={styles.saveButton}
             />
             <Button
-              title="Cambiar a Registro Rapido"
+              title="Cambiar a Registro Rápido"
               variant="outline"
               onPress={() => setMode('quick')}
               style={styles.switchModeButton}

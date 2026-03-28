@@ -18,12 +18,12 @@ export default function PrivacyPolicyScreen({ navigation }: PrivacyPolicyScreenP
           <Pressable onPress={() => navigation.goBack()} style={styles.backButton} accessibilityLabel="Volver">
             <Ionicons name="chevron-back" size={22} color={colors.textPrimary} />
           </Pressable>
-          <Text style={styles.headerTitle}>Politica de privacidad</Text>
+          <Text style={styles.headerTitle}>Política de privacidad</Text>
           <View style={styles.headerSpacer} />
         </View>
 
-        <Text style={styles.documentTitle}>Politica de privacidad</Text>
-        <Text style={styles.lastUpdated}>Ultima actualizacion: {PRIVACY_POLICY_LAST_UPDATED}</Text>
+        <Text style={styles.documentTitle}>Política de privacidad</Text>
+        <Text style={styles.lastUpdated}>Última actualización: {PRIVACY_POLICY_LAST_UPDATED}</Text>
 
         <View style={styles.card}>
           {PRIVACY_POLICY_SECTIONS.map((section, index) => (

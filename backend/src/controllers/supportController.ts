@@ -15,43 +15,43 @@ import type { SupportTicketRecord } from "../model/supportModel";
 const FAQ_ITEMS: SupportFaqItem[] = [
   {
     id: "faq-1",
-    pregunta: "Como registro un habito?",
-    respuesta: "En el panel diario pulsa el habito, introduce el valor y guarda.",
+    pregunta: "¿Cómo registro un hábito?",
+    respuesta: "En el panel diario pulsa el hábito, introduce el valor y guarda.",
   },
   {
     id: "faq-2",
-    pregunta: "Como activo recordatorios?",
-    respuesta: "Desde Perfil > Notificaciones puedes configurar horarios y categorias.",
+    pregunta: "¿Cómo activo recordatorios?",
+    respuesta: "Desde Perfil > Notificaciones puedes configurar horarios y categorías.",
   },
   {
     id: "faq-3",
-    pregunta: "Puedo editar un registro ya guardado?",
-    respuesta: "Por ahora solo puedes crear nuevos registros. La edicion llegara en una siguiente version.",
+    pregunta: "¿Puedo editar un registro ya guardado?",
+    respuesta: "Por ahora solo puedes crear nuevos registros. La edición llegará en una siguiente versión.",
   },
   {
     id: "faq-4",
-    pregunta: "Que pasa si cierro sesion?",
-    respuesta: "Tus datos quedan guardados en servidor y se recuperan al volver a iniciar sesion.",
+    pregunta: "¿Qué pasa si cierro sesión?",
+    respuesta: "Tus datos quedan guardados en servidor y se recuperan al volver a iniciar sesión.",
   },
   {
     id: "faq-5",
-    pregunta: "Como cambio mis preferencias de privacidad?",
-    respuesta: "En Perfil > Privacidad puedes activar o desactivar cada opcion.",
+    pregunta: "¿Cómo cambio mis preferencias de privacidad?",
+    respuesta: "En Perfil > Privacidad puedes activar o desactivar cada opción.",
   },
   {
     id: "faq-6",
-    pregunta: "Como reporto un error?",
-    respuesta: "En Ayuda y Soporte usa el bloque Reportar un error y envia el formulario rapido.",
+    pregunta: "¿Cómo reporto un error?",
+    respuesta: "En Ayuda y Soporte usa el bloque Reportar un error y envía el formulario rápido.",
   },
   {
     id: "faq-7",
-    pregunta: "Que incluye la exportacion de datos?",
-    respuesta: "Incluye tu perfil y registros basicos de habitos en formato JSON.",
+    pregunta: "¿Qué incluye la exportación de datos?",
+    respuesta: "Incluye tu perfil y registros básicos de hábitos en formato JSON.",
   },
   {
     id: "faq-8",
-    pregunta: "Como elimino mi cuenta?",
-    respuesta: "En Privacidad, seccion Gestion, pulsa Eliminar mi cuenta y confirma los dos pasos.",
+    pregunta: "¿Cómo elimino mi cuenta?",
+    respuesta: "En Privacidad, sección Gestión, pulsa Eliminar mi cuenta y confirma los dos pasos.",
   },
 ];
 
@@ -82,7 +82,7 @@ export async function createTicket(req: AuthRequest, res: Response, next: NextFu
   try {
     const userId = req.userId;
     if (!userId) {
-      throw new AppError("Token invalido.", 401);
+      throw new AppError("Token inválido.", 401);
     }
 
     const payload = (req.body ?? {}) as SupportTicketRequest;
@@ -98,10 +98,10 @@ export async function createTicket(req: AuthRequest, res: Response, next: NextFu
       throw new AppError("El asunto debe tener al menos 3 caracteres.", 400);
     }
     if (descripcion.length < 10) {
-      throw new AppError("La descripcion debe tener al menos 10 caracteres.", 400);
+      throw new AppError("La descripción debe tener al menos 10 caracteres.", 400);
     }
     if (!tipo) {
-      throw new AppError("Tipo de ticket invalido.", 400);
+      throw new AppError("Tipo de ticket inválido.", 400);
     }
 
     let finalDescripcion = descripcion;
@@ -137,12 +137,12 @@ export async function getTicketStatus(req: AuthRequest, res: Response, next: Nex
   try {
     const userId = req.userId;
     if (!userId) {
-      throw new AppError("Token invalido.", 401);
+      throw new AppError("Token inválido.", 401);
     }
 
     const ticketId = Number(req.params.ticketId);
     if (!ticketId || Number.isNaN(ticketId)) {
-      throw new AppError("ticketId invalido.", 400);
+      throw new AppError("ticketId inválido.", 400);
     }
 
     const ticket = await findSupportTicketById(userId, ticketId);

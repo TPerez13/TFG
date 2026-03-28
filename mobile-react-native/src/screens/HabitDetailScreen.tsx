@@ -10,7 +10,7 @@ import { colors, fontSizes, spacing } from '../theme/tokens';
 
 type HabitDetailScreenProps = NativeStackScreenProps<HabitsStackParamList, 'HabitDetail'>;
 
-const ACTIONS = ['Anadir registro', 'Ver historico', 'Editar meta', 'Recordatorios'];
+const ACTIONS = ['Añadir registro', 'Ver histórico', 'Editar meta', 'Recordatorios'];
 
 export default function HabitDetailScreen({ navigation, route }: HabitDetailScreenProps) {
   const { habitKey, typeId, initialTab, mode } = route.params ?? {};
@@ -21,7 +21,7 @@ export default function HabitDetailScreen({ navigation, route }: HabitDetailScre
     return undefined;
   }, [habitKey, typeId]);
 
-  const title = habit?.title ?? 'Detalle de habito';
+  const title = habit?.title ?? 'Detalle de hábito';
   const isAddMode = mode === 'add' || initialTab === 'add';
   const isComidas = habit?.key === 'comidas';
   const isAgua = habit?.key === 'agua';
@@ -30,15 +30,15 @@ export default function HabitDetailScreen({ navigation, route }: HabitDetailScre
   const isMeditacion = habit?.key === 'meditacion';
 
   const onActionPress = (action: string) => {
-    if (isAgua && action === 'Anadir registro') {
+    if (isAgua && action === 'Añadir registro') {
       navigation.navigate('RegistrarAgua', { mode: 'quick' });
       return;
     }
-    if (isAgua && action === 'Ver historico') {
+    if (isAgua && action === 'Ver histórico') {
       navigation.navigate('Hidratacion');
       return;
     }
-    if (isComidas && action === 'Anadir registro') {
+    if (isComidas && action === 'Añadir registro') {
       navigation.navigate('NutritionQuickAdd', { tipoComidaSeleccionada: 'DESAYUNO' });
       return;
     }
@@ -46,11 +46,11 @@ export default function HabitDetailScreen({ navigation, route }: HabitDetailScre
       navigation.navigate('HabitGoals');
       return;
     }
-    if (isEjercicio && action === 'Anadir registro') {
+    if (isEjercicio && action === 'Añadir registro') {
       navigation.navigate('RegistrarEjercicio', { mode: 'quick' });
       return;
     }
-    if (isEjercicio && action === 'Ver historico') {
+    if (isEjercicio && action === 'Ver histórico') {
       navigation.navigate('Ejercicio');
       return;
     }
@@ -58,11 +58,11 @@ export default function HabitDetailScreen({ navigation, route }: HabitDetailScre
       navigation.navigate('HabitGoals');
       return;
     }
-    if (isSueno && action === 'Anadir registro') {
+    if (isSueno && action === 'Añadir registro') {
       navigation.navigate('RegistrarSueno', { mode: 'quick' });
       return;
     }
-    if (isSueno && action === 'Ver historico') {
+    if (isSueno && action === 'Ver histórico') {
       navigation.navigate('Sueno');
       return;
     }
@@ -70,11 +70,11 @@ export default function HabitDetailScreen({ navigation, route }: HabitDetailScre
       navigation.navigate('HabitGoals');
       return;
     }
-    if (isMeditacion && action === 'Anadir registro') {
+    if (isMeditacion && action === 'Añadir registro') {
       navigation.navigate('RegistrarMeditacion', { mode: 'quick' });
       return;
     }
-    if (isMeditacion && action === 'Ver historico') {
+    if (isMeditacion && action === 'Ver histórico') {
       navigation.navigate('Meditacion');
       return;
     }
@@ -102,7 +102,7 @@ export default function HabitDetailScreen({ navigation, route }: HabitDetailScre
 
         <View style={styles.hero}>
           <Text style={styles.title}>{title}</Text>
-          {isAddMode ? <Text style={styles.hint}>Se abrio directamente en "Anadir registro".</Text> : null}
+          {isAddMode ? <Text style={styles.hint}>Se abrió directamente en "Añadir registro".</Text> : null}
         </View>
 
         <View style={styles.actions}>

@@ -216,14 +216,14 @@ export default function NutritionScreen({ navigation, route }: NutritionScreenPr
           >
             <Ionicons name="chevron-back" size={24} color={colors.textPrimary} />
           </Pressable>
-          <Text style={styles.headerTitle}>Alimentacion</Text>
+          <Text style={styles.headerTitle}>Alimentación</Text>
           <View style={styles.headerSpacer} />
         </View>
 
         <View style={styles.statusCard}>
           <View style={styles.statusTop}>
             <View>
-              <Text style={styles.statusEyebrow}>Estado del dia</Text>
+              <Text style={styles.statusEyebrow}>Estado del día</Text>
               <Text style={styles.statusTitle}>Comidas registradas</Text>
             </View>
             <Text style={styles.statusCount}>
@@ -241,7 +241,7 @@ export default function NutritionScreen({ navigation, route }: NutritionScreenPr
           <View style={styles.addIconWrap}>
             <Ionicons name="add" size={28} color="#22c55e" />
           </View>
-          <Text style={styles.addButtonText}>ANADIR COMIDA</Text>
+          <Text style={styles.addButtonText}>AÑADIR COMIDA</Text>
         </Pressable>
 
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tabsRow}>
@@ -266,8 +266,8 @@ export default function NutritionScreen({ navigation, route }: NutritionScreenPr
 
         <Text style={styles.sectionTitle}>Resumen Nutricional</Text>
         <View style={styles.macroRow}>
-          <MacroStatCard label="Calorias" value={data?.resumen.kcal ?? 0} unit="kcal" />
-          <MacroStatCard label="Proteina" value={data?.resumen.proteinaG ?? 0} unit="g" />
+          <MacroStatCard label="Calorías" value={data?.resumen.kcal ?? 0} unit="kcal" />
+          <MacroStatCard label="Proteína" value={data?.resumen.proteinaG ?? 0} unit="g" />
         </View>
 
         <View style={styles.historyHeader}>
@@ -309,15 +309,15 @@ export default function NutritionScreen({ navigation, route }: NutritionScreenPr
             {data?.globalNotificationsEnabled === false ? (
               <Text style={styles.reminderHint}>
                 Este horario queda guardado, pero no se programa mientras las notificaciones globales
-                esten desactivadas.
+                estén desactivadas.
               </Text>
             ) : null}
             <TimePickerField
               value={reminderTime}
               onConfirm={saveReminderTime}
               disabled={!data || reminderSaving}
-              modalTitle="Hora del recordatorio de nutricion"
-              modalDescription="Se programa una unica notificacion local para este habito."
+              modalTitle="Hora del recordatorio de nutrición"
+              modalDescription="Se programa una única notificación local para este hábito."
               accentColor="#22c55e"
               style={styles.reminderTimeInput}
             />

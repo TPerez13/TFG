@@ -96,7 +96,7 @@ export default function HabitsScreen({ navigation }: HabitsScreenProps) {
       <ScrollView contentContainerStyle={[baseStyles.content, styles.content]}>
         <View style={styles.header}>
           <View style={styles.headerSideSpacer} />
-          <Text style={styles.headerTitle}>Mis Habitos</Text>
+          <Text style={styles.headerTitle}>Mis Hábitos</Text>
           <View style={styles.headerSideSpacer} />
         </View>
 

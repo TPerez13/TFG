@@ -29,7 +29,7 @@ export function AppTabs() {
         name="HabitosTab"
         component={HabitsStack}
         options={({ route }) => ({
-          title: 'Habitos',
+          title: 'Hábitos',
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons name={focused ? 'clipboard' : 'clipboard-outline'} size={size} color={color} />
           ),

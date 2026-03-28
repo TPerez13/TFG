@@ -100,7 +100,7 @@ export default function DayHistoryDetailScreen({
         ) : null}
 
         {!loading && !error && visibleItems.length === 0 ? (
-          <Text style={styles.emptyText}>Aun no hay registros para este dia.</Text>
+          <Text style={styles.emptyText}>Aún no hay registros para este día.</Text>
         ) : null}
 
         {!loading && !error

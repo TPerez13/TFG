@@ -132,12 +132,12 @@ export default function EditProfileScreen({ navigation }: EditProfileScreenProps
     setPasswordSuccess(null);
 
     if (newPassword !== confirmNewPassword) {
-      setPasswordError('La nueva contrasena y su confirmacion no coinciden.');
+      setPasswordError('La nueva contraseña y su confirmación no coinciden.');
       return;
     }
 
     if (newPassword.length < 6) {
-      setPasswordError('La nueva contrasena debe tener al menos 6 caracteres.');
+      setPasswordError('La nueva contraseña debe tener al menos 6 caracteres.');
       return;
     }
 
@@ -158,15 +158,15 @@ export default function EditProfileScreen({ navigation }: EditProfileScreenProps
 
       const payload = (await response.json().catch(() => null)) as { message?: string } | null;
       if (!response.ok) {
-        throw new Error(payload?.message ?? 'No se pudo actualizar la contrasena.');
+        throw new Error(payload?.message ?? 'No se pudo actualizar la contraseña.');
       }
 
       setCurrentPassword('');
       setNewPassword('');
       setConfirmNewPassword('');
-      setPasswordSuccess(payload?.message ?? 'Contrasena actualizada correctamente.');
+      setPasswordSuccess(payload?.message ?? 'Contraseña actualizada correctamente.');
     } catch (err) {
-      setPasswordError(err instanceof Error ? err.message : 'No se pudo actualizar la contrasena.');
+      setPasswordError(err instanceof Error ? err.message : 'No se pudo actualizar la contraseña.');
     } finally {
       setPasswordSaving(false);
     }
@@ -230,39 +230,39 @@ export default function EditProfileScreen({ navigation }: EditProfileScreenProps
 
             <View style={styles.sectionDivider} />
 
-            <Text style={styles.sectionTitle}>Cambiar contrasena</Text>
-            <Text style={styles.label}>Contrasena actual</Text>
+            <Text style={styles.sectionTitle}>Cambiar contraseña</Text>
+            <Text style={styles.label}>Contraseña actual</Text>
             <TextInput
               value={currentPassword}
               onChangeText={setCurrentPassword}
               autoCapitalize="none"
               autoCorrect={false}
               secureTextEntry
-              placeholder="Contrasena actual"
+              placeholder="Contraseña actual"
               style={styles.input}
               placeholderTextColor={colors.placeholder}
             />
 
-            <Text style={styles.label}>Nueva contrasena</Text>
+            <Text style={styles.label}>Nueva contraseña</Text>
             <TextInput
               value={newPassword}
               onChangeText={setNewPassword}
               autoCapitalize="none"
               autoCorrect={false}
               secureTextEntry
-              placeholder="Nueva contrasena"
+              placeholder="Nueva contraseña"
               style={styles.input}
               placeholderTextColor={colors.placeholder}
             />
 
-            <Text style={styles.label}>Confirmar nueva contrasena</Text>
+            <Text style={styles.label}>Confirmar nueva contraseña</Text>
             <TextInput
               value={confirmNewPassword}
               onChangeText={setConfirmNewPassword}
               autoCapitalize="none"
               autoCorrect={false}
               secureTextEntry
-              placeholder="Repite la nueva contrasena"
+              placeholder="Repite la nueva contraseña"
               style={styles.input}
               placeholderTextColor={colors.placeholder}
             />
@@ -280,7 +280,7 @@ export default function EditProfileScreen({ navigation }: EditProfileScreenProps
                 pressed ? styles.savePressed : null,
               ]}
             >
-              <Text style={styles.saveText}>{passwordSaving ? 'Actualizando...' : 'Cambiar contrasena'}</Text>
+              <Text style={styles.saveText}>{passwordSaving ? 'Actualizando...' : 'Cambiar contraseña'}</Text>
             </Pressable>
           </>
         )}

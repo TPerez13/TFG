@@ -11,7 +11,7 @@ skinparam ArrowThickness 1
 skinparam packageStyle rectangle
 skinparam linetype ortho
 
-title Capitulo 4 - Navegacion detallada de TrackHabit Loop
+title Capítulo 4 - Navegación detallada de TrackHabit Loop
 
 left to right direction
 
@@ -19,33 +19,33 @@ rectangle "Login" as login
 rectangle "Recuperar acceso" as forgotPassword
 
 frame "App autenticada" as authed {
-  rectangle "Tabs\nInicio | Habitos | Progreso | Perfil" as tabs
+  rectangle "Tabs\nInicio | Hábitos | Progreso | Perfil" as tabs
 
   frame "Inicio" {
     rectangle "Panel diario" as panelDiario
   }
 
-  frame "Habitos" {
-    rectangle "Catalogo de habitos" as habitsHome
-    rectangle "Detalle / metas del habito" as habitDetail
-    rectangle "Nutricion" as nutrition
-    rectangle "Registro rapido / manual\nde comida" as nutritionEntry
-    rectangle "Hidratacion" as hydration
+  frame "Hábitos" {
+    rectangle "Catálogo de hábitos" as habitsHome
+    rectangle "Detalle / metas del hábito" as habitDetail
+    rectangle "Nutrición" as nutrition
+    rectangle "Registro rápido / manual\nde comida" as nutritionEntry
+    rectangle "Hidratación" as hydration
     rectangle "Registrar agua" as hydrationEntry
     rectangle "Ejercicio" as exercise
     rectangle "Registrar ejercicio" as exerciseEntry
-    rectangle "Sueno" as sleep
-    rectangle "Registrar sueno" as sleepEntry
-    rectangle "Meditacion" as meditation
-    rectangle "Registrar meditacion" as meditationEntry
+    rectangle "Sueño" as sleep
+    rectangle "Registrar sueño" as sleepEntry
+    rectangle "Meditación" as meditation
+    rectangle "Registrar meditación" as meditationEntry
   }
 
   frame "Progreso" {
     rectangle "Resumen mensual" as monthlyProgress
-    rectangle "Historico" as history
-    rectangle "Detalle por dia" as dayHistoryDetail
-    rectangle "Historico por habito" as habitHistory
-    rectangle "Detalle de habito" as progressHabitDetail
+    rectangle "Histórico" as history
+    rectangle "Detalle por día" as dayHistoryDetail
+    rectangle "Histórico por hábito" as habitHistory
+    rectangle "Detalle de hábito" as progressHabitDetail
   }
 
   frame "Perfil" {
@@ -56,33 +56,33 @@ frame "App autenticada" as authed {
     rectangle "Privacidad" as privacy
     rectangle "Soporte" as support
     rectangle "About" as about
-    rectangle "Politica de privacidad" as privacyPolicy
-    rectangle "Terminos de uso" as termsOfUse
+    rectangle "Política de privacidad" as privacyPolicy
+    rectangle "Términos de uso" as termsOfUse
   }
 }
 
 login --> forgotPassword : recuperar acceso
 forgotPassword --> login : volver / completar reseteo
-login --> tabs : autenticacion correcta
+login --> tabs : autenticación correcta
 
 tabs --> panelDiario : tab Inicio
-tabs --> habitsHome : tab Habitos
+tabs --> habitsHome : tab Hábitos
 tabs --> monthlyProgress : tab Progreso
 tabs --> profile : tab Perfil
 
-panelDiario --> hydration : acceso rapido
-panelDiario --> nutrition : acceso rapido
-panelDiario --> exercise : acceso rapido
-panelDiario --> sleep : acceso rapido
-panelDiario --> meditation : acceso rapido
+panelDiario --> hydration : acceso rápido
+panelDiario --> nutrition : acceso rápido
+panelDiario --> exercise : acceso rápido
+panelDiario --> sleep : acceso rápido
+panelDiario --> meditation : acceso rápido
 panelDiario --> achievements : teaser de logros
 
 habitsHome --> habitDetail : ver detalle general
-habitsHome --> nutrition : abrir nutricion
-habitsHome --> hydration : abrir hidratacion
+habitsHome --> nutrition : abrir nutrición
+habitsHome --> hydration : abrir hidratación
 habitsHome --> exercise : abrir ejercicio
-habitsHome --> sleep : abrir sueno
-habitsHome --> meditation : abrir meditacion
+habitsHome --> sleep : abrir sueño
+habitsHome --> meditation : abrir meditación
 
 nutrition --> nutritionEntry : registrar comida
 hydration --> hydrationEntry : registrar
@@ -90,9 +90,9 @@ exercise --> exerciseEntry : registrar
 sleep --> sleepEntry : registrar
 meditation --> meditationEntry : registrar
 
-monthlyProgress --> history : ver historico
-history --> dayHistoryDetail : explorar un dia
-history --> habitHistory : filtrar por habito
+monthlyProgress --> history : ver histórico
+history --> dayHistoryDetail : explorar un día
+history --> habitHistory : filtrar por hábito
 habitHistory --> progressHabitDetail : ver detalle
 
 profile --> editProfile
@@ -109,7 +109,7 @@ about --> termsOfUse : acceso legal
 note bottom of authed
 Diagrama orientado a memoria del producto:
 resume flujos de pantalla y no detalles
-de implementacion interna de React Navigation.
+de implementación interna de React Navigation.
 end note
 
 @enduml

@@ -76,7 +76,7 @@ export default function MonthlyProgressScreen({ navigation }: MonthlyProgressScr
 
   const shareMessage = useMemo(
     () =>
-      `Logro mensual - ${data.monthLabel}\nRacha del mes: ${data.streakDays} dias\nPromedio mensual: ${data.monthlyAvg}%\nHabitos completados: ${data.habitsCompleted}\n${data.achievementTitle}`,
+      `Logro mensual - ${data.monthLabel}\nRacha del mes: ${data.streakDays} días\nPromedio mensual: ${data.monthlyAvg}%\nHábitos completados: ${data.habitsCompleted}\n${data.achievementTitle}`,
     [data.achievementTitle, data.habitsCompleted, data.monthLabel, data.monthlyAvg, data.streakDays],
   );
 
@@ -158,7 +158,7 @@ export default function MonthlyProgressScreen({ navigation }: MonthlyProgressScr
               <View style={styles.emptyCard}>
                 <Text style={styles.emptyTitle}>Sin registros para este periodo</Text>
                 <Text style={styles.emptySubtitle}>
-                  Empieza a registrar habitos para ver tu progreso mensual.
+                  Empieza a registrar hábitos para ver tu progreso mensual.
                 </Text>
               </View>
             ) : null}

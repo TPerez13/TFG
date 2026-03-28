@@ -175,7 +175,7 @@ export default function MeditacionScreen({ navigation, route }: MeditacionScreen
     try {
       await deleteEntry(snackbar.undoEntryId);
       setSnackbar({ visible: false, message: '' });
-      emitMeditationFlash({ message: 'Registro de meditacion deshecho.' });
+      emitMeditationFlash({ message: 'Registro de meditación deshecho.' });
       await reload();
     } catch (err) {
       Alert.alert('Error', err instanceof Error ? err.message : 'No se pudo deshacer registro.');
@@ -194,12 +194,12 @@ export default function MeditacionScreen({ navigation, route }: MeditacionScreen
           >
             <Ionicons name="chevron-back" size={24} color={colors.textPrimary} />
           </Pressable>
-          <Text style={styles.headerTitle}>Meditacion</Text>
+          <Text style={styles.headerTitle}>Meditación</Text>
           <View style={styles.headerSpacer} />
         </View>
 
         <View style={styles.stateCard}>
-          <Text style={styles.stateEyebrow}>Estado del dia</Text>
+          <Text style={styles.stateEyebrow}>Estado del día</Text>
           <Text style={styles.stateTitle}>Minutos meditados</Text>
           <Text style={styles.stateCount}>
             {Math.round(data.totalMin)} de {data.goalMin} min
@@ -216,7 +216,7 @@ export default function MeditacionScreen({ navigation, route }: MeditacionScreen
           }
           style={({ pressed }) => [styles.addButton, pressed ? styles.buttonPressed : null]}
         >
-          <Text style={styles.addButtonText}>+ ANADIR MEDITACION</Text>
+          <Text style={styles.addButtonText}>+ AÑADIR MEDITACIÓN</Text>
         </Pressable>
 
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipRow}>
@@ -268,7 +268,7 @@ export default function MeditacionScreen({ navigation, route }: MeditacionScreen
         {loading ? <ActivityIndicator size="small" color={colors.textAccent} style={styles.loader} /> : null}
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
         {!loading && historyItems.length === 0 ? (
-          <Text style={styles.emptyText}>Aun no registraste meditacion hoy. Unos minutos hacen diferencia.</Text>
+          <Text style={styles.emptyText}>Aún no registraste meditación hoy. Unos minutos hacen diferencia.</Text>
         ) : null}
 
         {historyItems.map((item) => (
@@ -292,19 +292,19 @@ export default function MeditacionScreen({ navigation, route }: MeditacionScreen
           </View>
           <View style={styles.reminderText}>
             <Text style={styles.reminderTitle}>Recordatorios</Text>
-            <Text style={styles.reminderSubtitle}>Recordatorios de meditacion</Text>
+            <Text style={styles.reminderSubtitle}>Recordatorios de meditación</Text>
             {!data.globalNotificationsEnabled ? (
               <Text style={styles.reminderHint}>
                 Este horario queda guardado, pero no se programa mientras las notificaciones globales
-                esten desactivadas.
+                estén desactivadas.
               </Text>
             ) : null}
             <TimePickerField
               value={reminderTime}
               onConfirm={saveReminderTime}
               disabled={reminderSaving}
-              modalTitle="Hora del recordatorio de meditacion"
-              modalDescription="Se programa una unica notificacion local para este habito."
+              modalTitle="Hora del recordatorio de meditación"
+              modalDescription="Se programa una única notificación local para este hábito."
               style={styles.reminderTimeInput}
             />
           </View>

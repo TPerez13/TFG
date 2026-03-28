@@ -41,23 +41,23 @@ const HABIT_KEYS: HabitNotificationKey[] = [
 
 const HABIT_CONTENT: Record<HabitNotificationKey, { title: string; body: string }> = {
   hidratacion: {
-    title: 'Recordatorio de hidratacion',
-    body: 'Aun puedes sumar agua hoy. Registra tu siguiente vaso.',
+    title: 'Recordatorio de hidratación',
+    body: 'Aún puedes sumar agua hoy. Registra tu siguiente vaso.',
   },
   nutricion: {
-    title: 'Recordatorio de nutricion',
+    title: 'Recordatorio de nutrición',
     body: 'Revisa tus comidas de hoy y registra lo pendiente.',
   },
   ejercicio: {
     title: 'Recordatorio de ejercicio',
-    body: 'Aun hay tiempo para completar tu actividad de hoy.',
+    body: 'Aún hay tiempo para completar tu actividad de hoy.',
   },
   sueno: {
-    title: 'Recordatorio de sueno',
-    body: 'Prepara tu descanso y registra tus horas de sueno.',
+    title: 'Recordatorio de sueño',
+    body: 'Prepara tu descanso y registra tus horas de sueño.',
   },
   meditacion: {
-    title: 'Recordatorio de meditacion',
+    title: 'Recordatorio de meditación',
     body: 'Toma unos minutos para meditar y registrarlo.',
   },
 };
@@ -189,7 +189,7 @@ export const getNotificationPermissionState = async (): Promise<NotificationPerm
 const ensureAndroidChannel = async () => {
   if (Platform.OS !== 'android') return;
   await setNotificationChannelAsync(ANDROID_CHANNEL_ID, {
-    name: 'Recordatorios de habitos',
+    name: 'Recordatorios de hábitos',
     importance: AndroidImportance.HIGH,
     vibrationPattern: [0, 250, 150, 250],
     lightColor: '#22c55e',

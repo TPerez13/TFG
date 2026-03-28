@@ -23,7 +23,7 @@ export function FoodItemCard({ item, onAdd, compact = false }: FoodItemCardProps
           onPress={onAdd}
           style={({ pressed }) => [styles.addButton, pressed ? styles.addButtonPressed : null]}
         >
-          <Text style={styles.addText}>Anadir</Text>
+          <Text style={styles.addText}>Añadir</Text>
           <View style={styles.addIconWrap}>
             <Ionicons name="add" size={16} color={colors.textOnAccent} />
           </View>

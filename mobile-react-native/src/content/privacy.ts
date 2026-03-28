@@ -14,44 +14,44 @@ export const PRIVACY_POLICY_SECTIONS: LegalDocumentSection[] = [
   {
     title: 'Datos que recogemos',
     body: [
-      'Datos de cuenta: correo, nombre y hash de contrasena (nunca guardamos la contrasena en texto plano).',
+      'Datos de cuenta: correo, nombre y hash de contraseña (nunca guardamos la contraseña en texto plano).',
       'Preferencias de usuario: tema, idioma y configuraciones de notificaciones.',
-      'Registros de habitos: hidratacion, ejercicio, nutricion, sueno y meditacion.',
-      'Datos tecnicos minimos: errores y logs basicos para diagnostico cuando aplique.',
+      'Registros de hábitos: hidratación, ejercicio, nutrición, sueño y meditación.',
+      'Datos técnicos mínimos: errores y logs básicos para diagnóstico cuando aplique.',
     ],
   },
   {
     title: 'Para que usamos los datos',
     body: [
-      'Autenticacion y gestion de sesion.',
-      'Personalizacion de la experiencia de usuario.',
-      'Seguimiento de progreso y estadisticas de habitos.',
-      'Envio de recordatorios, si el usuario los activa.',
+      'Autenticación y gestión de sesión.',
+      'Personalización de la experiencia de usuario.',
+      'Seguimiento de progreso y estadísticas de hábitos.',
+      'Envío de recordatorios, si el usuario los activa.',
     ],
   },
   {
     title: 'Conservacion',
     body:
-      'Conservamos los datos mientras la cuenta este activa. Si eliminas tu cuenta, se eliminan los datos asociados segun las reglas de borrado de la plataforma.',
+      'Conservamos los datos mientras la cuenta esté activa. Si eliminas tu cuenta, se eliminan los datos asociados según las reglas de borrado de la plataforma.',
   },
   {
     title: 'Cesion a terceros',
     body:
-      'Actualmente no compartimos tus datos personales con terceros para fines comerciales. Si en el futuro se integran APIs externas, se informara de forma transparente.',
+      'Actualmente no compartimos tus datos personales con terceros para fines comerciales. Si en el futuro se integran APIs externas, se informará de forma transparente.',
   },
   {
     title: 'Seguridad',
     body: [
       'Las credenciales se almacenan como hash.',
-      'El acceso a datos esta controlado por usuario autenticado.',
-      'En despliegue se recomienda HTTPS para proteger el trafico.',
+      'El acceso a datos está controlado por usuario autenticado.',
+      'En despliegue se recomienda HTTPS para proteger el tráfico.',
       'Las sesiones se gestionan mediante tokens JWT.',
     ],
   },
   {
     title: 'Derechos del usuario',
     body:
-      'Puedes solicitar acceso, rectificacion y supresion de tus datos. Tambien puedes pedir portabilidad cuando la exportacion de datos este disponible.',
+      'Puedes solicitar acceso, rectificación y supresión de tus datos. También puedes pedir portabilidad cuando la exportación de datos esté disponible.',
   },
   {
     title: 'Contacto',

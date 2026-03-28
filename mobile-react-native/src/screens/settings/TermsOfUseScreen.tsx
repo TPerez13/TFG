@@ -18,12 +18,12 @@ export default function TermsOfUseScreen({ navigation }: TermsOfUseScreenProps) 
           <Pressable onPress={() => navigation.goBack()} style={styles.backButton} accessibilityLabel="Volver">
             <Ionicons name="chevron-back" size={22} color={colors.textPrimary} />
           </Pressable>
-          <Text style={styles.headerTitle}>Terminos de uso</Text>
+          <Text style={styles.headerTitle}>Términos de uso</Text>
           <View style={styles.headerSpacer} />
         </View>
 
-        <Text style={styles.documentTitle}>Terminos de uso</Text>
-        <Text style={styles.lastUpdated}>Ultima actualizacion: {TERMS_OF_USE_LAST_UPDATED}</Text>
+        <Text style={styles.documentTitle}>Términos de uso</Text>
+        <Text style={styles.lastUpdated}>Última actualización: {TERMS_OF_USE_LAST_UPDATED}</Text>
 
         <View style={styles.card}>
           {TERMS_OF_USE_SECTIONS.map((section, index) => (

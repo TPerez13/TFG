@@ -1,5 +1,5 @@
 ﻿@startuml
-' CAP4 - 08 Secuencia representativa: modulo de notificaciones
+' CAP4 - 08 Secuencia representativa: módulo de notificaciones
 
 skinparam backgroundColor #F8FAFC
 skinparam shadowing false
@@ -17,11 +17,11 @@ skinparam sequence {
 skinparam noteBackgroundColor #FFF9E6
 skinparam noteBorderColor #D7C58A
 
-title CU007 - Gestion de notificaciones persistidas (backend)
+title CU007 - Gestión de notificaciones persistidas (backend)
 
 participant "Cliente API (debug/export)" as UI
 participant "API Notifications" as API
-database "DB (notificacion)" as DB
+database "DB (notificación)" as DB
 
 == Carga inicial ==
 UI -> API: GET /api/notifications/unread-count
@@ -44,13 +44,13 @@ else No existe
   API --> UI: 404 {message}
 end
 
-== Marcar leida ==
+== Marcar leída ==
 UI -> API: PATCH /api/notifications/:id/read {read:true}
 API -> DB: UPDATE notificacion SET leida=true, f_leida=now()
 DB --> API: item actualizado
 API --> UI: 200 {item}
 
-== Marcar todas leidas ==
+== Marcar todas leídas ==
 UI -> API: PATCH /api/notifications/read-all
 API -> DB: UPDATE notificacion SET leida=true WHERE leida=false
 DB --> API: filas afectadas
@@ -69,7 +69,7 @@ note right of API
 Rutas activas: /notifications, /notifications/unread-count,
 /:id, /:id/read, /read-all, /seed.
 Disponible para clientes integrados
-que consuman el modulo de notificaciones.
+que consuman el módulo de notificaciones.
 end note
 '/
 

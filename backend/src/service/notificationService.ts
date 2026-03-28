@@ -41,7 +41,7 @@ export async function seedNotificationsForUser(userId: number) {
     const body = sampleBodies[type][idx % sampleBodies[type].length];
     const title =
       type === "REMINDER"
-        ? "Recordatorio de habitos"
+        ? "Recordatorio de hábitos"
         : type === "ACHIEVEMENT"
         ? "Logro desbloqueado"
         : type === "CHALLENGE"

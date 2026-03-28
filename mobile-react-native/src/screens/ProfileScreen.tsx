@@ -189,23 +189,23 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
           <SettingsRow
             icon="information-circle"
             title="Sobre la App"
-            subtitle="Version, creditos y licencias"
+            subtitle="Versión, créditos y licencias"
             onPress={() => navigation.navigate('AboutApp')}
           />
         </View>
 
-        <Text style={styles.sectionTitle}>Politica / Terminos</Text>
+        <Text style={styles.sectionTitle}>Política / Términos</Text>
         <View style={styles.card}>
           <SettingsRow
             icon="document-text"
-            title="Politica de privacidad"
+            title="Política de privacidad"
             subtitle="Como usamos y protegemos tus datos"
             onPress={() => navigation.navigate('PrivacyPolicy')}
           />
           <View style={styles.divider} />
           <SettingsRow
             icon="newspaper"
-            title="Terminos de uso"
+            title="Términos de uso"
             subtitle="Condiciones generales de uso de la app"
             onPress={() => navigation.navigate('TermsOfUse')}
           />
@@ -217,7 +217,7 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
           onPress={signOut}
         >
           <Ionicons name="log-out-outline" size={20} color="#d94141" />
-          <Text style={styles.logoutText}>Cerrar Sesion</Text>
+          <Text style={styles.logoutText}>Cerrar sesión</Text>
         </Pressable>
 
         <Text style={styles.footerText}>TrackHabit Loop esta disenado para ti.</Text>

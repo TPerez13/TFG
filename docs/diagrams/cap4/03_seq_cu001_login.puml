@@ -17,24 +17,24 @@ skinparam actorBackgroundColor #FFFFFF
 skinparam noteBackgroundColor #FFF9E6
 skinparam noteBorderColor #D7C58A
 
-title Capitulo 4 - Secuencia CU-001 Autenticacion
+title Capítulo 4 - Secuencia CU-001 Autenticación
 
 actor Usuario
-participant "App movil" as App
+participant "App móvil" as App
 participant "API" as API
 database "Base de datos" as DB
 
-alt Iniciar sesion
-    Usuario -> App : Introduce correo y contrasena
+alt Iniciar sesión
+    Usuario -> App : Introduce correo y contraseña
     App -> API : POST /auth/login
     API -> DB : Consultar usuario por correo
     DB --> API : Datos del usuario
     API -> API : Validar credenciales
-    alt Credenciales validas
-        API --> App : Token + datos basicos
+    alt Credenciales válidas
+        API --> App : Token + datos básicos
         App --> Usuario : Acceso concedido
-    else Credenciales invalidas
-        API --> App : Error de autenticacion
+    else Credenciales inválidas
+        API --> App : Error de autenticación
         App --> Usuario : Mostrar error
     end
 else Registrarse
@@ -45,7 +45,7 @@ else Registrarse
     alt Correo no registrado
         API -> DB : Insertar nuevo usuario
         DB --> API : Usuario creado
-        API --> App : Confirmacion + token
+        API --> App : Confirmación + token
         App --> Usuario : Cuenta creada
     else Correo ya registrado
         API --> App : Error de registro

@@ -58,23 +58,23 @@ export async function login(payload: Partial<LoginRequest>): Promise<LoginRespon
   const identifier = correo ?? username;
 
   if (!identifier || !password) {
-    throw new AppError("Correo y contrasena son requeridos.", 400);
+    throw new AppError("Correo y contraseña son requeridos.", 400);
   }
 
   const user = await findByEmail(identifier);
 
   if (!user) {
-    throw new AppError("Credenciales invalidas.", 401);
+    throw new AppError("Credenciales inválidas.", 401);
   }
 
   const isValid = await bcrypt.compare(password, user.hash_clave);
 
   if (!isValid) {
-    throw new AppError("Credenciales invalidas.", 401);
+    throw new AppError("Credenciales inválidas.", 401);
   }
 
   const response: LoginResponse = {
-    message: "Inicio de sesion correcto.",
+    message: "Inicio de sesión correcto.",
     user: toUserSummary(user),
     token: signAccessToken(user.id_usuario),
   };
@@ -91,7 +91,7 @@ export async function register(payload: Partial<RegisterRequest>): Promise<Regis
   const { correo, nombre, password, preferencias } = payload || {};
 
   if (!correo || !nombre || !password) {
-    throw new AppError("Nombre, correo y contrasena son requeridos.", 400);
+    throw new AppError("Nombre, correo y contraseña son requeridos.", 400);
   }
 
   const existing = await findByEmail(correo);
@@ -128,7 +128,7 @@ export async function requestPasswordReset(payload: { correo?: string }): Promis
   }
 
   const genericMessage =
-    "Si el correo existe, enviamos instrucciones para restablecer la contrasena.";
+    "Si el correo existe, enviamos instrucciones para restablecer la contraseña.";
   const user = await findByEmail(correo);
   if (!user) {
     return { message: genericMessage };
@@ -160,22 +160,22 @@ export async function resetPassword(payload: {
   const newPassword = payload?.newPassword ?? "";
 
   if (!correo || !code || !newPassword) {
-    throw new AppError("Correo, codigo y nueva contrasena son requeridos.", 400);
+    throw new AppError("Correo, código y nueva contraseña son requeridos.", 400);
   }
 
   if (newPassword.length < 6) {
-    throw new AppError("La nueva contrasena debe tener al menos 6 caracteres.", 400);
+    throw new AppError("La nueva contraseña debe tener al menos 6 caracteres.", 400);
   }
 
   const user = await findByEmail(correo);
   if (!user) {
-    throw new AppError("Codigo invalido o expirado.", 400);
+    throw new AppError("Código inválido o expirado.", 400);
   }
 
   const tokenHash = hashResetCode(code);
   const tokenConsumed = await consumePasswordResetToken(user.id_usuario, tokenHash, new Date());
   if (!tokenConsumed) {
-    throw new AppError("Codigo invalido o expirado.", 400);
+    throw new AppError("Código inválido o expirado.", 400);
   }
 
   const hash = await bcrypt.hash(newPassword, 10);
@@ -184,5 +184,5 @@ export async function resetPassword(payload: {
     throw new AppError("Usuario no encontrado.", 404);
   }
 
-  return { message: "Contrasena restablecida correctamente." };
+  return { message: "Contraseña restablecida correctamente." };
 }

@@ -29,13 +29,13 @@ export function useMe(): UseMeResult {
       }
 
       if (!response.ok) {
-        throw new Error('No se pudo cargar la informacion del perfil.');
+        throw new Error('No se pudo cargar la información del perfil.');
       }
 
       const payload = (await response.json()) as { user?: UserSummary };
       setUser(payload.user ?? null);
     } catch (_error) {
-      setError('No pudimos cargar tu informacion. Intenta nuevamente.');
+      setError('No pudimos cargar tu información. Intenta nuevamente.');
     } finally {
       setLoading(false);
     }

@@ -15,7 +15,7 @@ skinparam usecaseBackgroundColor #FFFFFF
 skinparam usecaseBorderColor #6E879D
 skinparam actorStyle awesome
 
-title Capitulo 4 - Casos de uso principales
+title Capítulo 4 - Casos de uso principales
 
 left to right direction
 
@@ -24,7 +24,7 @@ actor "Usuario autenticado" as A_USER
 actor "Sistema de notificaciones del dispositivo" as A_NOTIFY
 
 rectangle "TrackHabit Loop " {
-  usecase "Iniciar sesion" as UC_LOGIN
+  usecase "Iniciar sesión" as UC_LOGIN
   usecase "Registrarse" as UC_REGISTER
   usecase "Recuperar contraseña" as UC_FORGOT
   usecase "Restablecer contraseña" as UC_RESET
@@ -32,8 +32,8 @@ rectangle "TrackHabit Loop " {
   usecase "Gestionar perfil y privacidad" as UC_PROFILE
   usecase "Configurar avisos" as UC_ALERTS
 
-  usecase "Registrar habito" as UC_HABIT_ENTRY
-  usecase "Registrar comida (nutricion)" as UC_NUTRITION_ENTRY
+  usecase "Registrar hábito" as UC_HABIT_ENTRY
+  usecase "Registrar comida (nutrición)" as UC_NUTRITION_ENTRY
   usecase "Consultar historial" as UC_HISTORY
   usecase "Ver progreso mensual" as UC_PROGRESS
   usecase "Compartir progreso mensual" as UC_SHARE_PROGRESS

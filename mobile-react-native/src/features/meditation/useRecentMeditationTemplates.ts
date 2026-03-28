@@ -41,7 +41,7 @@ export function useRecentMeditationTemplates(): UseRecentMeditationTemplatesResu
       const payload = await fetchHabitEntries({ from, to, typeId: meditationTypeId });
       setEntries(payload);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'No se pudieron cargar recientes de meditacion.');
+      setError(err instanceof Error ? err.message : 'No se pudieron cargar recientes de meditación.');
       setEntries([]);
     } finally {
       setLoading(false);

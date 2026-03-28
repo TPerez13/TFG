@@ -17,26 +17,26 @@ skinparam actorBackgroundColor #FFFFFF
 skinparam noteBackgroundColor #FFF9E6
 skinparam noteBorderColor #D7C58A
 
-title Capitulo 4 - Secuencia CU-006 Configurar avisos y recordatorios
+title Capítulo 4 - Secuencia CU-006 Configurar avisos y recordatorios
 
 actor Usuario
-participant "App movil" as App
+participant "App móvil" as App
 participant "API" as API
 database "Base de datos" as DB
 participant "Sistema de notificaciones locales" as NotifLocal
 
-Usuario -> App : Modificar configuracion de avisos
+Usuario -> App : Modificar configuración de avisos
 App -> API : PATCH /notifications/settings
 API -> DB : Actualizar preferencias.notificaciones
-DB --> API : Confirmacion
-API --> App : Configuracion actualizada
+DB --> API : Confirmación
+API --> App : Configuración actualizada
 
 App -> NotifLocal : Cancelar avisos gestionados
-NotifLocal --> App : Cancelacion realizada
+NotifLocal --> App : Cancelación realizada
 
 alt Avisos globales activados
-    App -> App : Evaluar configuracion global y por habito
-    App -> NotifLocal : Programar avisos validos
+    App -> App : Evaluar configuración global y por hábito
+    App -> NotifLocal : Programar avisos válidos
     NotifLocal --> App : Avisos programados
 else Avisos globales desactivados
     App --> Usuario : Avisos desactivados
@@ -47,9 +47,9 @@ opt Permisos no concedidos
 end
 
 note right of NotifLocal
-Se mantiene una notificacion activa por habito.
-La hora se ajusta segun configuracion global,
-avisos por habito y periodo de silencio.
+Se mantiene una notificación activa por hábito.
+La hora se ajusta según configuración global,
+avisos por hábito y periodo de silencio.
 end note
 
 @enduml

@@ -199,13 +199,13 @@ export default function HidratacionScreen({ navigation }: HidratacionScreenProps
           >
             <Ionicons name="chevron-back" size={24} color={colors.textPrimary} />
           </Pressable>
-          <Text style={styles.headerTitle}>Hidratacion</Text>
+          <Text style={styles.headerTitle}>Hidratación</Text>
           <View style={styles.headerSpacer} />
         </View>
 
         <View style={styles.stateCard}>
           <View style={styles.stateHeader}>
-            <Text style={styles.stateEyebrow}>Estado del dia</Text>
+            <Text style={styles.stateEyebrow}>Estado del día</Text>
             <Text style={styles.stateCount}>{totalLabel} de {goalLabel}</Text>
           </View>
           <Text style={styles.stateTitle}>Agua registrada</Text>
@@ -216,7 +216,7 @@ export default function HidratacionScreen({ navigation }: HidratacionScreenProps
           onPress={() => navigation.navigate('RegistrarAgua')}
           style={({ pressed }) => [styles.addButton, pressed ? styles.buttonPressed : null]}
         >
-          <Text style={styles.addButtonText}>+ ANADIR AGUA</Text>
+          <Text style={styles.addButtonText}>+ AÑADIR AGUA</Text>
         </Pressable>
 
         <View style={styles.summaryRow}>
@@ -240,7 +240,7 @@ export default function HidratacionScreen({ navigation }: HidratacionScreenProps
         {loading ? <ActivityIndicator size="small" color={colors.textAccent} style={styles.loader} /> : null}
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
         {!loading && historyItems.length === 0 ? (
-          <Text style={styles.emptyText}>No registraste agua hoy todavia.</Text>
+          <Text style={styles.emptyText}>No registraste agua hoy todavía.</Text>
         ) : null}
 
         {historyItems.map((item) => (
@@ -256,19 +256,19 @@ export default function HidratacionScreen({ navigation }: HidratacionScreenProps
           </View>
           <View style={styles.reminderText}>
             <Text style={styles.reminderTitle}>Recordatorios</Text>
-            <Text style={styles.reminderSubtitle}>Recordatorios de hidratacion</Text>
+            <Text style={styles.reminderSubtitle}>Recordatorios de hidratación</Text>
             {!data.globalNotificationsEnabled ? (
               <Text style={styles.reminderHint}>
                 Este horario queda guardado, pero no se programa mientras las notificaciones globales
-                esten desactivadas.
+                estén desactivadas.
               </Text>
             ) : null}
             <TimePickerField
               value={reminderTime}
               onConfirm={saveReminderTime}
               disabled={reminderSaving}
-              modalTitle="Hora del recordatorio de hidratacion"
-              modalDescription="Se programa una unica notificacion local para este habito."
+              modalTitle="Hora del recordatorio de hidratación"
+              modalDescription="Se programa una única notificación local para este hábito."
               style={styles.reminderTimeInput}
             />
           </View>

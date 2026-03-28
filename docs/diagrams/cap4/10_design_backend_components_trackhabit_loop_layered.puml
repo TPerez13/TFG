@@ -20,7 +20,7 @@ skinparam linetype ortho
 skinparam nodesep 36
 skinparam ranksep 36
 
-title Diseno de componentes del backend de TrackHabit Loop
+title Diseño de componentes del backend de TrackHabit Loop
 
 top to bottom direction
 
@@ -35,7 +35,7 @@ package "Entrada HTTP" as be_http #EAF2FF {
   be_routes -[hidden]right-> be_ctrl
 }
 
-package "Servicios de aplicacion" as be_services #EAF7EA {
+package "Servicios de aplicación" as be_services #EAF7EA {
   component "Auth / Users" as be_s_account
   component "Habits /\nNutrition" as be_s_tracking
   component "Notifications" as be_s_notifications

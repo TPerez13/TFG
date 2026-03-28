@@ -24,7 +24,7 @@ type Preferences = {
 };
 
 const formatBoolean = (value?: boolean) => {
-  if (value === true) return 'Si';
+  if (value === true) return 'Sí';
   if (value === false) return 'No';
   return 'N/A';
 };
@@ -74,11 +74,11 @@ export default function FeedScreen({ route, navigation }: FeedScreenProps) {
     ? `${notificationSettings.global.quietFrom} - ${notificationSettings.global.quietTo}`
     : 'N/A';
   const habitItems: Array<{ key: keyof NotificationSettings['habits']; label: string }> = [
-    { key: 'hidratacion', label: 'Hidratacion' },
-    { key: 'nutricion', label: 'Nutricion' },
+    { key: 'hidratacion', label: 'Hidratación' },
+    { key: 'nutricion', label: 'Nutrición' },
     { key: 'ejercicio', label: 'Ejercicio' },
-    { key: 'sueno', label: 'Sueno' },
-    { key: 'meditacion', label: 'Meditacion' },
+    { key: 'sueno', label: 'Sueño' },
+    { key: 'meditacion', label: 'Meditación' },
   ];
 
   return (
@@ -115,7 +115,7 @@ export default function FeedScreen({ route, navigation }: FeedScreenProps) {
             <Text style={styles.value}>{email}</Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.label}>Creacion</Text>
+            <Text style={styles.label}>Creación</Text>
             <Text style={styles.value}>{createdAt}</Text>
           </View>
         </View>
@@ -190,7 +190,7 @@ export default function FeedScreen({ route, navigation }: FeedScreenProps) {
           ]}
           onPress={() => navigation.getParent<any>()?.navigate('HabitosTab')}
         >
-          <Text style={styles.habitsText}>Volver a mis habitos</Text>
+          <Text style={styles.habitsText}>Volver a mis hábitos</Text>
         </Pressable>
       </ScrollView>
     </SafeAreaView>

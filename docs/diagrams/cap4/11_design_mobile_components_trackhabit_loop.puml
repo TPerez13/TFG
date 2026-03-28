@@ -20,11 +20,11 @@ skinparam linetype ortho
 skinparam nodesep 40
 skinparam ranksep 42
 
-title Diseno detallado de componentes de la aplicacion movil de TrackHabit Loop
+title Diseño detallado de componentes de la aplicación móvil de TrackHabit Loop
 
 top to bottom direction
 
-package "Shell y sesion" as mo_shell #EAF2FF {
+package "Shell y sesión" as mo_shell #EAF2FF {
   component "App.tsx" as mo_app
   component "AuthProvider / AuthContext" as mo_auth_ctx
   component "NavigationContainer" as mo_nav_container
@@ -37,7 +37,7 @@ package "Shell y sesion" as mo_shell #EAF2FF {
   mo_root -[hidden]right-> mo_runtime
 }
 
-package "Navegacion" as mo_nav #EAF7EA {
+package "Navegación" as mo_nav #EAF7EA {
   component "AuthStack\nLogin / ForgotPassword" as mo_nav_auth
   component "AppTabs" as mo_tabs
   component "HomeStack\nPanelDiario" as mo_nav_home
@@ -52,11 +52,11 @@ package "Navegacion" as mo_nav #EAF7EA {
   mo_nav_progress -[hidden]right-> mo_nav_profile
 }
 
-package "Modulos funcionales" as mo_modules #F4EEFF {
-  component "Acceso publico\nLoginScreen\nForgotPasswordScreen" as mo_mod_auth
+package "Módulos funcionales" as mo_modules #F4EEFF {
+  component "Acceso público\nLoginScreen\nForgotPasswordScreen" as mo_mod_auth
   component "Inicio y panel diario\nPanelDiarioScreen\nhabitRegistry" as mo_mod_home
-  component "Habitos y registro\nentriesApi\nuseCreateHabitEntry / useDeleteHabitEntry\nhydration / exercise / sleep / meditation" as mo_mod_habits
-  component "Nutricion\nnutrition/api.ts\nuseNutritionToday / useNutritionMutations\nquick add / manual entry" as mo_mod_nutrition
+  component "Hábitos y registro\nentriesApi\nuseCreateHabitEntry / useDeleteHabitEntry\nhydration / exercise / sleep / meditation" as mo_mod_habits
+  component "Nutrición\nnutrition/api.ts\nuseNutritionToday / useNutritionMutations\nquick add / manual entry" as mo_mod_nutrition
   component "Progreso y logros\nuseHistoryRange / useHabitTrend\nuseMonthlyProgress / useAchievements" as mo_mod_progress
   component "Perfil, privacidad y soporte\nuseMe / useUpdatePreferences\nProfile, EditProfile, Privacy,\nSupport, About, Feed, legal" as mo_mod_profile
   component "Subsistema de notificaciones\nNotificationSettingsScreen\nfeatures/notifications/api.ts\nreminderSettings.ts\nlocalNotifications.ts" as mo_mod_notifications
@@ -87,7 +87,7 @@ mo_app --> mo_runtime
 mo_app --> mo_nav_container
 
 mo_nav_container --> mo_root
-mo_root --> mo_auth_ctx : estado de sesion
+mo_root --> mo_auth_ctx : estado de sesión
 mo_root --> mo_nav_auth : sin token
 mo_root --> mo_tabs : con token
 
@@ -106,7 +106,7 @@ mo_nav_profile --> mo_mod_notifications : ajustes / feed
 
 mo_auth_ctx --> mo_storage : restaura / persiste token
 mo_auth_ctx --> mo_api : setAuthToken()
-mo_runtime --> mo_auth_ctx : observa sesion
+mo_runtime --> mo_auth_ctx : observa sesión
 mo_runtime --> mo_mod_notifications : sincroniza avisos
 
 mo_mod_auth --> mo_api
@@ -130,7 +130,7 @@ mo_mod_notifications --> mo_device : permisos y agenda
 
 mo_api --> mo_backend
 mo_modules ..> mo_contracts : DTOs y tipos
-mo_nav ..> mo_contracts : params de navegacion
+mo_nav ..> mo_contracts : params de navegación
 
 mo_shell -[hidden]down-> mo_nav
 mo_nav -[hidden]down-> mo_modules

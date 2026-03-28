@@ -12,17 +12,17 @@ skinparam packageStyle rectangle
 skinparam componentStyle rectangle
 skinparam linetype ortho
 
-title Capitulo 5 - Despliegue de TrackHabit Loop
+title Capítulo 5 - Despliegue de TrackHabit Loop
 
 left to right direction
 
 
-node "Dispositivo movil\nAndroid / iOS" as device {
+node "Dispositivo móvil\nAndroid / iOS" as device {
 
   node "App TrackHabit Loop" as mobileApp {
     component "Frontend + React Native + Expo" as Application
   }
-  node "SO movil" as mobileOs {
+  node "SO móvil" as mobileOs {
     component "Notificaciones" as deviceNotifications
   }
 }
@@ -54,17 +54,17 @@ pgadmin --> pg
 
 /'
 -----
-user --> mobileApp : Interaccion diaria
+user --> mobileApp : Interacción diaria
 mobileApp --> backend : HTTPS/REST + JSON\n(prod; HTTP localhost en dev)
 backend --> pg : SQL
 mobileApp --> deviceNotifications : API local de avisos
 deviceNotifications --> user : Recordatorios y alertas
 
-pgadmin --> pg : SQL (administracion)
+pgadmin --> pg : SQL (administración)
 ------
 note right of backend
-API unica para autenticacion, usuarios,
-habitos, nutricion, notificaciones
+API única para autenticación, usuarios,
+hábitos, nutrición, notificaciones
 y soporte.
 end note
 '/

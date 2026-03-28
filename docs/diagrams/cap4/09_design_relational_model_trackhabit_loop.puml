@@ -21,7 +21,7 @@ skinparam linetype ortho
 skinparam nodesep 70
 skinparam ranksep 45
 
-title Capitulo 5 - Modelo relacional fisico de TrackHabit Loop
+title Capítulo 5 - Modelo relacional físico de TrackHabit Loop
 
 top to bottom direction
 
@@ -49,7 +49,7 @@ package "Cuenta y acceso" #EAF2FF {
   }
 }
 
-package "Habitos y nutricion" #EAF7EA {
+package "Hábitos y nutrición" #EAF7EA {
   together {
     entity "tipo_habito" as tipo_habito {
       * id_tipo_habito : SERIAL <<PK>>
@@ -97,7 +97,7 @@ package "Habitos y nutricion" #EAF7EA {
   }
 }
 
-package "Gamificacion" #F4EEFF {
+package "Gamificación" #F4EEFF {
   together {
     entity "logro" as logro {
       * id_logro : SERIAL <<PK>>

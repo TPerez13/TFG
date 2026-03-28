@@ -106,7 +106,7 @@ export default function NutritionQuickAddScreen({
           >
             <Ionicons name="chevron-back" size={24} color={colors.textPrimary} />
           </Pressable>
-          <Text style={styles.headerTitle}>Registro Rapido</Text>
+          <Text style={styles.headerTitle}>Registro Rápido</Text>
           <Pressable onPress={() => Alert.alert('Ayuda', 'Disponible pronto.')}>
             <Text style={styles.helpText}>Ayuda</Text>
           </Pressable>
@@ -165,7 +165,7 @@ export default function NutritionQuickAddScreen({
         {frequentLoading ? <ActivityIndicator size="small" color={colors.textAccent} /> : null}
         {frequentError ? <Text style={styles.errorText}>{frequentError}</Text> : null}
         {!frequentLoading && frequentItems.length === 0 ? (
-          <Text style={styles.emptyText}>Aun no hay alimentos frecuentes.</Text>
+          <Text style={styles.emptyText}>Aún no hay alimentos frecuentes.</Text>
         ) : null}
         {frequentItems.map((item, index) => (
           <FoodItemCard key={`frequent-${item.nombre}-${index}`} item={item} onAdd={() => handleAdd(item)} />

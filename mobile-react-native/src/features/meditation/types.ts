@@ -37,7 +37,7 @@ export const meditationTypeLabel = (type: MeditationSessionType) => {
     case 'mindfulness':
       return 'Mindfulness';
     case 'guiada':
-      return 'Meditacion guiada';
+      return 'Meditación guiada';
     case 'escaneo':
       return 'Escaneo corporal';
     default:

@@ -165,13 +165,13 @@ export default function HabitDetailScreen({ navigation, route }: HabitDetailScre
         {loading ? (
           <View style={styles.loadingCard}>
             <View style={styles.loadingBox} />
-            <Text style={styles.loadingText}>Cargando detalle del habito...</Text>
+            <Text style={styles.loadingText}>Cargando detalle del hábito...</Text>
           </View>
         ) : null}
 
         {error && !loading ? (
           <View style={styles.errorCard}>
-            <Text style={styles.errorTitle}>No se pudo cargar el detalle del habito</Text>
+            <Text style={styles.errorTitle}>No se pudo cargar el detalle del hábito</Text>
             <Pressable onPress={handleRetry} style={({ pressed }) => [styles.retryButton, pressed ? styles.pressed : null]}>
               <Text style={styles.retryText}>Reintentar</Text>
             </Pressable>
@@ -193,7 +193,7 @@ export default function HabitDetailScreen({ navigation, route }: HabitDetailScre
             </View>
 
             <View style={styles.trendCard}>
-              <Text style={styles.sectionTitle}>Tendencia ultimos 7 dias</Text>
+              <Text style={styles.sectionTitle}>Tendencia últimos 7 días</Text>
               <View style={styles.trendBars}>
                 {trendData.daily.map((point) => {
                   const height = point.pct > 0 ? Math.max(6, Math.round((point.pct / 100) * 72)) : 6;
@@ -216,9 +216,9 @@ export default function HabitDetailScreen({ navigation, route }: HabitDetailScre
 
             {isEmpty ? (
               <View style={styles.emptyCard}>
-                <Text style={styles.emptyText}>Sin registros para este habito.</Text>
+                <Text style={styles.emptyText}>Sin registros para este hábito.</Text>
                 <Pressable onPress={openHabitsHome} style={({ pressed }) => [styles.emptyCta, pressed ? styles.pressed : null]}>
-                  <Text style={styles.emptyCtaText}>Ir a Habitos</Text>
+                  <Text style={styles.emptyCtaText}>Ir a Hábitos</Text>
                 </Pressable>
               </View>
             ) : null}
@@ -249,7 +249,7 @@ export default function HabitDetailScreen({ navigation, route }: HabitDetailScre
 
             {olderRecent.length > 0 ? (
               <>
-                <Text style={styles.groupTitle}>ULTIMOS</Text>
+                <Text style={styles.groupTitle}>ÚLTIMOS</Text>
                 {olderRecent.map((entry) => (
                   <View key={entry.id_registro_habito} style={styles.entryCard}>
                     <Text style={styles.entryValue}>{formatEntryValue(habitKey, entry)}</Text>

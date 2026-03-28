@@ -18,17 +18,17 @@ skinparam linetype ortho
 skinparam nodesep 42
 skinparam ranksep 46
 
-title Diseno resumido de componentes de la aplicacion movil de TrackHabit Loop
+title Diseño resumido de componentes de la aplicación móvil de TrackHabit Loop
 
 top to bottom direction
 
-component "App shell y sesion\nApp.tsx, NavigationContainer,\nAuthProvider" as mo_shell
+component "App shell y sesión\nApp.tsx, NavigationContainer,\nAuthProvider" as mo_shell
 component "Root navigation" as mo_root
 component "Auth flow" as mo_auth
 component "Main tabs" as mo_tabs
-component "Modulo Habitos y\nNutricion" as mo_habits
-component "Modulo Progreso y\nLogros" as mo_progress
-component "Modulo Perfil /\nAjustes / Soporte" as mo_profile
+component "Módulo Hábitos y\nNutrición" as mo_habits
+component "Módulo Progreso y\nLogros" as mo_progress
+component "Módulo Perfil /\nAjustes / Soporte" as mo_profile
 component "Subsistema de\nnotificaciones" as mo_notif
 component "Infraestructura de cliente\napi.ts, AsyncStorage,\nshared contracts" as mo_infra
 cloud "Backend API" as mo_backend

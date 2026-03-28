@@ -117,7 +117,7 @@ export default function NutritionManualEntryScreen({
         />
         {showNameError ? <Text style={styles.errorText}>Por favor, introduce el nombre de la comida</Text> : null}
 
-        <Text style={styles.fieldLabel}>Calorias (kcal)</Text>
+        <Text style={styles.fieldLabel}>Calorías (kcal)</Text>
         <TextInput
           value={kcal}
           onChangeText={(value) => {
@@ -131,9 +131,9 @@ export default function NutritionManualEntryScreen({
           keyboardType="numeric"
           style={[styles.input, showKcalError ? styles.inputError : null]}
         />
-        {showKcalError ? <Text style={styles.errorText}>Por favor, introduce las calorias</Text> : null}
+        {showKcalError ? <Text style={styles.errorText}>Por favor, introduce las calorías</Text> : null}
 
-        <Text style={styles.fieldLabel}>Proteina (g)</Text>
+        <Text style={styles.fieldLabel}>Proteína (g)</Text>
         <TextInput
           value={protein}
           onChangeText={setProtein}
@@ -176,7 +176,7 @@ export default function NutritionManualEntryScreen({
         />
 
         <Button
-          title="Cambiar a Registro Rapido"
+          title="Cambiar a Registro Rápido"
           variant="outline"
           onPress={() =>
             navigation.replace('NutritionQuickAdd', {

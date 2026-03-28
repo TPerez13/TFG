@@ -78,7 +78,7 @@ export default function SupportScreen({ navigation }: SupportScreenProps) {
       }
 
       if (!faqRes.ok || !meRes.ok) {
-        throw new Error('No se pudo cargar la informacion de soporte.');
+        throw new Error('No se pudo cargar la información de soporte.');
       }
 
       const faqPayload = (await faqRes.json()) as SupportFaqResponse;
@@ -128,7 +128,7 @@ export default function SupportScreen({ navigation }: SupportScreenProps) {
       const ticket = (await response.json()) as SupportTicketResponse;
       setTicketState('success');
       setFeedback(`Ticket creado: ${ticket.ticketNumber}`);
-      Alert.alert('Solicitud enviada', `Tu ticket ${ticket.ticketNumber} se registro correctamente.`);
+      Alert.alert('Solicitud enviada', `Tu ticket ${ticket.ticketNumber} se registró correctamente.`);
     } catch (_error) {
       setTicketState('error');
       setFeedback('Error al enviar ticket de soporte.');
@@ -137,7 +137,7 @@ export default function SupportScreen({ navigation }: SupportScreenProps) {
 
   const handleSendContact = async () => {
     if (subject.trim().length < 3 || description.trim().length < 10) {
-      setFeedback('Completa asunto (3+) y descripcion (10+) para enviar.');
+      setFeedback('Completa asunto (3+) y descripción (10+) para enviar.');
       setTicketState('error');
       return;
     }
@@ -187,7 +187,7 @@ export default function SupportScreen({ navigation }: SupportScreenProps) {
         {screenState === 'error' ? (
           <View style={styles.statusCard}>
             <Text style={styles.statusTitle}>No se pudo cargar soporte</Text>
-            <Text style={styles.statusSubtitle}>Comprueba la conexion y vuelve a intentarlo.</Text>
+            <Text style={styles.statusSubtitle}>Comprueba la conexión y vuelve a intentarlo.</Text>
             <Pressable style={styles.retryButton} onPress={() => void handleLoadSupportData()}>
               <Text style={styles.retryText}>Reintentar</Text>
             </Pressable>
@@ -258,7 +258,7 @@ export default function SupportScreen({ navigation }: SupportScreenProps) {
             <View style={styles.card}>
               <Pressable style={styles.secondaryButton} onPress={() => setReportExpanded((value) => !value)}>
                 <Text style={styles.secondaryButtonText}>
-                  {reportExpanded ? 'Ocultar formulario rapido' : 'Abrir formulario rapido'}
+                  {reportExpanded ? 'Ocultar formulario rápido' : 'Abrir formulario rápido'}
                 </Text>
               </Pressable>
               {reportExpanded ? (
@@ -280,12 +280,12 @@ export default function SupportScreen({ navigation }: SupportScreenProps) {
                     style={[styles.input, styles.textArea]}
                     value={bugDescription}
                     onChangeText={setBugDescription}
-                    placeholder="Descripcion breve del error"
+                    placeholder="Descripción breve del error"
                     placeholderTextColor={colors.placeholder}
                     multiline
                   />
                   <Text style={styles.helper}>
-                    Se adjuntara automaticamente info del dispositivo y version ({appVersion}/{appBuild}).
+                    Se adjuntará automáticamente info del dispositivo y versión ({appVersion}/{appBuild}).
                   </Text>
                   <Pressable
                     style={[styles.primaryButton, ticketState === 'loading' ? styles.buttonDisabled : null]}
@@ -298,15 +298,15 @@ export default function SupportScreen({ navigation }: SupportScreenProps) {
               ) : null}
             </View>
 
-            <Text style={styles.sectionTitle}>Politica / Terminos</Text>
+            <Text style={styles.sectionTitle}>Política / Términos</Text>
             <View style={styles.card}>
               <PlaceholderLink
-                title="Politica de privacidad"
+                title="Política de privacidad"
                 onPress={() => navigation.navigate('PrivacyPolicy')}
               />
               <View style={styles.divider} />
               <PlaceholderLink
-                title="Terminos de uso"
+                title="Términos de uso"
                 onPress={() => navigation.navigate('TermsOfUse')}
               />
             </View>

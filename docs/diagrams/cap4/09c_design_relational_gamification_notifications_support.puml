@@ -21,7 +21,7 @@ skinparam linetype ortho
 skinparam nodesep 75
 skinparam ranksep 45
 
-title Capitulo 5 - Detalle relacional de gamificacion, avisos y soporte
+title Capítulo 5 - Detalle relacional de gamificación, avisos y soporte
 
 left to right direction
 
@@ -44,7 +44,7 @@ package "Usuario de referencia" #EAF2FF {
   }
 }
 
-package "Gamificacion" #F4EEFF {
+package "Gamificación" #F4EEFF {
   together {
     entity "logro" as logro {
       * id_logro : SERIAL <<PK>>
@@ -86,7 +86,7 @@ package "Gamificacion" #F4EEFF {
   }
 }
 
-package "Configuracion de avisos" #EAF7EA {
+package "Configuración de avisos" #EAF7EA {
   together {
     entity "recordatorio" as recordatorio {
       * id_recordatorio : SERIAL <<PK>>
@@ -110,7 +110,7 @@ package "Configuracion de avisos" #EAF7EA {
   }
 }
 
-package "Historico y soporte" #FFF5E8 {
+package "Histórico y soporte" #FFF5E8 {
   together {
     entity "notificacion" as notificacion {
       * id_notificacion : SERIAL <<PK>>
@@ -158,9 +158,9 @@ reto -[hidden]-> user_device
 recordatorio -[hidden]-> ticket_soporte
 
 note bottom of notificacion
-Persistencia de eventos e historico de avisos.
+Persistencia de eventos e histórico de avisos.
 No existe FK directa hacia logro, reto
-o recordatorio; la relacion es semantica
+o recordatorio; la relación es semántica
 mediante tipo y metadatos.
 end note
 

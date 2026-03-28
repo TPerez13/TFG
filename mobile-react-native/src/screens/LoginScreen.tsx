@@ -1,4 +1,4 @@
-// Pantalla de inicio de sesion y registro.
+// Pantalla de inicio de sesión y registro.
 import React, { useState } from 'react';
 import type { ImageSourcePropType } from 'react-native';
 import { Image, Pressable, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
@@ -49,15 +49,15 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
   const handleAuth = async () => {
     if (isSignUp) {
       if (!nombre || !correo || !password) {
-        setAuthMsg('Completa nombre, correo y contrasena.');
+        setAuthMsg('Completa nombre, correo y contraseña.');
         return;
       }
       if (password !== confirmPassword) {
-        setAuthMsg('Las contrasenas no coinciden.');
+        setAuthMsg('Las contraseñas no coinciden.');
         return;
       }
     } else if (!correo || !password) {
-      setAuthMsg('Ingresa correo y contrasena.');
+      setAuthMsg('Ingresa correo y contraseña.');
       return;
     }
 
@@ -86,7 +86,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
         if (parsed.token) {
           await signIn(parsed.token);
         } else {
-          setAuthMsg('Login correcto, pero no se recibio token.');
+          setAuthMsg('Login correcto, pero no se recibió token.');
         }
       } else {
         const fallback = (parsed as { message?: string } | null)?.message ?? raw;
@@ -134,11 +134,11 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
               </View>
             )}
           </View>
-          <Text style={styles.title}>{isSignUp ? 'Crear cuenta' : 'Iniciar Sesion'}</Text>
+          <Text style={styles.title}>{isSignUp ? 'Crear cuenta' : 'Iniciar sesión'}</Text>
           <Text style={styles.subtitle}>
             {isSignUp
               ? 'Crea tu cuenta para continuar tu camino hacia el bienestar.'
-              : 'Bienvenido de nuevo. Continua con tu camino hacia el bienestar.'}
+              : 'Bienvenido de nuevo. Continúa con tu camino hacia el bienestar.'}
           </Text>
         </View>
 
@@ -154,7 +154,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
               />
             </>
           ) : null}
-          <Text style={styles.label}>Correo Electronico</Text>
+          <Text style={styles.label}>Correo electrónico</Text>
           <Input
             placeholder="nombre@ejemplo.com"
             autoCapitalize="none"
@@ -162,9 +162,9 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
             value={correo}
             onChangeText={setCorreo}
           />
-          <Text style={styles.label}>Contrasena</Text>
+          <Text style={styles.label}>Contraseña</Text>
           <Input
-            placeholder="Tu contrasena"
+            placeholder="Tu contraseña"
             autoCapitalize="none"
             secureTextEntry={!showPassword}
             value={password}
@@ -182,9 +182,9 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
           />
           {isSignUp ? (
             <>
-              <Text style={styles.label}>Confirmar contrasena</Text>
+              <Text style={styles.label}>Confirmar contraseña</Text>
               <Input
-                placeholder="Repite tu contrasena"
+                placeholder="Repite tu contraseña"
                 autoCapitalize="none"
                 secureTextEntry={!showConfirmPassword}
                 value={confirmPassword}
@@ -204,11 +204,11 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
           ) : null}
           {!isSignUp ? (
             <Pressable style={styles.forgotLink} onPress={() => navigation.navigate('ForgotPassword')}>
-              <Text style={styles.forgotText}>Olvidaste tu contrasena?</Text>
+              <Text style={styles.forgotText}>¿Olvidaste tu contraseña?</Text>
             </Pressable>
           ) : null}
           <Button
-            title={isSignUp ? 'Crear cuenta ->' : 'Iniciar Sesion'}
+            title={isSignUp ? 'Crear cuenta ->' : 'Iniciar sesión'}
             onPress={handleAuth}
             style={styles.primaryButton}
           />
@@ -226,7 +226,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
           {isSignUp ? 'Ya tienes una cuenta?' : 'No tienes una cuenta?'}
         </Text>
         <Button
-          title={isSignUp ? 'Iniciar sesion' : 'Crear cuenta'}
+          title={isSignUp ? 'Iniciar sesión' : 'Crear cuenta'}
           onPress={() => switchMode(isSignUp ? 'signin' : 'signup')}
           variant="outline"
           style={styles.secondaryButton}

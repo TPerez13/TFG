@@ -22,9 +22,9 @@ skinparam linetype ortho
 
 hide methods
 
-title Capitulo 4 - Modelo Conceptual de TrackHabit Loop
+title Capítulo 4 - Modelo Conceptual de TrackHabit Loop
 
-package "Cuenta y autenticacion" {
+package "Cuenta y autenticación" {
   together {
     class Usuario {
       +id_usuario: int
@@ -46,7 +46,7 @@ package "Cuenta y autenticacion" {
   }
 }
 
-package "Habitos y nutricion" {
+package "Hábitos y nutrición" {
   together {
     class TipoHabito {
       +id_tipo_habito: int
@@ -136,7 +136,7 @@ package "Soporte" {
   }
 }
 
-package "Gamificacion" {
+package "Gamificación" {
   together {
     class Logro {
       +id_logro: int
@@ -209,7 +209,7 @@ TipoHabito "1" -- "0..*" RegistroHabito : clasifica
 
 Usuario "1" -- "0..*" RegistroComida : registra
 Alimento "0..1" -- "0..*" RegistroComida : referencia opcional
-RegistroComida "1" <-- "0..1" RegistroHabito : vinculo nutricion
+RegistroComida "1" <-- "0..1" RegistroHabito : vínculo nutrición
 
 Usuario "1" -- "1" ConfiguracionNotificaciones : define
 ConfiguracionNotificaciones "1" -- "1..*" ConfiguracionAvisoHabito : contiene
@@ -225,11 +225,11 @@ Reto "1" -- "0..*" UsuarioReto : define
 
 ProgresoMensual ..> RegistroHabito : agrega
 ProgresoMensual ..> Usuario : usa metas/preferencias
-HistorialDiario ..> RegistroHabito : agrupa por dia
-LogroCliente ..> RegistroHabito : evalua reglas
+HistorialDiario ..> RegistroHabito : agrupa por día
+LogroCliente ..> RegistroHabito : evalúa reglas
 LogroCliente ..> Usuario : usa metas activas
 
-' --- Guias invisibles para mejorar distribucion ---
+' --- Guías invisibles para mejorar distribución ---
 Usuario -[hidden]-> TipoHabito
 TipoHabito -[hidden]-> ConfiguracionNotificaciones
 
@@ -246,8 +246,8 @@ note right of RegistroHabito
 RB-001: cada registro pertenece a un usuario autenticado.
 RB-002: id_tipo_habito debe existir en tipo_habito.
 RB-003: consultas principales por rango de fechas.
-RB-003b: registrar comida no crea automaticamente
-un RegistroHabito de nutricion en el flujo actual.
+RB-003b: registrar comida no crea automáticamente
+un RegistroHabito de nutrición en el flujo actual.
 end note
 
 note right of Notificacion
@@ -257,16 +257,16 @@ Disponible para consulta y seguimiento de avisos.
 end note
 
 note right of ConfiguracionNotificaciones
-Fuente de verdad unica: usuario.preferencias.notificaciones.
-Se edita desde Perfil > Notificaciones y desde cada habito.
-Si enabled=false a nivel global, los avisos por habito no
+Fuente de verdad única: usuario.preferencias.notificaciones.
+Se edita desde Perfil > Notificaciones y desde cada hábito.
+Si enabled=false a nivel global, los avisos por hábito no
 se consideran activos.
 end note
 
 note right of ConfiguracionAvisoHabito
-Al registrar un habito/comida, se actualiza lastCompletedDate
-para coherencia de cancelacion/reprogramacion logica.
-La programacion activa se ejecuta en mobile con
+Al registrar un hábito/comida, se actualiza lastCompletedDate
+para coherencia de cancelación/reprogramación lógica.
+La programación activa se ejecuta en mobile con
 notificaciones locales.
 end note
 
@@ -282,7 +282,7 @@ end note
 
 note bottom
 El alcance del modelo se centra en salud,
-progreso, avisos, gamificacion y soporte.
+progreso, avisos, gamificación y soporte.
 end note
 */
 @enduml

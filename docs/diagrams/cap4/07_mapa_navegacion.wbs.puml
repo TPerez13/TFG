@@ -1,5 +1,5 @@
 @startwbs
-' CAP4 - 07 Mapa de Navegacion
+' CAP4 - 07 Mapa de Navegación
 
 skinparam backgroundColor #F8FAFC
 skinparam shadowing false
@@ -8,37 +8,37 @@ skinparam defaultFontName Segoe UI
 skinparam defaultFontSize 13
 skinparam ArrowColor #5B7083
 skinparam ArrowThickness 1
-title Capitulo 4 - Mapa de navegacion
+title Capítulo 4 - Mapa de navegación
 
-* Aplicacion movil
+* Aplicación móvil
 ** Acceso
-*** Inicio de sesion
+*** Inicio de sesión
 *** Registro
-*** Recuperacion de contrasena
+*** Recuperación de contraseña
 
-** Navegacion principal
+** Navegación principal
 *** Inicio
 **** Panel diario
 
-*** Habitos
-**** Vista general de habitos
-**** Nutricion
-**** Hidratacion
+*** Hábitos
+**** Vista general de hábitos
+**** Nutrición
+**** Hidratación
 **** Ejercicio
-**** Sueno
-**** Meditacion
+**** Sueño
+**** Meditación
 
 *** Progreso
 **** Progreso mensual
 **** Historial
 **** Detalle diario
-**** Detalle por habito
+**** Detalle por hábito
 
 *** Perfil
 **** Perfil de usuario
 **** Logros
-**** Configuracion de notificaciones
+**** Configuración de notificaciones
 **** Privacidad
 **** Soporte
-**** Informacion legal
+**** Información legal
 @endwbs

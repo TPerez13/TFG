@@ -59,14 +59,14 @@ export default function ForgotPasswordScreen({ navigation }: ForgotPasswordScree
 
       const payload = (await response.json().catch(() => null)) as ForgotPasswordResponse | null;
       if (!response.ok) {
-        throw new Error(payload?.message ?? 'No se pudo iniciar la recuperacion.');
+        throw new Error(payload?.message ?? 'No se pudo iniciar la recuperación.');
       }
 
       setStep('reset');
-      setInfo(payload?.message ?? 'Revisa el codigo y continua con el restablecimiento.');
+      setInfo(payload?.message ?? 'Revisa el código y continúa con el restablecimiento.');
       setDevCode(payload?.devResetCode ?? null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'No se pudo iniciar la recuperacion.');
+      setError(err instanceof Error ? err.message : 'No se pudo iniciar la recuperación.');
     } finally {
       setLoading(false);
     }
@@ -79,12 +79,12 @@ export default function ForgotPasswordScreen({ navigation }: ForgotPasswordScree
     setInfo(null);
 
     if (newPassword !== confirmPassword) {
-      setError('La nueva contrasena y su confirmacion no coinciden.');
+      setError('La nueva contraseña y su confirmación no coinciden.');
       return;
     }
 
     if (newPassword.length < 6) {
-      setError('La nueva contrasena debe tener al menos 6 caracteres.');
+      setError('La nueva contraseña debe tener al menos 6 caracteres.');
       return;
     }
 
@@ -101,16 +101,16 @@ export default function ForgotPasswordScreen({ navigation }: ForgotPasswordScree
 
       const payload = (await response.json().catch(() => null)) as ResetPasswordResponse | null;
       if (!response.ok) {
-        throw new Error(payload?.message ?? 'No se pudo restablecer la contrasena.');
+        throw new Error(payload?.message ?? 'No se pudo restablecer la contraseña.');
       }
 
       setResetDone(true);
-      setInfo(payload?.message ?? 'Contrasena restablecida correctamente.');
+      setInfo(payload?.message ?? 'Contraseña restablecida correctamente.');
       setCode('');
       setNewPassword('');
       setConfirmPassword('');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'No se pudo restablecer la contrasena.');
+      setError(err instanceof Error ? err.message : 'No se pudo restablecer la contraseña.');
     } finally {
       setLoading(false);
     }
@@ -120,11 +120,11 @@ export default function ForgotPasswordScreen({ navigation }: ForgotPasswordScree
     <Screen>
       <ScrollView contentContainerStyle={[baseStyles.content, styles.content]} keyboardShouldPersistTaps="handled">
         <View style={styles.header}>
-          <Text style={styles.title}>Recuperar Contrasena</Text>
+          <Text style={styles.title}>Recuperar contraseña</Text>
           <Text style={styles.subtitle}>
             {step === 'request'
-              ? 'Ingresa tu correo para generar un codigo temporal.'
-              : 'Introduce el codigo y define tu nueva contrasena.'}
+              ? 'Ingresa tu correo para generar un código temporal.'
+              : 'Introduce el código y define tu nueva contraseña.'}
           </Text>
         </View>
 
@@ -138,30 +138,30 @@ export default function ForgotPasswordScreen({ navigation }: ForgotPasswordScree
         />
 
         {step === 'request' ? (
-          <Button title={loading ? 'Enviando...' : 'Enviar codigo'} onPress={requestCode} disabled={!canRequestCode} />
+          <Button title={loading ? 'Enviando...' : 'Enviar código'} onPress={requestCode} disabled={!canRequestCode} />
         ) : (
           <>
             <Text style={styles.label}>Codigo</Text>
             <Input
-              placeholder="Codigo de 6 digitos"
+              placeholder="Código de 6 dígitos"
               autoCapitalize="none"
               keyboardType="number-pad"
               value={code}
               onChangeText={setCode}
             />
 
-            <Text style={styles.label}>Nueva contrasena</Text>
+            <Text style={styles.label}>Nueva contraseña</Text>
             <Input
-              placeholder="Nueva contrasena"
+              placeholder="Nueva contraseña"
               autoCapitalize="none"
               secureTextEntry
               value={newPassword}
               onChangeText={setNewPassword}
             />
 
-            <Text style={styles.label}>Confirmar contrasena</Text>
+            <Text style={styles.label}>Confirmar contraseña</Text>
             <Input
-              placeholder="Repite la nueva contrasena"
+              placeholder="Repite la nueva contraseña"
               autoCapitalize="none"
               secureTextEntry
               value={confirmPassword}
@@ -169,7 +169,7 @@ export default function ForgotPasswordScreen({ navigation }: ForgotPasswordScree
             />
 
             <Button
-              title={loading ? 'Restableciendo...' : 'Restablecer contrasena'}
+              title={loading ? 'Restableciendo...' : 'Restablecer contraseña'}
               onPress={resetPassword}
               disabled={!canReset}
             />
@@ -178,10 +178,10 @@ export default function ForgotPasswordScreen({ navigation }: ForgotPasswordScree
 
         {info ? <Text style={styles.info}>{info}</Text> : null}
         {error ? <Text style={styles.error}>{error}</Text> : null}
-        {devCode ? <Text style={styles.devCode}>Codigo de prueba: {devCode}</Text> : null}
+        {devCode ? <Text style={styles.devCode}>Código de prueba: {devCode}</Text> : null}
 
         <Pressable style={styles.backLink} onPress={() => navigation.navigate('Login')}>
-          <Text style={styles.backLinkText}>{resetDone ? 'Ir a Iniciar Sesion' : 'Volver a Iniciar Sesion'}</Text>
+          <Text style={styles.backLinkText}>{resetDone ? 'Ir a Iniciar sesión' : 'Volver a Iniciar sesión'}</Text>
         </Pressable>
       </ScrollView>
     </Screen>

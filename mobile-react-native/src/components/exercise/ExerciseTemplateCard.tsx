@@ -40,7 +40,7 @@ export function ExerciseTemplateCard({
         </View>
       </View>
       <Pressable onPress={onAdd} style={({ pressed }) => [styles.addButton, pressed ? styles.pressed : null]}>
-        <Text style={styles.addText}>Anadir +</Text>
+        <Text style={styles.addText}>Añadir +</Text>
       </Pressable>
     </View>
   );

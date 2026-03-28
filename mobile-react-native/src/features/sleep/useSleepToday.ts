@@ -104,14 +104,14 @@ export function useSleepToday(date: Date): UseSleepTodayResult {
       ]);
 
       if (!userRes.ok) {
-        throw new Error('No se pudo cargar usuario para meta de sueno.');
+        throw new Error('No se pudo cargar usuario para meta de sueño.');
       }
 
       const userPayload = (await userRes.json()) as { user?: User };
       setEntries(entriesRes);
       setUser(userPayload.user ?? null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'No se pudo cargar sueno.');
+      setError(err instanceof Error ? err.message : 'No se pudo cargar sueño.');
       setEntries([]);
     } finally {
       setLoading(false);

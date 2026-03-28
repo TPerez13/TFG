@@ -22,9 +22,9 @@ skinparam linetype ortho
 
 hide methods
 
-title Capitulo 4 - Modelo Conceptual del sistema
+title Capítulo 4 - Modelo Conceptual del sistema
 
-package "Cuenta y autenticacion" {
+package "Cuenta y autenticación" {
   together {
     class Usuario {
       +id_usuario: entero
@@ -46,7 +46,7 @@ package "Cuenta y autenticacion" {
   }
 }
 
-package "Habitos y nutricion" {
+package "Hábitos y nutrición" {
   together {
     class TipoHabito {
       +id_tipo_habito: entero
@@ -134,7 +134,7 @@ package "Soporte" {
   }
 }
 
-package "Gamificacion" {
+package "Gamificación" {
   together {
     class Logro {
       +id_logro: entero
@@ -227,7 +227,7 @@ HistorialDiario ..> RegistroHabito : DER
 EstadoLogro ..> RegistroHabito : EVP
 EstadoLogro ..> Usuario : USP
 
-' --- Guias invisibles para mejorar distribucion ---
+' --- Guías invisibles para mejorar distribución ---
 Usuario -[hidden]-> TipoHabito
 TipoHabito -[hidden]-> ConfiguracionNotificaciones
 
@@ -255,7 +255,7 @@ legend right
 | PAR | participa |
 | DER | se deriva de |
 | USP | usa preferencias |
-| EVP | evalua progreso |
+| EVP | evalúa progreso |
 endlegend
 
 @enduml

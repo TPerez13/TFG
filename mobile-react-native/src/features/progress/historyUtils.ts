@@ -162,7 +162,7 @@ const resolveGoalValue = (
 const resolveTitle = (definition: HabitDefinition | undefined, habitKey: HabitKey) => {
   if (definition?.title) return definition.title;
   if (habitKey === 'comidas') return 'Comidas';
-  if (habitKey === 'sueno') return 'Sueno';
+  if (habitKey === 'sueno') return 'Sueño';
   return habitKey.charAt(0).toUpperCase() + habitKey.slice(1);
 };
 
@@ -269,7 +269,7 @@ export const getMotivationalText = (habitKey: HabitKey, achieved: boolean) => {
   if (achieved) return '\u00a1Objetivo alcanzado!';
   if (habitKey === 'agua') return 'Sigue hidratandote.';
   if (habitKey === 'ejercicio') return 'Activa tu cuerpo hoy.';
-  if (habitKey === 'sueno') return 'Dormir bien tambien suma.';
+  if (habitKey === 'sueno') return 'Dormir bien también suma.';
   if (habitKey === 'meditacion') return 'Unos minutos de calma ayudan.';
   return 'Suma una comida balanceada.';
 };
@@ -281,4 +281,3 @@ export const lastNDays = (days: number, fromDate = new Date()) => {
   }
   return items;
 };
-

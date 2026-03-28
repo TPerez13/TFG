@@ -92,7 +92,7 @@ export async function getMe(req: AuthRequest, res: Response, next: NextFunction)
     const userId = req.userId;
     console.log("[USERS] /users/me userId:", userId ?? "missing");
     if (!userId) {
-      throw new AppError("Token invalido.", 401);
+      throw new AppError("Token inválido.", 401);
     }
 
     const user = await findById(userId);
@@ -111,7 +111,7 @@ export async function updateMe(req: AuthRequest, res: Response, next: NextFuncti
   try {
     const userId = req.userId;
     if (!userId) {
-      throw new AppError("Token invalido.", 401);
+      throw new AppError("Token inválido.", 401);
     }
 
     const payload = (req.body as {
@@ -136,7 +136,7 @@ export async function updateMe(req: AuthRequest, res: Response, next: NextFuncti
     let nextNombre: string | undefined;
     if (hasNombre) {
       if (typeof payload.nombre !== "string" || payload.nombre.trim().length === 0) {
-        throw new AppError("Nombre invalido.", 400);
+        throw new AppError("Nombre inválido.", 400);
       }
       nextNombre = payload.nombre.trim();
     }
@@ -144,7 +144,7 @@ export async function updateMe(req: AuthRequest, res: Response, next: NextFuncti
     let nextCorreo: string | undefined;
     if (hasCorreo) {
       if (typeof payload.correo !== "string" || payload.correo.trim().length === 0) {
-        throw new AppError("Correo invalido.", 400);
+        throw new AppError("Correo inválido.", 400);
       }
       nextCorreo = payload.correo.trim();
     }
@@ -153,7 +153,7 @@ export async function updateMe(req: AuthRequest, res: Response, next: NextFuncti
     if (hasPreferences) {
       const preferences = payload.preferencias;
       if (!preferences || typeof preferences !== "object" || Array.isArray(preferences)) {
-        throw new AppError("Preferencias invalidas.", 400);
+        throw new AppError("Preferencias inválidas.", 400);
       }
       nextPreferences = preferences;
     }
@@ -193,7 +193,7 @@ export async function changePassword(req: AuthRequest, res: Response, next: Next
   try {
     const userId = req.userId;
     if (!userId) {
-      throw new AppError("Token invalido.", 401);
+      throw new AppError("Token inválido.", 401);
     }
 
     const payload = (req.body as { currentPassword?: string; newPassword?: string }) ?? {};
@@ -201,15 +201,15 @@ export async function changePassword(req: AuthRequest, res: Response, next: Next
     const newPassword = typeof payload.newPassword === "string" ? payload.newPassword : "";
 
     if (!currentPassword || !newPassword) {
-      throw new AppError("Contrasena actual y nueva contrasena son requeridas.", 400);
+      throw new AppError("Contraseña actual y nueva contraseña son requeridas.", 400);
     }
 
     if (newPassword.length < 6) {
-      throw new AppError("La nueva contrasena debe tener al menos 6 caracteres.", 400);
+      throw new AppError("La nueva contraseña debe tener al menos 6 caracteres.", 400);
     }
 
     if (currentPassword === newPassword) {
-      throw new AppError("La nueva contrasena debe ser diferente a la actual.", 400);
+      throw new AppError("La nueva contraseña debe ser diferente a la actual.", 400);
     }
 
     const user = await findById(userId);
@@ -219,7 +219,7 @@ export async function changePassword(req: AuthRequest, res: Response, next: Next
 
     const isCurrentValid = await bcrypt.compare(currentPassword, user.hash_clave);
     if (!isCurrentValid) {
-      throw new AppError("La contrasena actual es incorrecta.", 401);
+      throw new AppError("La contraseña actual es incorrecta.", 401);
     }
 
     const hash = await bcrypt.hash(newPassword, 10);
@@ -228,7 +228,7 @@ export async function changePassword(req: AuthRequest, res: Response, next: Next
       throw new AppError("Usuario no encontrado.", 404);
     }
 
-    res.json({ message: "Contrasena actualizada correctamente." });
+    res.json({ message: "Contraseña actualizada correctamente." });
   } catch (error) {
     next(error);
   }
@@ -242,7 +242,7 @@ export async function exportMe(req: AuthRequest, res: Response, next: NextFuncti
   try {
     const userId = req.userId;
     if (!userId) {
-      throw new AppError("Token invalido.", 401);
+      throw new AppError("Token inválido.", 401);
     }
 
     const user = await findById(userId);
@@ -276,7 +276,7 @@ export async function deleteMe(req: AuthRequest, res: Response, next: NextFuncti
   try {
     const userId = req.userId;
     if (!userId) {
-      throw new AppError("Token invalido.", 401);
+      throw new AppError("Token inválido.", 401);
     }
 
     const deleted = await deleteUserById(userId);

@@ -15,7 +15,7 @@ skinparam actorBackgroundColor #FFFFFF
 skinparam noteBackgroundColor #FFF9E6
 skinparam noteBorderColor #D7C58A
 
-title Secuencia de autenticacion de TrackHabit Loop
+title Secuencia de autenticación de TrackHabit Loop
 
 autonumber
 
@@ -31,7 +31,7 @@ participant "AuthProvider" as authctx
 database "AsyncStorage" as storage
 participant "RootNavigator" as root
 
-user -> login : Introduce correo y contrasena
+user -> login : Introduce correo y contraseña
 login -> api : POST /login
 api -> authmod : Solicitud HTTP
 authmod -> authsvc : login(payload)
@@ -39,9 +39,9 @@ authsvc -> usermodel : findByEmail(correo)
 usermodel -> pg : SELECT usuario
 pg --> usermodel : UserRecord
 usermodel --> authsvc : Datos del usuario
-authsvc -> authsvc : Verifica hash de contrasena
+authsvc -> authsvc : Verifica hash de contraseña
 
-alt Credenciales validas
+alt Credenciales válidas
   authsvc -> jwt : signAccessToken(userId)
   jwt --> authsvc : JWT
   authsvc --> authmod : LoginResponse
@@ -50,11 +50,11 @@ alt Credenciales validas
   login -> authctx : signIn(token)
   authctx -> api : setAuthToken(token)
   authctx -> storage : Persistir token
-  authctx --> root : Actualizar sesion
+  authctx --> root : Actualizar sesión
   root --> user : Activa flujo autenticado
-else Credenciales invalidas
+else Credenciales inválidas
   authsvc --> authmod : AppError(401)
-  authmod --> api : Error de autenticacion
+  authmod --> api : Error de autenticación
   api --> login : 401 Unauthorized
   login --> user : Mostrar mensaje de error
 end

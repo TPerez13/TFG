@@ -41,7 +41,7 @@ export function useRecentSleepTemplates(): UseRecentSleepTemplatesResult {
       const payload = await fetchHabitEntries({ from, to, typeId: sleepTypeId });
       setEntries(payload);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'No se pudieron cargar recientes de sueno.');
+      setError(err instanceof Error ? err.message : 'No se pudieron cargar recientes de sueño.');
       setEntries([]);
     } finally {
       setLoading(false);

@@ -107,7 +107,7 @@ export function useAchievements(selectedMonth: Date): UseAchievementsResult {
     const response = await apiFetch('/users/me');
     if (response.status === 401) {
       await signOut();
-      throw new Error('Tu sesion ha expirado.');
+      throw new Error('Tu sesión ha expirado.');
     }
     if (!response.ok) {
       throw new Error(await parseErrorMessage(response, 'No se pudo cargar tu perfil.'));
@@ -120,7 +120,7 @@ export function useAchievements(selectedMonth: Date): UseAchievementsResult {
   const fetchGlobalEntries = useCallback(async () => {
     const today = new Date();
     const start = addDays(today, -(GLOBAL_LOOKBACK_DAYS - 1));
-    // Este calculo usa el historico disponible (365 dias + mes seleccionado en cache).
+    // Este cálculo usa el histórico disponible (365 días + mes seleccionado en caché).
     return fetchHabitEntries({
       from: toIsoDateKey(start),
       to: toIsoDateKey(today),

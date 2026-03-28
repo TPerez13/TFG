@@ -209,7 +209,7 @@ export const evaluateAchievements = (context: AchievementEvaluationContext): Ach
     {
       id: 'FIRST_ENTRY',
       title: 'Primer registro',
-      description: 'Registra tu primer avance en un habito.',
+      description: 'Registra tu primer avance en un hábito.',
       icon: 'sparkles-outline',
       unlocked: Boolean(firstEntryAt),
       unlockedAt: firstEntryAt,
@@ -245,7 +245,7 @@ export const evaluateAchievements = (context: AchievementEvaluationContext): Ach
     {
       id: 'PERFECT_DAY',
       title: 'Dia perfecto',
-      description: 'Cumple todos los habitos objetivo en un mismo dia.',
+      description: 'Cumple todos los hábitos objetivo en un mismo día.',
       icon: 'star-outline',
       unlocked: Boolean(firstPerfectDay),
       unlockedAt: firstPerfectDay,
@@ -280,8 +280,8 @@ export const evaluateAchievements = (context: AchievementEvaluationContext): Ach
     },
     {
       id: 'HABIT_MASTER',
-      title: 'Maestro del habito',
-      description: `Cumple un mismo habito ${HABIT_MASTER_TARGET} veces.`,
+      title: 'Maestro del hábito',
+      description: `Cumple un mismo hábito ${HABIT_MASTER_TARGET} veces.`,
       icon: 'medal-outline',
       unlocked: Boolean(habitMaster.unlockedAt),
       unlockedAt: habitMaster.unlockedAt,

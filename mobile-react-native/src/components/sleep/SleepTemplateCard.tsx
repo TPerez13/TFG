@@ -29,7 +29,7 @@ export function SleepTemplateCard({ title, hours, subtitle, onAdd }: SleepTempla
         </View>
       </View>
       <Pressable onPress={onAdd} style={({ pressed }) => [styles.addButton, pressed ? styles.pressed : null]}>
-        <Text style={styles.addText}>Anadir +</Text>
+        <Text style={styles.addText}>Añadir +</Text>
       </Pressable>
     </View>
   );

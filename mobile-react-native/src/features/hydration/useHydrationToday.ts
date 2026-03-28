@@ -137,7 +137,7 @@ export function useHydrationToday(date: Date): UseHydrationTodayResult {
       ]);
 
       if (!userRes.ok) {
-        throw new Error('No se pudo cargar usuario para meta de hidratacion.');
+        throw new Error('No se pudo cargar usuario para meta de hidratación.');
       }
 
       const userPayload = (await userRes.json()) as { user?: User };
@@ -145,7 +145,7 @@ export function useHydrationToday(date: Date): UseHydrationTodayResult {
       setWindowEntries(thirtyDaysEntries);
       setUser(userPayload.user ?? null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'No se pudo cargar hidratacion.');
+      setError(err instanceof Error ? err.message : 'No se pudo cargar hidratación.');
       setEntries([]);
       setWindowEntries([]);
     } finally {

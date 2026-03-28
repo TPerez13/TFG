@@ -10,7 +10,7 @@ type ReminderDebugPanelProps = {
   sendingTest?: boolean;
 };
 
-const formatBoolean = (value: boolean) => (value ? 'Si' : 'No');
+const formatBoolean = (value: boolean) => (value ? 'Sí' : 'No');
 
 const formatDateTime = (value: string | null, source: HabitReminderDebugInfo['nextScheduledSource']) => {
   if (!value) return 'No programada';
@@ -58,14 +58,14 @@ export function ReminderDebugPanel({
 
   return (
     <View style={styles.card}>
-      <Text style={styles.title}>Diagnostico del aviso</Text>
+      <Text style={styles.title}>Diagnóstico del aviso</Text>
       {loading ? <ActivityIndicator size="small" color={colors.textAccent} style={styles.loader} /> : null}
       {!loading && data ? (
         <>
           <DebugRow label="Hora del sistema" value={formatSystemDateTime(systemTime)} />
           <DebugRow label="Permiso actual" value={data.permissionState} />
           <DebugRow
-            label="Proxima fecha programada"
+            label="Próxima fecha programada"
             value={formatDateTime(data.nextScheduledAt, data.nextScheduledSource)}
           />
           <DebugRow label="Completado hoy" value={formatBoolean(data.completedToday)} />
@@ -86,7 +86,7 @@ export function ReminderDebugPanel({
           ]}
         >
           <Text style={styles.testButtonText}>
-            {sendingTest ? 'Lanzando prueba...' : 'Lanzar notificacion de prueba'}
+            {sendingTest ? 'Lanzando prueba...' : 'Lanzar notificación de prueba'}
           </Text>
         </Pressable>
       ) : null}

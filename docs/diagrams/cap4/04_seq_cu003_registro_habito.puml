@@ -1,5 +1,5 @@
 ﻿@startuml
-' CAP4 - 04 Secuencia CU-003 Registrar habito
+' CAP4 - 04 Secuencia CU-003 Registrar hábito
 
 skinparam backgroundColor #F8FAFC
 skinparam shadowing false
@@ -17,38 +17,38 @@ skinparam actorBackgroundColor #FFFFFF
 skinparam noteBackgroundColor #FFF9E6
 skinparam noteBorderColor #D7C58A
 
-title Capitulo 4 - Secuencia CU-003 Registrar habito
+title Capítulo 4 - Secuencia CU-003 Registrar hábito
 
 actor Usuario
-participant "App movil" as App
+participant "App móvil" as App
 participant "API" as API
 database "Base de datos" as DB
-participant "Sincronizacion avisos" as Avisos
+participant "Sincronización avisos" as Avisos
 
-Usuario -> App : Introduce datos del habito
+Usuario -> App : Introduce datos del hábito
 
-alt Registrar habito generico
+alt Registrar hábito genérico
     App -> API : POST /habits/entries
     API -> API : Validar datos y token
     API -> DB : Insertar registro_habito
-    DB --> API : Confirmacion
+    DB --> API : Confirmación
     API -> DB : Actualizar preferencias / ultima fecha
-    DB --> API : Confirmacion
+    DB --> API : Confirmación
     API --> App : Registro correcto
-else Registrar comida (nutricion)
+else Registrar comida (nutrición)
     App -> API : POST /nutrition/entries
     API -> API : Validar datos y token
     API -> DB : Insertar registro_comida
     DB --> API : id_registro_comida
     API -> DB : Insertar registro_habito asociado
-    DB --> API : Confirmacion
+    DB --> API : Confirmación
     API -> DB : Actualizar preferencias / ultima fecha
-    DB --> API : Confirmacion
+    DB --> API : Confirmación
     API --> App : Registro correcto
 end
 
 App -> Avisos : Resincronizar avisos locales
 Avisos --> App : Estado actualizado
-App --> Usuario : Confirmacion de registro
+App --> Usuario : Confirmación de registro
 
 @enduml

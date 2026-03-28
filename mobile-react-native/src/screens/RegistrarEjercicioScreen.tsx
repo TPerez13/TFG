@@ -186,7 +186,7 @@ export default function RegistrarEjercicioScreen({
             style={({ pressed }) => [styles.switchButton, pressed ? styles.buttonPressed : null]}
           >
             <Text style={styles.switchButtonText}>
-              {mode === 'quick' ? 'Cambiar a Manual' : 'Cambiar a Registro Rapido'}
+              {mode === 'quick' ? 'Cambiar a Manual' : 'Cambiar a Registro Rápido'}
             </Text>
           </Pressable>
         </View>
@@ -243,7 +243,7 @@ export default function RegistrarEjercicioScreen({
           </View>
         ) : (
           <View>
-            <Text style={styles.fieldLabel}>Duracion (min)</Text>
+            <Text style={styles.fieldLabel}>Duración (min)</Text>
             <TextInput
               value={duration}
               onChangeText={(value) => {
@@ -258,7 +258,7 @@ export default function RegistrarEjercicioScreen({
               placeholderTextColor={colors.placeholder}
               style={[styles.input, showDurationError ? styles.inputError : null]}
             />
-            {showDurationError ? <Text style={styles.errorText}>Introduce la duracion en minutos.</Text> : null}
+            {showDurationError ? <Text style={styles.errorText}>Introduce la duración en minutos.</Text> : null}
 
             <Text style={styles.fieldLabel}>Intensidad (opcional)</Text>
             <View style={styles.chipWrap}>
@@ -289,7 +289,7 @@ export default function RegistrarEjercicioScreen({
               ))}
             </View>
 
-            <Text style={styles.fieldLabel}>Calorias (kcal) opcional</Text>
+            <Text style={styles.fieldLabel}>Calorías (kcal) opcional</Text>
             <TextInput
               value={kcal}
               onChangeText={setKcal}
@@ -314,7 +314,7 @@ export default function RegistrarEjercicioScreen({
               style={styles.saveButton}
             />
             <Button
-              title="Cambiar a Registro Rapido"
+              title="Cambiar a Registro Rápido"
               variant="outline"
               onPress={() => setMode('quick')}
               style={styles.switchModeButton}

@@ -257,7 +257,7 @@ export async function createNutritionEntry(
       const knownValidation = [
         "Fecha de registro invalida.",
         "El nombre de la comida es requerido.",
-        "Las calorias deben ser mayores a 0.",
+        "Las calorías deben ser mayores a 0.",
       ];
       if (knownValidation.includes(error.message)) {
         next(new AppError(error.message, 400));

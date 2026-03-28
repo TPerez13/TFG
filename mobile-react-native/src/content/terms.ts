@@ -5,36 +5,36 @@ export const TERMS_OF_USE_LAST_UPDATED = '12 de febrero de 2026';
 
 export const TERMS_OF_USE_SECTIONS: LegalDocumentSection[] = [
   {
-    title: 'Aceptacion de los terminos',
+    title: 'Aceptación de los términos',
     body:
-      'Al usar TrackHabit Loop aceptas estos terminos de forma preliminar para el entorno del proyecto/TFG.',
+      'Al usar TrackHabit Loop aceptas estos términos de forma preliminar para el entorno del proyecto/TFG.',
   },
   {
-    title: 'Descripcion del servicio',
+    title: 'Descripción del servicio',
     body:
-      'La app permite registrar habitos, visualizar progreso y configurar recordatorios basicos para seguimiento personal.',
+      'La app permite registrar hábitos, visualizar progreso y configurar recordatorios básicos para seguimiento personal.',
   },
   {
     title: 'Registro y cuenta',
     body:
-      'Eres responsable de mantener la confidencialidad de tu acceso y de la informacion asociada a tu cuenta.',
+      'Eres responsable de mantener la confidencialidad de tu acceso y de la información asociada a tu cuenta.',
   },
   {
     title: 'Uso permitido y prohibido',
     body: [
-      'Uso permitido: seguimiento personal de habitos y bienestar.',
-      'No esta permitido manipular la app, intentar acceso no autorizado o usarla para fines ilicitos.',
+      'Uso permitido: seguimiento personal de hábitos y bienestar.',
+      'No está permitido manipular la app, intentar acceso no autorizado o usarla para fines ilícitos.',
     ],
   },
   {
     title: 'Notificaciones',
     body:
-      'Las notificaciones dependen de permisos del sistema y de tu configuracion. No se garantiza la entrega al 100% en todos los dispositivos.',
+      'Las notificaciones dependen de permisos del sistema y de tu configuración. No se garantiza la entrega al 100% en todos los dispositivos.',
   },
   {
-    title: 'Descargo de responsabilidad (no consejo medico)',
+    title: 'Descargo de responsabilidad (no consejo médico)',
     body:
-      'La informacion mostrada no sustituye asesoramiento medico, nutricional ni profesional especializado.',
+      'La información mostrada no sustituye asesoramiento médico, nutricional ni profesional especializado.',
   },
   {
     title: 'Disponibilidad y cambios del servicio',
@@ -44,10 +44,10 @@ export const TERMS_OF_USE_SECTIONS: LegalDocumentSection[] = [
   {
     title: 'Propiedad intelectual',
     body:
-      'El diseno, contenido y codigo de la app pertenecen a sus autores y no pueden reutilizarse sin autorizacion.',
+      'El diseño, contenido y código de la app pertenecen a sus autores y no pueden reutilizarse sin autorización.',
   },
   {
     title: 'Contacto',
-    body: `Para consultas sobre estos terminos: ${LEGAL_SUPPORT_EMAIL}.`,
+    body: `Para consultas sobre estos términos: ${LEGAL_SUPPORT_EMAIL}.`,
   },
 ];

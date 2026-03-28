@@ -171,7 +171,7 @@ class NotificationSettings <<DTO>> {
 +system: boolean
 }
 
-' === Servicios de aplicacion ===
+' === Servicios de aplicación ===
 class AuthService <<Servicio>> {
 +login(payload: LoginRequest): LoginResponse
 +register(payload: RegisterRequest): RegisterResponse

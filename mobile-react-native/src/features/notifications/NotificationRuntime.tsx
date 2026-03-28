@@ -11,7 +11,7 @@ async function syncFromServer(requestPermissions: boolean) {
   try {
     await syncLocalNotificationsWithServer({ requestPermissions });
   } catch {
-    // El flujo principal de la app no debe bloquearse por un fallo de sincronizacion local.
+    // El flujo principal de la app no debe bloquearse por un fallo de sincronización local.
   }
 }
 

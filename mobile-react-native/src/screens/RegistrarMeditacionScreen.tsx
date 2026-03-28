@@ -114,7 +114,7 @@ export default function RegistrarMeditacionScreen({
       });
 
       emitMeditationFlash({
-        message: 'Meditacion registrada correctamente!',
+        message: '¡Meditación registrada correctamente!',
         undoEntryId: created.id_registro_habito,
       });
       navigation.reset({
@@ -122,7 +122,7 @@ export default function RegistrarMeditacionScreen({
         routes: [
           { name: 'Habits' },
           {
-            name: 'Meditacion',
+            name: 'Meditación',
             params: {
               sessionTypeSeleccionada: template.type,
               refreshToken: Date.now(),
@@ -131,7 +131,7 @@ export default function RegistrarMeditacionScreen({
         ],
       });
     } catch (err) {
-      Alert.alert('Error', err instanceof Error ? err.message : 'No se pudo registrar meditacion.');
+      Alert.alert('Error', err instanceof Error ? err.message : 'No se pudo registrar meditación.');
     }
   };
 
@@ -162,7 +162,7 @@ export default function RegistrarMeditacionScreen({
           >
             <Ionicons name="chevron-back" size={24} color={colors.textPrimary} />
           </Pressable>
-          <Text style={styles.headerTitle}>Registro de Meditacion</Text>
+          <Text style={styles.headerTitle}>Registro de Meditación</Text>
           <Pressable onPress={() => Alert.alert('Ayuda', 'Disponible pronto.')}>
             <Text style={styles.helpText}>Ayuda</Text>
           </Pressable>
@@ -172,7 +172,7 @@ export default function RegistrarMeditacionScreen({
           <View style={styles.modeInfo}>
             <Ionicons name="leaf-outline" size={24} color={colors.textAccent} />
             <View>
-              <Text style={styles.modeTitle}>Meditacion</Text>
+              <Text style={styles.modeTitle}>Meditación</Text>
               <Text style={styles.modeMeta}>Hoy, {timeLabel}</Text>
             </View>
           </View>
@@ -181,12 +181,12 @@ export default function RegistrarMeditacionScreen({
             style={({ pressed }) => [styles.switchButton, pressed ? styles.buttonPressed : null]}
           >
             <Text style={styles.switchButtonText}>
-              {mode === 'quick' ? 'Cambiar a Manual' : 'Cambiar a Registro Rapido'}
+              {mode === 'quick' ? 'Cambiar a Manual' : 'Cambiar a Registro Rápido'}
             </Text>
           </Pressable>
         </View>
 
-        <Text style={styles.fieldLabel}>Tipo de meditacion</Text>
+        <Text style={styles.fieldLabel}>Tipo de meditación</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipRow}>
           {MEDITATION_TYPES.map((type) => (
             <Pressable
@@ -236,7 +236,7 @@ export default function RegistrarMeditacionScreen({
           </View>
         ) : (
           <View>
-            <Text style={styles.fieldLabel}>Duracion (min)</Text>
+            <Text style={styles.fieldLabel}>Duración (min)</Text>
             <TextInput
               value={duration}
               onChangeText={(value) => {
@@ -251,9 +251,9 @@ export default function RegistrarMeditacionScreen({
               placeholderTextColor={colors.placeholder}
               style={[styles.input, showDurationError ? styles.inputError : null]}
             />
-            {showDurationError ? <Text style={styles.errorText}>Introduce una duracion valida (1-180 min).</Text> : null}
+            {showDurationError ? <Text style={styles.errorText}>Introduce una duración válida (1-180 min).</Text> : null}
 
-            <Text style={styles.fieldLabel}>Estado de animo antes (opcional)</Text>
+            <Text style={styles.fieldLabel}>Estado de ánimo antes (opcional)</Text>
             <View style={styles.moodRow}>
               {MOOD_VALUES.map((value) => (
                 <Pressable
@@ -270,7 +270,7 @@ export default function RegistrarMeditacionScreen({
               ))}
             </View>
 
-            <Text style={styles.fieldLabel}>Estado de animo despues (opcional)</Text>
+            <Text style={styles.fieldLabel}>Estado de ánimo después (opcional)</Text>
             <View style={styles.moodRow}>
               {MOOD_VALUES.map((value) => (
                 <Pressable
@@ -291,7 +291,7 @@ export default function RegistrarMeditacionScreen({
             <TextInput
               value={notes}
               onChangeText={setNotes}
-              placeholder="Ej. me senti mas calmado"
+              placeholder="Ej. me sentí más calmado"
               placeholderTextColor={colors.placeholder}
               style={styles.input}
             />
@@ -302,7 +302,7 @@ export default function RegistrarMeditacionScreen({
               style={styles.saveButton}
             />
             <Button
-              title="Cambiar a Registro Rapido"
+              title="Cambiar a Registro Rápido"
               variant="outline"
               onPress={() => setMode('quick')}
               style={styles.switchModeButton}

@@ -58,7 +58,7 @@ export default function HabitHistoryScreen({ navigation, route }: HabitHistorySc
         <View style={styles.trendCard}>
           <View style={styles.trendTop}>
             <View>
-              <Text style={styles.eyebrow}>ULTIMOS 7 DIAS</Text>
+              <Text style={styles.eyebrow}>ÚLTIMOS 7 DÍAS</Text>
               <Text style={styles.trendTitle}>Tendencia</Text>
             </View>
             <View style={styles.avgWrap}>
@@ -70,7 +70,7 @@ export default function HabitHistoryScreen({ navigation, route }: HabitHistorySc
           {loading ? (
             <View style={styles.loadingCard}>
               <View style={styles.trendLoading} />
-              <Text style={styles.loadingText}>Cargando historial del habito...</Text>
+              <Text style={styles.loadingText}>Cargando historial del hábito...</Text>
             </View>
           ) : (
             <View style={styles.trendBars}>
@@ -108,9 +108,9 @@ export default function HabitHistoryScreen({ navigation, route }: HabitHistorySc
 
         {!error && !loading && data.recentToday.length === 0 && data.recentYesterday.length === 0 ? (
           <View style={styles.emptyCard}>
-            <Text style={styles.emptyText}>Sin registros en los ultimos 7 dias.</Text>
+            <Text style={styles.emptyText}>Sin registros en los últimos 7 días.</Text>
             <Pressable onPress={openHabitsHome} style={({ pressed }) => [styles.emptyCta, pressed ? styles.pressed : null]}>
-              <Text style={styles.emptyCtaText}>Ir a Habitos</Text>
+              <Text style={styles.emptyCtaText}>Ir a Hábitos</Text>
             </Pressable>
           </View>
         ) : null}
@@ -161,7 +161,7 @@ export default function HabitHistoryScreen({ navigation, route }: HabitHistorySc
           style={({ pressed }) => [styles.ctaButton, pressed ? styles.pressed : null]}
         >
           <Ionicons name="add-circle" size={28} color="#19b95b" />
-          <Text style={styles.ctaText}>Ir a Detalle del Habito</Text>
+          <Text style={styles.ctaText}>Ir a Detalle del Hábito</Text>
         </Pressable>
       </ScrollView>
     </Screen>

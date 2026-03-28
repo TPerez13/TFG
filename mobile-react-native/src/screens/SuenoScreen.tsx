@@ -169,7 +169,7 @@ export default function SuenoScreen({ navigation }: SuenoScreenProps) {
     try {
       await deleteEntry(snackbar.undoEntryId);
       setSnackbar({ visible: false, message: '' });
-      emitSleepFlash({ message: 'Registro de sueno deshecho.' });
+      emitSleepFlash({ message: 'Registro de sueño deshecho.' });
       await reload();
     } catch (err) {
       Alert.alert('Error', err instanceof Error ? err.message : 'No se pudo deshacer registro.');
@@ -188,12 +188,12 @@ export default function SuenoScreen({ navigation }: SuenoScreenProps) {
           >
             <Ionicons name="chevron-back" size={24} color={colors.textPrimary} />
           </Pressable>
-          <Text style={styles.headerTitle}>Sueno</Text>
+          <Text style={styles.headerTitle}>Sueño</Text>
           <View style={styles.headerSpacer} />
         </View>
 
         <View style={styles.stateCard}>
-          <Text style={styles.stateEyebrow}>Estado del dia</Text>
+          <Text style={styles.stateEyebrow}>Estado del día</Text>
           <Text style={styles.stateTitle}>Horas registradas</Text>
           <Text style={styles.stateCount}>
             {formatHours(data.totalHours)} de {formatHours(data.goalHours)} h
@@ -205,7 +205,7 @@ export default function SuenoScreen({ navigation }: SuenoScreenProps) {
           onPress={() => navigation.navigate('RegistrarSueno', { mode: 'quick' })}
           style={({ pressed }) => [styles.addButton, pressed ? styles.buttonPressed : null]}
         >
-          <Text style={styles.addButtonText}>+ ANADIR SUENO</Text>
+          <Text style={styles.addButtonText}>+ AÑADIR SUEÑO</Text>
         </Pressable>
 
         <View style={styles.summaryRow}>
@@ -231,7 +231,7 @@ export default function SuenoScreen({ navigation }: SuenoScreenProps) {
         {loading ? <ActivityIndicator size="small" color={colors.textAccent} style={styles.loader} /> : null}
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
         {!loading && historyItems.length === 0 ? (
-          <Text style={styles.emptyText}>Aun no registraste sueno hoy. Intenta descansar a tiempo.</Text>
+          <Text style={styles.emptyText}>Aún no registraste sueño hoy. Intenta descansar a tiempo.</Text>
         ) : null}
 
         {historyItems.map((item) => (
@@ -253,19 +253,19 @@ export default function SuenoScreen({ navigation }: SuenoScreenProps) {
           </View>
           <View style={styles.reminderText}>
             <Text style={styles.reminderTitle}>Recordatorios</Text>
-            <Text style={styles.reminderSubtitle}>Recordatorios de sueno</Text>
+            <Text style={styles.reminderSubtitle}>Recordatorios de sueño</Text>
             {!data.globalNotificationsEnabled ? (
               <Text style={styles.reminderHint}>
                 Este horario queda guardado, pero no se programa mientras las notificaciones globales
-                esten desactivadas.
+                estén desactivadas.
               </Text>
             ) : null}
             <TimePickerField
               value={reminderTime}
               onConfirm={saveReminderTime}
               disabled={reminderSaving}
-              modalTitle="Hora del recordatorio de sueno"
-              modalDescription="Se programa una unica notificacion local para este habito."
+              modalTitle="Hora del recordatorio de sueño"
+              modalDescription="Se programa una única notificación local para este hábito."
               style={styles.reminderTimeInput}
             />
           </View>

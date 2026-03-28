@@ -45,7 +45,7 @@ export const habitRegistry: HabitDefinition[] = [
     quickAdd: { enabled: true, value: 1, unit: 'vaso' },
     accentColor: '#2d7ff9',
     softColor: '#eaf3ff',
-    action: { label: 'Anadir vaso +', intent: 'quick', routeName: 'HabitosTab' },
+    action: { label: 'Añadir vaso +', intent: 'quick', routeName: 'HabitosTab' },
     formatSummary: (current, goal) => `${current} de ${goal.value} ${goal.unit}`,
     showInGoals: true,
   },
@@ -81,7 +81,7 @@ export const habitRegistry: HabitDefinition[] = [
   {
     key: 'sueno',
     idTipoHabito: 4,
-    label: 'SUENO',
+    label: 'SUEÑO',
     title: 'Sueño',
     icon: 'moon-outline',
     goal: { value: 8, unit: 'horas' },
@@ -95,7 +95,7 @@ export const habitRegistry: HabitDefinition[] = [
   {
     key: 'meditacion',
     idTipoHabito: 5,
-    label: 'MEDITACION',
+    label: 'MEDITACIÓN',
     title: 'Meditación',
     icon: 'leaf-outline',
     goal: { value: 10, unit: 'min' },

@@ -256,7 +256,7 @@ export async function createNutritionEntryForUser(
 
     const kcalCandidate = Number(input.kcal ?? food?.kcal ?? NaN);
     if (!Number.isFinite(kcalCandidate) || kcalCandidate <= 0) {
-      throw new Error("Las calorias deben ser mayores a 0.");
+      throw new Error("Las calorías deben ser mayores a 0.");
     }
 
     const proteina = toNullableNumber(input.proteinaG ?? food?.proteina_g ?? null);

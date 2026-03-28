@@ -95,14 +95,14 @@ export function useMeditationToday(
       ]);
 
       if (!userRes.ok) {
-        throw new Error('No se pudo cargar usuario para meta de meditacion.');
+        throw new Error('No se pudo cargar usuario para meta de meditación.');
       }
 
       const userPayload = (await userRes.json()) as { user?: User };
       setEntries(entriesRes);
       setUser(userPayload.user ?? null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'No se pudo cargar meditacion.');
+      setError(err instanceof Error ? err.message : 'No se pudo cargar meditación.');
       setEntries([]);
     } finally {
       setLoading(false);

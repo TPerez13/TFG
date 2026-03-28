@@ -24,7 +24,7 @@ export async function fetchNutritionToday(date: string, tipoComida?: MealType): 
 
   const response = await apiFetch(`/nutrition/today?${query.toString()}`);
   if (!response.ok) {
-    throw new Error(await parseErrorMessage(response, 'No se pudo cargar la alimentacion de hoy.'));
+    throw new Error(await parseErrorMessage(response, 'No se pudo cargar la alimentación de hoy.'));
   }
 
   return (await response.json()) as NutritionTodayData;

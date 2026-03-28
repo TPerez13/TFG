@@ -200,7 +200,7 @@ export default function EjercicioScreen({ navigation, route }: EjercicioScreenPr
         </View>
 
         <View style={styles.stateCard}>
-          <Text style={styles.stateEyebrow}>Estado del dia</Text>
+          <Text style={styles.stateEyebrow}>Estado del día</Text>
           <Text style={styles.stateTitle}>Minutos completados</Text>
           <Text style={styles.stateCount}>
             {Math.round(data.totalMin)} de {data.goalMin} min
@@ -217,7 +217,7 @@ export default function EjercicioScreen({ navigation, route }: EjercicioScreenPr
           }
           style={({ pressed }) => [styles.addButton, pressed ? styles.buttonPressed : null]}
         >
-          <Text style={styles.addButtonText}>+ ANADIR EJERCICIO</Text>
+          <Text style={styles.addButtonText}>+ AÑADIR EJERCICIO</Text>
         </Pressable>
 
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipRow}>
@@ -269,7 +269,7 @@ export default function EjercicioScreen({ navigation, route }: EjercicioScreenPr
         {loading ? <ActivityIndicator size="small" color={colors.textAccent} style={styles.loader} /> : null}
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
         {!loading && historyItems.length === 0 ? (
-          <Text style={styles.emptyText}>Sin actividad todavia. Empieza con una sesion corta.</Text>
+          <Text style={styles.emptyText}>Sin actividad todavía. Empieza con una sesión corta.</Text>
         ) : null}
 
         {historyItems.map((item) => (
@@ -298,7 +298,7 @@ export default function EjercicioScreen({ navigation, route }: EjercicioScreenPr
             {!data.globalNotificationsEnabled ? (
               <Text style={styles.reminderHint}>
                 Este horario queda guardado, pero no se programa mientras las notificaciones globales
-                esten desactivadas.
+                estén desactivadas.
               </Text>
             ) : null}
             <TimePickerField
@@ -306,7 +306,7 @@ export default function EjercicioScreen({ navigation, route }: EjercicioScreenPr
               onConfirm={saveReminderTime}
               disabled={reminderSaving}
               modalTitle="Hora del recordatorio de ejercicio"
-              modalDescription="Se programa una unica notificacion local para este habito."
+              modalDescription="Se programa una única notificación local para este hábito."
               style={styles.reminderTimeInput}
             />
           </View>

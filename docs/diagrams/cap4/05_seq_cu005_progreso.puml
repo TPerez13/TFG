@@ -17,17 +17,17 @@ skinparam actorBackgroundColor #FFFFFF
 skinparam noteBackgroundColor #FFF9E6
 skinparam noteBorderColor #D7C58A
 
-title Capitulo 4 - Secuencia CU-005 Consultar progreso
+title Capítulo 4 - Secuencia CU-005 Consultar progreso
 
 actor Usuario
-participant "App movil" as App
+participant "App móvil" as App
 participant "API" as API
 database "Base de datos" as DB
 
 Usuario -> App : Solicitar progreso mensual
 App -> API : GET /habits/entries?from,to
 API -> DB : Consultar registros del usuario
-DB --> API : Registros del periodo
+DB --> API : Registros del período
 API --> App : Registros
 
 App -> API : GET /users/me
@@ -37,10 +37,10 @@ API --> App : Preferencias
 
 App -> App : Calcular agregados y tendencias
 App -> App : Derivar progreso mensual
-App --> Usuario : Mostrar estadisticas y resumen
+App --> Usuario : Mostrar estadísticas y resumen
 
 note right of App
-El calculo del progreso se realiza en cliente
+El cálculo del progreso se realiza en cliente
 a partir de registros y preferencias del usuario.
 end note
 

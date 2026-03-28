@@ -31,19 +31,19 @@ skinparam rectangle<<Shared>> {
   BorderColor #5B7083
 }
 
-title Capitulo 5 - C4 de contenedores de TrackHabit Loop
+title Capítulo 5 - C4 de contenedores de TrackHabit Loop
 
 top to bottom direction
 
 actor "Usuario" as user
 
-rectangle "Aplicacion movil\n<<Container>>\nExpo + React Native\n\nResponsabilidades:\n- UI y navegacion\n- Gestion de sesion JWT\n- Consulta y registro de habitos\n- Sincronizacion de ajustes\n- Programacion local de recordatorios" as mobile <<Mobile>>
+rectangle "Aplicación móvil\n<<Container>>\nExpo + React Native\n\nResponsabilidades:\n- UI y navegación\n- Gestión de sesión JWT\n- Consulta y registro de hábitos\n- Sincronización de ajustes\n- Programación local de recordatorios" as mobile <<Mobile>>
 
-rectangle "Backend API\n<<Container>>\nNode.js + Express\n\nResponsabilidades:\n- Exponer endpoints REST\n- Validar autenticacion\n- Orquestar usuarios, habitos,\n  nutricion, notificaciones y soporte\n- Persistir preferencias y actividad" as api <<Backend>>
+rectangle "Backend API\n<<Container>>\nNode.js + Express\n\nResponsabilidades:\n- Exponer endpoints REST\n- Validar autenticación\n- Orquestar usuarios, hábitos,\n  nutrición, notificaciones y soporte\n- Persistir preferencias y actividad" as api <<Backend>>
 
-database "Base de datos\n<<Container>>\nPostgreSQL\n\nResponsabilidades:\n- Persistencia relacional\n- Preferencias JSONB\n- Historial de habitos,\n  comidas, tickets y notificaciones" as db
+database "Base de datos\n<<Container>>\nPostgreSQL\n\nResponsabilidades:\n- Persistencia relacional\n- Preferencias JSONB\n- Historial de hábitos,\n  comidas, tickets y notificaciones" as db
 
-rectangle "Sistema de notificaciones\ndel dispositivo\n<<External System>>\n\nResponsabilidades:\n- Gestion de permisos\n- Agenda avisos locales\n- Entrega alertas al usuario" as deviceSystem <<External>>
+rectangle "Sistema de notificaciones\ndel dispositivo\n<<External System>>\n\nResponsabilidades:\n- Gestión de permisos\n- Agenda avisos locales\n- Entrega alertas al usuario" as deviceSystem <<External>>
 
 rectangle "Shared DTOs\n<<Shared Library>>\npackages/shared\n\nResponsabilidades:\n- Tipos TS compartidos\n- Request / response DTOs\n- Contratos base entre cliente y API" as shared <<Shared>>
 
@@ -57,7 +57,7 @@ api ..> shared
 
 /'
 note bottom of mobile
-La configuracion de avisos
+La configuración de avisos
 se guarda en backend y la app agenda
 las notificaciones en el propio dispositivo.
 end note

@@ -99,7 +99,7 @@ export function useHabitTrend(habitKeyOrTypeId: HabitKey | number, days = 7): Us
     if (!typeId) {
       setEntries([]);
       setLoading(false);
-      setError('No se pudo identificar el habito.');
+      setError('No se pudo identificar el hábito.');
       return;
     }
 
@@ -135,7 +135,7 @@ export function useHabitTrend(habitKeyOrTypeId: HabitKey | number, days = 7): Us
       }
     } catch (loadError) {
       setEntries([]);
-      setError(loadError instanceof Error ? loadError.message : 'No se pudo cargar el historial del habito.');
+      setError(loadError instanceof Error ? loadError.message : 'No se pudo cargar el historial del hábito.');
     } finally {
       setLoading(false);
     }

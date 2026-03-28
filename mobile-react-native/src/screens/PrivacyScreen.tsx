@@ -156,13 +156,13 @@ export default function PrivacyScreen({ navigation }: PrivacyScreenProps) {
       }
 
       await Share.share({
-        title: 'Exportacion de datos - TrackHabit Loop',
+        title: 'Exportación de datos - TrackHabit Loop',
         message: JSON.stringify(payload, null, 2),
       });
 
-      showBanner('success', 'Exportacion lista para compartir.');
+      showBanner('success', 'Exportación lista para compartir.');
     } catch (_error) {
-      showBanner('error', 'No se pudo completar la exportacion.');
+      showBanner('error', 'No se pudo completar la exportación.');
     } finally {
       setExporting(false);
     }
@@ -171,7 +171,7 @@ export default function PrivacyScreen({ navigation }: PrivacyScreenProps) {
   const confirmExport = () => {
     Alert.alert(
       'Descargar mis datos',
-      'Se incluira perfil, preferencias, registros de habitos y notificaciones. La generacion puede tardar unos segundos.',
+      'Se incluirá perfil, preferencias, registros de hábitos y notificaciones. La generación puede tardar unos segundos.',
       [
         { text: 'Cancelar', style: 'cancel' },
         { text: 'Continuar', onPress: () => void runExport() },
@@ -206,7 +206,7 @@ export default function PrivacyScreen({ navigation }: PrivacyScreenProps) {
   const startDeleteFlow = () => {
     Alert.alert(
       'Eliminar mi cuenta',
-      'Esta accion borra tu cuenta y datos asociados. Luego tendras que confirmar escribiendo ELIMINAR.',
+      'Esta acción borra tu cuenta y datos asociados. Luego tendrás que confirmar escribiendo ELIMINAR.',
       [
         { text: 'Cancelar', style: 'cancel' },
         { text: 'Continuar', style: 'destructive', onPress: () => setDeleteModalVisible(true) },
@@ -235,8 +235,8 @@ export default function PrivacyScreen({ navigation }: PrivacyScreenProps) {
           <LoadingSkeleton />
         ) : error ? (
           <View style={styles.errorCard}>
-            <Text style={styles.errorTitle}>No se pudo cargar la configuracion de privacidad</Text>
-            <Text style={styles.errorDescription}>Comprueba tu conexion y vuelve a intentarlo.</Text>
+            <Text style={styles.errorTitle}>No se pudo cargar la configuración de privacidad</Text>
+            <Text style={styles.errorDescription}>Comprueba tu conexión y vuelve a intentarlo.</Text>
             <Pressable style={styles.retryButton} onPress={() => void reload()}>
               <Text style={styles.retryButtonText}>Reintentar</Text>
             </Pressable>
@@ -245,7 +245,7 @@ export default function PrivacyScreen({ navigation }: PrivacyScreenProps) {
           <>
             <SettingsSection
               title="Datos de la cuenta"
-              subtitle="Consulta tu informacion principal. Estos campos son solo lectura."
+              subtitle="Consulta tu información principal. Estos campos son solo lectura."
             >
               <ReadOnlyFieldRow label="Correo" value={user?.correo ?? 'No disponible'} />
               <ReadOnlyFieldRow label="Nombre" value={user?.nombre ?? 'No disponible'} hideDivider />
@@ -264,10 +264,10 @@ export default function PrivacyScreen({ navigation }: PrivacyScreenProps) {
 
             <SettingsSection
               title="Control de datos"
-              subtitle="Decide como se usan tus datos para analisis y personalizacion."
+              subtitle="Decide cómo se usan tus datos para análisis y personalización."
             >
               <ToggleRow
-                label="Permitir analitica"
+                label="Permitir analítica"
                 description="Nos ayuda a mejorar estabilidad y experiencia general."
                 value={privacy.analyticsEnabled}
                 disabled={isBusy}
@@ -298,11 +298,11 @@ export default function PrivacyScreen({ navigation }: PrivacyScreenProps) {
             </SettingsSection>
 
             <SettingsSection
-              title="Gestion"
+              title="Gestión"
               subtitle="Acciones sensibles sobre tu cuenta y tus datos."
             >
               <DangerZone
-                description="Si eliminas la cuenta perderas acceso a registros, preferencias y configuraciones."
+                description="Si eliminas la cuenta perderás acceso a registros, preferencias y configuraciones."
                 warning="Esta accion es irreversible."
                 buttonLabel={deleting ? 'Eliminando...' : 'Eliminar mi cuenta'}
                 disabled={isBusy}
@@ -310,8 +310,8 @@ export default function PrivacyScreen({ navigation }: PrivacyScreenProps) {
               />
             </SettingsSection>
 
-            <SettingsSection title="Informacion" subtitle="Detalles y contacto relacionados con privacidad.">
-              <ReadOnlyFieldRow label="Ultima actualizacion" value={INFO_LAST_UPDATED} />
+            <SettingsSection title="Información" subtitle="Detalles y contacto relacionados con privacidad.">
+              <ReadOnlyFieldRow label="Última actualización" value={INFO_LAST_UPDATED} />
               <ReadOnlyFieldRow label="Contacto" value={SUPPORT_EMAIL} hideDivider />
             </SettingsSection>
           </>
@@ -321,7 +321,7 @@ export default function PrivacyScreen({ navigation }: PrivacyScreenProps) {
       <Modal visible={deleteModalVisible} transparent animationType="fade" onRequestClose={() => setDeleteModalVisible(false)}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalCard}>
-            <Text style={styles.modalTitle}>Confirmacion final</Text>
+            <Text style={styles.modalTitle}>Confirmación final</Text>
             <Text style={styles.modalText}>
               Escribe <Text style={styles.modalKeyword}>{DELETE_KEYWORD}</Text> para confirmar que quieres eliminar tu cuenta.
             </Text>
