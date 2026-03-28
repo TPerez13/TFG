@@ -6,7 +6,11 @@
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js"
+    "start": "node dist/server.js",
+    "test:build": "tsc -p tsconfig.test.json",
+    "test:unit": "npm run test:build && node --require ./dist-test/tests/setup/env.js --test ./dist-test/tests/unit",
+    "test:integration": "npm run test:build && node --require ./dist-test/tests/setup/env.js --test ./dist-test/tests/integration",
+    "test": "npm run test:build && node --require ./dist-test/tests/setup/env.js --test ./dist-test/tests/unit ./dist-test/tests/integration"
   },
   "dependencies": {
     "@muchasvidas/shared": "1.0.0",
