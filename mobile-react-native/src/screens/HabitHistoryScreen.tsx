@@ -17,7 +17,7 @@ export default function HabitHistoryScreen({ navigation, route }: HabitHistorySc
   const openHabitDetail = () => navigation.navigate('HabitDetail', { habitKey });
 
   const openHabitsHome = () => {
-    const parent = navigation.getParent();
+    const parent = navigation.getParent<any>();
     if (!parent) return;
 
     if (habitKey === 'agua') {

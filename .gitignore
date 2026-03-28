@@ -9,3 +9,7 @@ packages/shared/dist/
 # Environment files
 .env
 backend/.env
+
+# Documentation and image files
+*.md
+*.png

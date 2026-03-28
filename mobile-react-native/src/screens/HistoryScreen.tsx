@@ -83,7 +83,7 @@ export default function HistoryScreen({ navigation }: HistoryScreenProps) {
       navigation.goBack();
       return;
     }
-    const parent = navigation.getParent();
+      const parent = navigation.getParent<any>();
     if (parent) {
       parent.navigate('InicioTab' as never);
     }

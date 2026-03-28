@@ -198,7 +198,7 @@ export default function PanelDiarioScreen({ navigation }: PanelDiarioScreenProps
     if (!habit?.action) return;
 
     if (habit.action.intent === 'navigate' && habit.action.routeName) {
-      const parent = navigation.getParent();
+      const parent = navigation.getParent<any>();
       if (parent) {
         parent.navigate(habit.action.routeName as never);
         return;
@@ -210,7 +210,7 @@ export default function PanelDiarioScreen({ navigation }: PanelDiarioScreenProps
   };
 
   const onHabitCardPress = (habitKey: string) => {
-    const parent = navigation.getParent();
+    const parent = navigation.getParent<any>();
     if (!parent) return;
 
     if (habitKey === 'agua') {
@@ -241,7 +241,7 @@ export default function PanelDiarioScreen({ navigation }: PanelDiarioScreenProps
   };
 
   const onOpenAchievements = () => {
-    const parent = navigation.getParent();
+    const parent = navigation.getParent<any>();
     if (!parent) return;
     parent.navigate('PerfilTab' as never, { screen: 'AchievementsScreen' } as never);
   };

@@ -1,5 +1,11 @@
 import type { HabitEntry } from '../../types/models';
-import type { ExerciseActivityType, ExerciseHistoryItem, ExerciseNotesPayload, ExerciseTemplate } from './types';
+import type {
+  ExerciseActivityType,
+  ExerciseHistoryItem,
+  ExerciseIntensity,
+  ExerciseNotesPayload,
+  ExerciseTemplate,
+} from './types';
 
 const toSafeNumber = (value: unknown): number | undefined => {
   if (value === null || value === undefined || value === '') return undefined;
@@ -16,7 +22,7 @@ const normalizeActivityType = (value: unknown): ExerciseActivityType => {
   return 'otro';
 };
 
-const normalizeIntensity = (value: unknown) => {
+const normalizeIntensity = (value: unknown): ExerciseIntensity | undefined => {
   if (typeof value !== 'string') return undefined;
   const normalized = value.trim().toLowerCase();
   if (normalized === 'suave') return 'suave';

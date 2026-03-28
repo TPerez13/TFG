@@ -124,7 +124,7 @@ export default function HabitDetailScreen({ navigation, route }: HabitDetailScre
   };
 
   const openHabitsHome = () => {
-    const parent = navigation.getParent();
+    const parent = navigation.getParent<any>();
     if (!parent) return;
 
     if (habitKey === 'agua') {

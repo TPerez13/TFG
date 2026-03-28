@@ -188,7 +188,7 @@ export default function FeedScreen({ route, navigation }: FeedScreenProps) {
             styles.habitsButton,
             pressed ? styles.habitsButtonPressed : null,
           ]}
-          onPress={() => navigation.getParent()?.navigate('HabitosTab' as never)}
+          onPress={() => navigation.getParent<any>()?.navigate('HabitosTab')}
         >
           <Text style={styles.habitsText}>Volver a mis habitos</Text>
         </Pressable>
