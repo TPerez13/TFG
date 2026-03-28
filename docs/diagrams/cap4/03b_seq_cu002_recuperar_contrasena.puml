@@ -1,0 +1,72 @@
+@startuml
+' CAP4 - 03b Secuencia CU-002 Recuperar contraseña
+
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 13
+skinparam ArrowColor #5B7083
+skinparam ArrowThickness 1
+skinparam sequenceLifeLineBorderColor #6E879D
+skinparam sequenceLifeLineBackgroundColor #FFFFFF
+skinparam participantBorderColor #6E879D
+skinparam participantBackgroundColor #FFFFFF
+skinparam actorBorderColor #6E879D
+skinparam actorBackgroundColor #FFFFFF
+skinparam noteBackgroundColor #FFF9E6
+skinparam noteBorderColor #D7C58A
+
+title Capítulo 4 - Secuencia CU-010 Recuperar contraseña
+
+actor Usuario
+participant "App móvil" as App
+participant "API" as API
+database "Base de datos" as DB
+participant "Servicio de correo" as Mail
+
+== Solicitud del código ==
+Usuario -> App : Pulsa "¿Olvidaste tu contraseña?"
+App --> Usuario : Solicita correo de la cuenta
+Usuario -> App : Introduce correo
+App -> API : POST /password/forgot
+API -> DB : Buscar usuario por correo
+DB --> API : Usuario / sin coincidencia
+
+alt Correo existente
+    API -> API : Generar código temporal y caducidad
+    API -> DB : Guardar token de recuperación
+    API -> Mail : Enviar correo con código
+    Mail --> API : Confirmación / intento de entrega
+    API --> App : Mensaje genérico de recuperación
+    App --> Usuario : Indica revisar el correo
+else Correo no existente
+    API --> App : Mensaje genérico de recuperación
+    App --> Usuario : Indica revisar el correo
+end
+
+== Restablecimiento ==
+Usuario -> App : Introduce correo, código y nueva contraseña
+App -> API : POST /password/reset
+API -> DB : Buscar usuario por correo
+DB --> API : Datos del usuario
+API -> DB : Validar token, caducidad y consumo único
+
+alt Código válido
+    API -> API : Hashear nueva contraseña
+    API -> DB : Actualizar contraseña
+    DB --> API : Confirmación
+    API --> App : Contraseña restablecida
+    App --> Usuario : Acceso recuperado
+else Código inválido o expirado
+    API --> App : Error de validación
+    App --> Usuario : Mostrar error
+end
+
+note right of API
+En desarrollo, el backend puede devolver
+el código temporal en la respuesta para
+facilitar pruebas locales.
+end note
+
+@enduml

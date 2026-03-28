@@ -12,6 +12,11 @@ import { signAccessToken } from "../utils/jwt";
 import type { UserRecord } from "../model/userModel";
 import { createUser, findByEmail, updatePasswordHash } from "../model/userModel";
 import { createPasswordResetToken, consumePasswordResetToken } from "../model/passwordResetModel";
+import {
+  assertPasswordResetEmailConfigured,
+  isPasswordResetEmailConfigured,
+  sendPasswordResetEmail,
+} from "./emailService";
 import { getDefaultNotificationSettings } from "./notificationSettingsService";
 
 const DEFAULT_PREFERENCIAS: Record<string, unknown> = {
@@ -97,7 +102,7 @@ export async function register(payload: Partial<RegisterRequest>): Promise<Regis
   const existing = await findByEmail(correo);
 
   if (existing) {
-    throw new AppError("El correo ya esta registrado.", 409);
+    throw new AppError("El correo ya está registrado.", 409);
   }
 
   const hash = await bcrypt.hash(password, 10);
@@ -129,6 +134,12 @@ export async function requestPasswordReset(payload: { correo?: string }): Promis
 
   const genericMessage =
     "Si el correo existe, enviamos instrucciones para restablecer la contraseña.";
+  const shouldRequireEmailDelivery = process.env.NODE_ENV === "production";
+
+  if (shouldRequireEmailDelivery) {
+    assertPasswordResetEmailConfigured();
+  }
+
   const user = await findByEmail(correo);
   if (!user) {
     return { message: genericMessage };
@@ -139,6 +150,18 @@ export async function requestPasswordReset(payload: { correo?: string }): Promis
   const expiresAt = new Date(Date.now() + PASSWORD_RESET_EXPIRATION_MINUTES * 60 * 1000);
 
   await createPasswordResetToken(user.id_usuario, tokenHash, expiresAt);
+
+  if (isPasswordResetEmailConfigured()) {
+    const emailDelivered = await sendPasswordResetEmail({
+      to: user.correo,
+      resetCode,
+      expiresInMinutes: PASSWORD_RESET_EXPIRATION_MINUTES,
+    });
+
+    if (!emailDelivered) {
+      console.error(`[mail] Password reset code could not be delivered to ${user.correo}.`);
+    }
+  }
 
   if (process.env.NODE_ENV !== "production") {
     return {

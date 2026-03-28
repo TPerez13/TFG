@@ -24,6 +24,15 @@ cp backend/.env.example backend/.env
 
 El backend usa `DATABASE_URL` para conectarse a PostgreSQL.
 
+Variables opcionales para recuperación de contraseña por correo:
+
+- `MAIL_PROVIDER=disabled|resend`
+- `MAIL_FROM=no-reply@tu-dominio.com`
+- `RESEND_API_KEY=re_xxxxx`
+
+Si `MAIL_PROVIDER=resend`, el backend enviará correos reales de recuperación.
+Si está en `disabled`, en desarrollo seguirá devolviendo el código temporal en la respuesta del endpoint.
+
 ## Base de datos
 
 Comandos útiles:

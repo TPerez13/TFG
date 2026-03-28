@@ -1,0 +1,51 @@
+@startuml
+' CAP4 - 02b Caso de uso CU-002 Recuperar contraseña
+
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 13
+skinparam ArrowColor #5B7083
+skinparam ArrowThickness 1
+skinparam packageStyle rectangle
+skinparam packageBorderColor #9FB3C8
+skinparam packageBackgroundColor #EEF4FA
+skinparam usecaseBackgroundColor #FFFFFF
+skinparam usecaseBorderColor #6E879D
+skinparam actorStyle awesome
+
+title Capítulo 4 - Caso de uso CU-010 Recuperar contraseña
+
+left to right direction
+
+actor "Usuario no autenticado" as A_GUEST
+actor "Servicio de correo" as A_MAIL
+
+rectangle "TrackHabit Loop" {
+  usecase "Solicitar recuperación\npor correo" as UC_FORGOT
+  usecase "Generar código\ntemporal" as UC_CODE
+  usecase "Enviar código de\nrecuperación" as UC_SEND
+  usecase "Restablecer\ncontraseña" as UC_RESET
+  usecase "Validar código\ny caducidad" as UC_VALIDATE
+}
+
+A_GUEST --> UC_FORGOT
+A_GUEST --> UC_RESET
+A_MAIL --> UC_SEND
+
+UC_FORGOT .> UC_CODE : <<include>>
+UC_FORGOT .> UC_SEND : <<include>>
+UC_RESET .> UC_VALIDATE : <<include>>
+
+note right of UC_FORGOT
+El sistema muestra siempre un mensaje genérico
+para no revelar si el correo existe o no.
+end note
+
+note right of UC_RESET
+Precondición: el usuario dispone del código temporal vigente.
+Postcondición: la contraseña queda actualizada.
+end note
+
+@enduml

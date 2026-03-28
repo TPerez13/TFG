@@ -17,7 +17,7 @@ skinparam actorBackgroundColor #FFFFFF
 skinparam noteBackgroundColor #FFF9E6
 skinparam noteBorderColor #D7C58A
 
-title Capítulo 4 - Secuencia CU-001 Autenticación
+title Capítulo 4 - Secuencia de autenticación: inicio de sesión y registro
 
 actor Usuario
 participant "App móvil" as App

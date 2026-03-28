@@ -25,7 +25,7 @@ describe("authService", () => {
     await assertRejectsAppError(
       authService.login({ correo: "ana@example.com" }),
       400,
-      "Correo y contrasena son requeridos."
+      "Correo y contraseña son requeridos."
     );
   });
 
@@ -35,7 +35,7 @@ describe("authService", () => {
     await assertRejectsAppError(
       authService.login({ correo: "ana@example.com", password: "secret" }),
       401,
-      "Credenciales invalidas."
+      "Credenciales inválidas."
     );
   });
 
@@ -50,7 +50,7 @@ describe("authService", () => {
     });
 
     assert.deepEqual(result, {
-      message: "Inicio de sesion correcto.",
+      message: "Inicio de sesión correcto.",
       user: {
         id: 7,
         correo: "ana@example.com",
@@ -72,7 +72,7 @@ describe("authService", () => {
         password: "secret",
       }),
       409,
-      "El correo ya esta registrado."
+      "El correo ya está registrado."
     );
   });
 
@@ -126,7 +126,7 @@ describe("authService", () => {
     const result = await authService.requestPasswordReset({ correo: "missing@example.com" });
 
     assert.deepEqual(result, {
-      message: "Si el correo existe, enviamos instrucciones para restablecer la contrasena.",
+      message: "Si el correo existe, enviamos instrucciones para restablecer la contraseña.",
     });
   });
 
@@ -148,11 +148,40 @@ describe("authService", () => {
 
     const result = await authService.requestPasswordReset({ correo: "ana@example.com" });
 
-    assert.equal(result.message, "Si el correo existe, enviamos instrucciones para restablecer la contrasena.");
+    assert.equal(result.message, "Si el correo existe, enviamos instrucciones para restablecer la contraseña.");
     assert.match(result.devResetCode ?? "", /^\d{6}$/);
     assert.equal(savedReset.userId, 7);
     assert.match(savedReset.tokenHash ?? "", /^[a-f0-9]{64}$/);
     assert.ok(savedReset.expiresAt instanceof Date);
+  });
+
+  it("requires email delivery configuration in production", async () => {
+    const previousNodeEnv = process.env.NODE_ENV;
+    const previousMailProvider = process.env.MAIL_PROVIDER;
+    let findByEmailCalls = 0;
+
+    process.env.NODE_ENV = "production";
+    delete process.env.MAIL_PROVIDER;
+    mock.method(userModel, "findByEmail", async () => {
+      findByEmailCalls += 1;
+      return baseUser;
+    });
+
+    try {
+      await assertRejectsAppError(
+        authService.requestPasswordReset({ correo: "ana@example.com" }),
+        503,
+        "La recuperación por correo no está disponible en este momento."
+      );
+      assert.equal(findByEmailCalls, 0);
+    } finally {
+      process.env.NODE_ENV = previousNodeEnv;
+      if (previousMailProvider === undefined) {
+        delete process.env.MAIL_PROVIDER;
+      } else {
+        process.env.MAIL_PROVIDER = previousMailProvider;
+      }
+    }
   });
 
   it("rejects password reset when the new password is too short", async () => {
@@ -163,7 +192,7 @@ describe("authService", () => {
         newPassword: "123",
       }),
       400,
-      "La nueva contrasena debe tener al menos 6 caracteres."
+      "La nueva contraseña debe tener al menos 6 caracteres."
     );
   });
 
@@ -192,7 +221,7 @@ describe("authService", () => {
       newPassword: "123456",
     });
 
-    assert.deepEqual(result, { message: "Contrasena restablecida correctamente." });
+    assert.deepEqual(result, { message: "Contraseña restablecida correctamente." });
     assert.equal(consumedArgs[0], 7);
     assert.match(String(consumedArgs[1]), /^[a-f0-9]{64}$/);
     assert.ok(consumedArgs[2] instanceof Date);

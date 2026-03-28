@@ -21,7 +21,7 @@ describe("auth routes integration", () => {
     mock.method(authService, "login", async (payload: Parameters<typeof authService.login>[0]) => {
       receivedPayload = payload;
       return {
-        message: "Inicio de sesion correcto.",
+        message: "Inicio de sesión correcto.",
         user: {
           id: 7,
           correo: "ana@example.com",
@@ -48,7 +48,7 @@ describe("auth routes integration", () => {
       });
       assert.equal(response.status, 200);
       assert.deepEqual(response.json, {
-        message: "Inicio de sesion correcto.",
+        message: "Inicio de sesión correcto.",
         user: {
           id: 7,
           correo: "ana@example.com",
@@ -108,7 +108,7 @@ describe("auth routes integration", () => {
 
   it("POST /api/password/forgot delegates to the auth service", async () => {
     mock.method(authService, "requestPasswordReset", async () => ({
-      message: "Si el correo existe, enviamos instrucciones para restablecer la contrasena.",
+      message: "Si el correo existe, enviamos instrucciones para restablecer la contraseña.",
       devResetCode: "123456",
     }));
 
@@ -123,7 +123,7 @@ describe("auth routes integration", () => {
 
       assert.equal(response.status, 200);
       assert.deepEqual(response.json, {
-        message: "Si el correo existe, enviamos instrucciones para restablecer la contrasena.",
+        message: "Si el correo existe, enviamos instrucciones para restablecer la contraseña.",
         devResetCode: "123456",
       });
     } finally {
@@ -133,7 +133,7 @@ describe("auth routes integration", () => {
 
   it("POST /api/password/reset maps AppError through the error handler", async () => {
     mock.method(authService, "resetPassword", async () => {
-      throw new AppError("Codigo invalido o expirado.", 400);
+      throw new AppError("Código inválido o expirado.", 400);
     });
 
     const server = await startTestServer(createApp());
@@ -151,7 +151,7 @@ describe("auth routes integration", () => {
 
       assert.equal(response.status, 400);
       assert.deepEqual(response.json, {
-        message: "Codigo invalido o expirado.",
+        message: "Código inválido o expirado.",
       });
     } finally {
       await server.close();
