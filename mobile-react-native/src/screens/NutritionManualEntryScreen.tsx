@@ -202,9 +202,9 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xl,
   },
   iconButton: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.surfaceBorder,
@@ -212,14 +212,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   headerTitle: {
-    fontSize: 32,
+    fontSize: 30,
     lineHeight: 34,
     fontWeight: '800',
     color: colors.textPrimary,
   },
   headerSpacer: {
-    width: 38,
-    height: 38,
+    width: 44,
+    height: 44,
   },
   buttonPressed: {
     opacity: 0.85,
@@ -246,21 +246,21 @@ const styles = StyleSheet.create({
   input: {
     borderRadius: radius.lg,
     borderWidth: 1,
-    borderColor: '#d0d7d1',
+    borderColor: colors.borderSubtle,
     backgroundColor: colors.surface,
     paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
+    paddingVertical: spacing.mdPlus,
     fontSize: 18,
     lineHeight: 22,
     color: colors.textPrimary,
     marginBottom: spacing.md,
-    minHeight: 62,
+    minHeight: 56,
   },
   inputError: {
-    borderColor: '#e67a00',
+    borderColor: colors.error,
   },
   errorText: {
-    color: '#c66b00',
+    color: colors.error,
     fontSize: fontSizes.md,
     marginTop: -spacing.sm,
     marginBottom: spacing.md,
@@ -277,7 +277,5 @@ const styles = StyleSheet.create({
   },
   switchModeButton: {
     marginTop: spacing.md,
-    backgroundColor: '#f0f3f1',
-    borderColor: '#d9e2db',
   },
 });

@@ -114,7 +114,7 @@ export default function NutritionQuickAddScreen({
 
         <View style={styles.modeCard}>
           <View style={styles.modeInfo}>
-            <Ionicons name="restaurant-outline" size={24} color="#22c55e" />
+            <Ionicons name="restaurant-outline" size={24} color={colors.textAccent} />
             <View>
               <Text style={styles.modeTitle}>Comida</Text>
               <Text style={styles.modeMeta}>Hoy, {nowLabel}</Text>
@@ -188,9 +188,9 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xl,
   },
   iconButton: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.surfaceBorder,
@@ -198,22 +198,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   headerTitle: {
-    fontSize: 32,
+    fontSize: 30,
     lineHeight: 34,
     fontWeight: '800',
     color: colors.textPrimary,
   },
   helpText: {
-    color: '#22c55e',
-    fontSize: fontSizes.lg,
+    color: colors.textAccent,
+    fontSize: fontSizes.base,
     fontWeight: '700',
   },
   modeCard: {
-    backgroundColor: '#dff2e7',
+    backgroundColor: colors.successSoft,
     borderRadius: radius.lg,
     borderWidth: 1,
-    borderColor: '#d0e8d9',
-    padding: spacing.lg,
+    borderColor: colors.borderSubtle,
+    padding: spacing.lgPlus,
     marginBottom: spacing.lg,
   },
   modeInfo: {
@@ -223,13 +223,13 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   modeTitle: {
-    fontSize: 30,
-    lineHeight: 34,
+    fontSize: 28,
+    lineHeight: 32,
     color: colors.textPrimary,
     fontWeight: '800',
   },
   modeMeta: {
-    fontSize: fontSizes.lg,
+    fontSize: fontSizes.base,
     color: colors.textMuted,
     fontWeight: '600',
   },
@@ -238,9 +238,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
     borderWidth: 1,
-    borderColor: colors.surfaceBorder,
+    borderColor: colors.borderSubtle,
+    minHeight: 44,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   switchButtonText: {
     fontSize: fontSizes.base,
@@ -260,19 +263,19 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
   },
   tabChipActive: {
-    borderColor: '#22c55e',
-    backgroundColor: '#eafbf1',
+    borderColor: colors.accent,
+    backgroundColor: colors.brandSoft,
   },
   tabLabel: {
     fontWeight: '700',
     color: colors.textMuted,
   },
   tabLabelActive: {
-    color: '#15803d',
+    color: colors.textAccent,
   },
   sectionTitle: {
-    fontSize: 30,
-    lineHeight: 34,
+    fontSize: 24,
+    lineHeight: 28,
     color: colors.textPrimary,
     fontWeight: '800',
     marginBottom: spacing.md,
@@ -281,7 +284,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.lg,
   },
   errorText: {
-    color: '#b84a4a',
+    color: colors.error,
     marginBottom: spacing.md,
   },
   emptyText: {

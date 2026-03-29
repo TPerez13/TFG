@@ -14,15 +14,12 @@ import {
 } from 'react-native';
 import { ProgressBar } from '../components/ProgressBar';
 import { Screen } from '../components/layout/Screen';
-import { ReminderDebugPanel } from '../components/settings/ReminderDebugPanel';
 import { TimePickerField } from '../components/settings/TimePickerField';
 import { Snackbar } from '../components/ui/Snackbar';
 import { emitHydrationFlash, subscribeHydrationFlash } from '../features/hydration/hydrationFlash';
 import { useHydrationToday } from '../features/hydration/useHydrationToday';
 import { useDeleteHabitEntry } from '../features/habits/useDeleteHabitEntry';
-import { sendHabitTestNotification } from '../features/notifications/localNotifications';
 import { saveHabitReminderPatch } from '../features/notifications/reminderSettings';
-import { useHabitReminderDebug } from '../features/notifications/useHabitReminderDebug';
 import type { HabitsStackParamList } from '../navigation/types';
 import { baseStyles } from '../theme/components';
 import { colors, fontSizes, radius, spacing } from '../theme/tokens';
@@ -53,14 +50,12 @@ export default function HidratacionScreen({ navigation }: HidratacionScreenProps
   const [reminderEnabled, setReminderEnabled] = useState(true);
   const [reminderTime, setReminderTime] = useState('10:00');
   const [reminderSaving, setReminderSaving] = useState(false);
-  const [sendingTest, setSendingTest] = useState(false);
   const [snackbar, setSnackbar] = useState<SnackbarState>({
     visible: false,
     message: '',
   });
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { data, loading, error, reload } = useHydrationToday(today);
-  const reminderDebug = useHabitReminderDebug('hidratacion', data.reminderSnapshot);
   const { deleteEntry, deleting } = useDeleteHabitEntry();
 
   useEffect(() => {
@@ -93,8 +88,8 @@ export default function HidratacionScreen({ navigation }: HidratacionScreenProps
 
   useFocusEffect(
     React.useCallback(() => {
-      void Promise.all([reload(), reminderDebug.reload()]);
-    }, [reload, reminderDebug.reload]),
+      void reload();
+    }, [reload]),
   );
 
   const goalLabel = useMemo(() => formatGoal(data.goal.value, data.goal.unit), [data.goal.unit, data.goal.value]);
@@ -160,21 +155,6 @@ export default function HidratacionScreen({ navigation }: HidratacionScreenProps
     }
   };
 
-  const sendTestNow = async () => {
-    setSendingTest(true);
-    try {
-      const sent = await sendHabitTestNotification('hidratacion');
-      await reminderDebug.reload();
-      if (!sent) {
-        Alert.alert('Permisos pendientes', 'El sistema no tiene permisos para mostrar notificaciones.');
-      }
-    } catch (err) {
-      Alert.alert('Error', err instanceof Error ? err.message : 'No se pudo lanzar la prueba.');
-    } finally {
-      setSendingTest(false);
-    }
-  };
-
   const onUndo = async () => {
     if (!snackbar.undoEntryId || deleting) return;
     try {
@@ -209,10 +189,11 @@ export default function HidratacionScreen({ navigation }: HidratacionScreenProps
             <Text style={styles.stateCount}>{totalLabel} de {goalLabel}</Text>
           </View>
           <Text style={styles.stateTitle}>Agua registrada</Text>
-          <ProgressBar progress={data.progress} fillColor={colors.textAccent} height={12} style={styles.stateBar} />
+          <ProgressBar progress={data.progress} fillColor={colors.accent} height={12} style={styles.stateBar} />
         </View>
 
         <Pressable
+          accessibilityRole="button"
           onPress={() => navigation.navigate('RegistrarAgua')}
           style={({ pressed }) => [styles.addButton, pressed ? styles.buttonPressed : null]}
         >
@@ -276,18 +257,10 @@ export default function HidratacionScreen({ navigation }: HidratacionScreenProps
             value={reminderEnabled}
             onValueChange={handleReminderToggle}
             disabled={reminderSaving}
-            trackColor={{ false: '#d1d5db', true: colors.textAccent }}
+            trackColor={{ false: '#d1d5db', true: colors.accent }}
             thumbColor="#ffffff"
           />
         </View>
-        <ReminderDebugPanel
-          data={reminderDebug.data}
-          loading={reminderDebug.loading}
-          onSendTest={() => {
-            void sendTestNow();
-          }}
-          sendingTest={sendingTest}
-        />
       </ScrollView>
 
       <Snackbar
@@ -311,9 +284,9 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xl,
   },
   iconButton: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     borderWidth: 1,
     borderColor: colors.surfaceBorder,
     backgroundColor: colors.surface,
@@ -325,12 +298,13 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 30,
+    lineHeight: 34,
     fontWeight: '800',
     color: colors.textPrimary,
   },
   headerSpacer: {
-    width: 38,
-    height: 38,
+    width: 44,
+    height: 44,
   },
   stateCard: {
     backgroundColor: colors.surface,
@@ -370,18 +344,21 @@ const styles = StyleSheet.create({
   },
   addButton: {
     borderRadius: radius.lg,
-    backgroundColor: colors.textAccent,
-    minHeight: 62,
+    backgroundColor: colors.accent,
+    borderWidth: 1,
+    borderColor: colors.accent,
+    minHeight: 64,
     alignItems: 'center',
     justifyContent: 'center',
+    paddingHorizontal: spacing.xl,
     marginBottom: spacing.lg,
   },
   addButtonText: {
     color: colors.textOnAccent,
-    fontSize: 24,
-    lineHeight: 28,
+    fontSize: 22,
+    lineHeight: 26,
     fontWeight: '800',
-    letterSpacing: 1,
+    letterSpacing: 0.5,
   },
   summaryRow: {
     flexDirection: 'row',
@@ -429,7 +406,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   errorText: {
-    color: '#b84a4a',
+    color: colors.error,
     marginBottom: spacing.md,
   },
   emptyText: {
@@ -492,7 +469,7 @@ const styles = StyleSheet.create({
   },
   reminderHint: {
     marginTop: spacing.xs,
-    color: '#9a6b22',
+    color: colors.warning,
     fontSize: fontSizes.sm,
     lineHeight: 18,
   },

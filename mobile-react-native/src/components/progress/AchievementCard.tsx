@@ -1,6 +1,7 @@
 import React from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import { Button } from '../ui/Button';
 import { colors, radius, spacing } from '../../theme/tokens';
 
 type AchievementCardProps = {
@@ -21,17 +22,12 @@ export function AchievementCard({ title, onShare }: AchievementCardProps) {
         </View>
       </View>
 
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="Compartir logro"
+      <Button
+        title="COMPARTIR LOGRO"
         onPress={onShare}
-        style={({ pressed }) => [styles.shareButton, pressed ? styles.sharePressed : null]}
-      >
-        <Text numberOfLines={1} style={styles.shareLabel}>
-          Compartir con la Fa...
-        </Text>
-        <Ionicons name="share-social-outline" size={22} color="#f6fff9" />
-      </Pressable>
+        rightIcon={<Ionicons name="share-social-outline" size={18} color={colors.textOnAccent} />}
+        style={styles.shareButton}
+      />
     </View>
   );
 }
@@ -81,23 +77,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   shareButton: {
-    backgroundColor: '#20c85e',
-    borderRadius: 28,
-    minHeight: 64,
-    paddingHorizontal: spacing.xl,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: spacing.sm,
-  },
-  shareLabel: {
-    color: '#f6fff9',
-    fontSize: 19,
-    fontWeight: '700',
-    flexShrink: 1,
-    marginRight: spacing.sm,
-  },
-  sharePressed: {
-    opacity: 0.85,
+    width: '100%',
+    marginTop: 0,
   },
 });

@@ -4,7 +4,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { Pressable, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { HabitCard } from '../components/HabitCard';
 import { Screen } from '../components/layout/Screen';
-import { habitRegistry } from '../features/habits/habitRegistry';
+import { habitRegistry, type HabitKey } from '../features/habits/habitRegistry';
 import type { MealType } from '../features/nutrition/types';
 import type { HabitsStackParamList } from '../navigation/types';
 import { apiFetch } from '../services/api';
@@ -86,6 +86,56 @@ export default function HabitsScreen({ navigation }: HabitsScreenProps) {
     });
   }, [habits, totalsByType]);
 
+  const onHabitPress = (habitKey: HabitKey, typeId: number) => {
+    if (habitKey === 'agua') {
+      navigation.navigate('Hidratacion');
+      return;
+    }
+    if (habitKey === 'ejercicio') {
+      navigation.navigate('Ejercicio');
+      return;
+    }
+    if (habitKey === 'sueno') {
+      navigation.navigate('Sueno');
+      return;
+    }
+    if (habitKey === 'meditacion') {
+      navigation.navigate('Meditacion');
+      return;
+    }
+    if (habitKey === 'comidas') {
+      navigation.navigate('Nutrition', { tipoComidaSeleccionada: defaultMealType });
+      return;
+    }
+    navigation.navigate('HabitDetail', {
+      habitKey,
+      typeId,
+    });
+  };
+
+  const onHabitQuickAdd = (habitKey: HabitKey) => {
+    if (habitKey === 'agua') {
+      navigation.navigate('RegistrarAgua', { mode: 'quick' });
+      return;
+    }
+    if (habitKey === 'ejercicio') {
+      navigation.navigate('RegistrarEjercicio', { mode: 'quick' });
+      return;
+    }
+    if (habitKey === 'sueno') {
+      navigation.navigate('RegistrarSueno', { mode: 'quick' });
+      return;
+    }
+    if (habitKey === 'meditacion') {
+      navigation.navigate('RegistrarMeditacion', { mode: 'quick' });
+      return;
+    }
+    if (habitKey === 'comidas') {
+      navigation.navigate('NutritionQuickAdd', { tipoComidaSeleccionada: defaultMealType });
+      return;
+    }
+  };
+
   return (
     <Screen>
       <StatusBar barStyle="dark-content" />
@@ -123,32 +173,9 @@ export default function HabitsScreen({ navigation }: HabitsScreenProps) {
               variant="goals"
               subtitle={subtitle}
               progress={progress}
-              onPress={() => {
-                if (habit.key === 'agua') {
-                  navigation.navigate('Hidratacion');
-                  return;
-                }
-                if (habit.key === 'ejercicio') {
-                  navigation.navigate('Ejercicio');
-                  return;
-                }
-                if (habit.key === 'sueno') {
-                  navigation.navigate('Sueno');
-                  return;
-                }
-                if (habit.key === 'meditacion') {
-                  navigation.navigate('Meditacion');
-                  return;
-                }
-                if (habit.key === 'comidas') {
-                  navigation.navigate('Nutrition', { tipoComidaSeleccionada: defaultMealType });
-                  return;
-                }
-                navigation.navigate('HabitDetail', {
-                  habitKey: habit.key,
-                  typeId: habit.idTipoHabito,
-                });
-              }}
+              showPlusButton={habit.quickAdd.enabled}
+              onQuickAdd={() => onHabitQuickAdd(habit.key)}
+              onPress={() => onHabitPress(habit.key, habit.idTipoHabito)}
             />
           ))}
         </View>

@@ -305,9 +305,9 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xl,
   },
   iconButton: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     borderWidth: 1,
     borderColor: colors.surfaceBorder,
     backgroundColor: colors.surface,
@@ -318,7 +318,8 @@ const styles = StyleSheet.create({
     opacity: 0.85,
   },
   headerTitle: {
-    fontSize: 28,
+    fontSize: 30,
+    lineHeight: 34,
     fontWeight: '800',
     color: colors.textPrimary,
   },
@@ -329,10 +330,10 @@ const styles = StyleSheet.create({
   },
   modeCard: {
     borderRadius: radius.lg,
-    backgroundColor: '#dff2e7',
+    backgroundColor: colors.successSoft,
     borderWidth: 1,
-    borderColor: '#d0e8d9',
-    padding: spacing.lg,
+    borderColor: colors.borderSubtle,
+    padding: spacing.lgPlus,
     marginBottom: spacing.lg,
   },
   modeInfo: {
@@ -356,10 +357,13 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     borderRadius: radius.lg,
     borderWidth: 1,
-    borderColor: colors.surfaceBorder,
+    borderColor: colors.borderSubtle,
     backgroundColor: colors.surface,
+    minHeight: 44,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   switchButtonText: {
     color: colors.textPrimary,
@@ -384,20 +388,21 @@ const styles = StyleSheet.create({
   input: {
     borderRadius: radius.lg,
     borderWidth: 1,
-    borderColor: '#d0d7d1',
+    borderColor: colors.borderSubtle,
     backgroundColor: colors.surface,
     paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
+    paddingVertical: spacing.mdPlus,
     fontSize: 18,
+    lineHeight: 22,
     color: colors.textPrimary,
     marginBottom: spacing.md,
-    minHeight: 58,
+    minHeight: 56,
   },
   inputError: {
-    borderColor: '#e67a00',
+    borderColor: colors.error,
   },
   errorText: {
-    color: '#b84a4a',
+    color: colors.error,
     marginBottom: spacing.md,
   },
   emptyText: {
@@ -426,8 +431,8 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
   },
   chipActive: {
-    borderColor: colors.textAccent,
-    backgroundColor: '#eafbf1',
+    borderColor: colors.accent,
+    backgroundColor: colors.brandSoft,
   },
   chipText: {
     color: colors.textMuted,
@@ -435,14 +440,12 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   chipTextActive: {
-    color: '#167a43',
+    color: colors.textAccent,
   },
   saveButton: {
     marginTop: spacing.lg,
   },
   switchModeButton: {
     marginTop: spacing.md,
-    backgroundColor: '#f0f3f1',
-    borderColor: '#d9e2db',
   },
 });

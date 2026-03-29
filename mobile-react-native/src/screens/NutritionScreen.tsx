@@ -15,14 +15,11 @@ import {
 import { ProgressBar } from '../components/ProgressBar';
 import { MacroStatCard } from '../components/nutrition/MacroStatCard';
 import { Screen } from '../components/layout/Screen';
-import { ReminderDebugPanel } from '../components/settings/ReminderDebugPanel';
 import { TimePickerField } from '../components/settings/TimePickerField';
 import { Snackbar } from '../components/ui/Snackbar';
 import { mealTypeLabel, mealTypeOptions } from '../features/nutrition/constants';
 import { emitNutritionFlash, subscribeNutritionFlash } from '../features/nutrition/nutritionFlash';
-import { sendHabitTestNotification } from '../features/notifications/localNotifications';
 import { saveHabitReminderPatch } from '../features/notifications/reminderSettings';
-import { useHabitReminderDebug } from '../features/notifications/useHabitReminderDebug';
 import { useNutritionMutations } from '../features/nutrition/useNutritionMutations';
 import { useNutritionToday } from '../features/nutrition/useNutritionToday';
 import type { MealType } from '../features/nutrition/types';
@@ -58,7 +55,6 @@ export default function NutritionScreen({ navigation, route }: NutritionScreenPr
   const [reminderEnabled, setReminderEnabled] = useState(false);
   const [reminderTime, setReminderTime] = useState('13:00');
   const [reminderSaving, setReminderSaving] = useState(false);
-  const [sendingTest, setSendingTest] = useState(false);
   const [snackbar, setSnackbar] = useState<SnackbarState>({
     visible: false,
     message: '',
@@ -66,18 +62,6 @@ export default function NutritionScreen({ navigation, route }: NutritionScreenPr
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const today = useMemo(() => formatLocalDate(new Date()), []);
   const { data, loading, error, reload } = useNutritionToday(today, selectedType);
-  const reminderDebug = useHabitReminderDebug(
-    'nutricion',
-    data?.reminderSnapshot ?? {
-      globalEnabled: false,
-      quietHoursEnabled: false,
-      quietFrom: '22:00',
-      quietTo: '07:00',
-      habitEnabled: false,
-      time: '13:00',
-      lastCompletedDate: null,
-    }
-  );
   const { deleteEntry } = useNutritionMutations();
 
   useEffect(() => {
@@ -117,8 +101,8 @@ export default function NutritionScreen({ navigation, route }: NutritionScreenPr
 
   useFocusEffect(
     React.useCallback(() => {
-      void Promise.all([reload(), reminderDebug.reload()]);
-    }, [reload, reminderDebug.reload]),
+      void reload();
+    }, [reload]),
   );
 
   const historyItems = showAllHistory ? data?.historial ?? [] : (data?.historial ?? []).slice(0, 3);
@@ -176,21 +160,6 @@ export default function NutritionScreen({ navigation, route }: NutritionScreenPr
     }
   };
 
-  const sendTestNow = async () => {
-    setSendingTest(true);
-    try {
-      const sent = await sendHabitTestNotification('nutricion');
-      await reminderDebug.reload();
-      if (!sent) {
-        Alert.alert('Permisos pendientes', 'El sistema no tiene permisos para mostrar notificaciones.');
-      }
-    } catch (err) {
-      Alert.alert('Error', err instanceof Error ? err.message : 'No se pudo lanzar la prueba.');
-    } finally {
-      setSendingTest(false);
-    }
-  };
-
   const handleUndo = async () => {
     if (!snackbar.undoEntryId) return;
 
@@ -231,16 +200,14 @@ export default function NutritionScreen({ navigation, route }: NutritionScreenPr
               {data?.objetivoDiario ?? 4}
             </Text>
           </View>
-          <ProgressBar progress={data?.progreso ?? 0} fillColor="#22c55e" height={14} />
+          <ProgressBar progress={data?.progreso ?? 0} fillColor={colors.accent} height={14} />
         </View>
 
         <Pressable
+          accessibilityRole="button"
           onPress={() => navigation.navigate('NutritionQuickAdd', { tipoComidaSeleccionada: selectedType })}
           style={({ pressed }) => [styles.addButton, pressed ? styles.buttonPressed : null]}
         >
-          <View style={styles.addIconWrap}>
-            <Ionicons name="add" size={28} color="#22c55e" />
-          </View>
           <Text style={styles.addButtonText}>AÑADIR COMIDA</Text>
         </Pressable>
 
@@ -257,7 +224,7 @@ export default function NutritionScreen({ navigation, route }: NutritionScreenPr
                   pressed ? styles.buttonPressed : null,
                 ]}
               >
-                <Ionicons name={option.icon} size={18} color={active ? '#22c55e' : colors.textSubtle} />
+                <Ionicons name={option.icon} size={18} color={active ? colors.textAccent : colors.textSubtle} />
                 <Text style={[styles.tabLabel, active ? styles.tabLabelActive : null]}>{option.label}</Text>
               </Pressable>
             );
@@ -286,7 +253,7 @@ export default function NutritionScreen({ navigation, route }: NutritionScreenPr
         {historyItems.map((entry) => (
           <View key={entry.idRegistroComida} style={styles.historyCard}>
             <View style={styles.historyIcon}>
-              <Ionicons name="restaurant-outline" size={20} color="#22c55e" />
+              <Ionicons name="restaurant-outline" size={20} color={colors.textAccent} />
             </View>
             <View style={styles.historyInfo}>
               <Text style={styles.historyType}>{mealTypeLabel(entry.tipoComida)}</Text>
@@ -301,7 +268,7 @@ export default function NutritionScreen({ navigation, route }: NutritionScreenPr
 
         <View style={styles.reminderCard}>
           <View style={styles.reminderIcon}>
-            <Ionicons name="notifications-outline" size={22} color="#22c55e" />
+            <Ionicons name="notifications-outline" size={22} color={colors.textAccent} />
           </View>
           <View style={styles.reminderTextWrap}>
             <Text style={styles.reminderTitle}>Recordatorios</Text>
@@ -318,7 +285,7 @@ export default function NutritionScreen({ navigation, route }: NutritionScreenPr
               disabled={!data || reminderSaving}
               modalTitle="Hora del recordatorio de nutrición"
               modalDescription="Se programa una única notificación local para este hábito."
-              accentColor="#22c55e"
+              accentColor={colors.accent}
               style={styles.reminderTimeInput}
             />
           </View>
@@ -326,18 +293,10 @@ export default function NutritionScreen({ navigation, route }: NutritionScreenPr
             value={reminderEnabled}
             onValueChange={handleReminderToggle}
             disabled={reminderSaving}
-            trackColor={{ true: '#22c55e', false: '#d1d5db' }}
+            trackColor={{ true: colors.accent, false: '#d1d5db' }}
             thumbColor="#ffffff"
           />
         </View>
-        <ReminderDebugPanel
-          data={reminderDebug.data}
-          loading={reminderDebug.loading || !data}
-          onSendTest={() => {
-            void sendTestNow();
-          }}
-          sendingTest={sendingTest}
-        />
       </ScrollView>
       <Snackbar
         visible={snackbar.visible}
@@ -360,15 +319,15 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xl,
   },
   headerTitle: {
-    fontSize: 32,
-    lineHeight: 36,
+    fontSize: 30,
+    lineHeight: 34,
     fontWeight: '800',
     color: colors.textPrimary,
   },
   iconButton: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.surfaceBorder,
@@ -376,8 +335,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   headerSpacer: {
-    width: 38,
-    height: 38,
+    width: 44,
+    height: 44,
   },
   buttonPressed: {
     opacity: 0.85,
@@ -419,33 +378,26 @@ const styles = StyleSheet.create({
   statusCountCurrent: {
     fontSize: 34,
     lineHeight: 38,
-    color: '#22c55e',
+    color: colors.textAccent,
     fontWeight: '900',
   },
   addButton: {
-    backgroundColor: '#22c55e',
+    backgroundColor: colors.accent,
+    borderWidth: 1,
+    borderColor: colors.accent,
     borderRadius: radius.lg,
-    minHeight: 68,
-    flexDirection: 'row',
+    minHeight: 64,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: spacing.md,
+    paddingHorizontal: spacing.xl,
     marginBottom: spacing.xl,
   },
-  addIconWrap: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    backgroundColor: '#ffffff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   addButtonText: {
-    fontSize: 28,
-    lineHeight: 30,
+    fontSize: 22,
+    lineHeight: 26,
     fontWeight: '800',
-    color: '#f4fff7',
-    letterSpacing: 1,
+    color: colors.textOnAccent,
+    letterSpacing: 0.5,
   },
   tabsRow: {
     gap: spacing.md,
@@ -464,16 +416,16 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
   },
   tabChipActive: {
-    borderColor: '#22c55e',
-    backgroundColor: '#eafbf1',
+    borderColor: colors.accent,
+    backgroundColor: colors.brandSoft,
   },
   tabLabel: {
     fontSize: 16,
     fontWeight: '700',
-    color: colors.textPrimary,
+    color: colors.textMuted,
   },
   tabLabelActive: {
-    color: '#15803d',
+    color: colors.textAccent,
   },
   sectionTitle: {
     fontSize: 20,
@@ -493,15 +445,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   showAll: {
-    color: '#22c55e',
+    color: colors.textAccent,
     fontSize: 16,
-    fontWeight: '800',
+    fontWeight: '700',
   },
   loading: {
     marginBottom: spacing.sm,
   },
   errorText: {
-    color: '#b84a4a',
+    color: colors.error,
     marginBottom: spacing.md,
   },
   emptyText: {
@@ -522,7 +474,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: '#eafbf1',
+    backgroundColor: colors.brandSoft,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: spacing.md,
@@ -573,7 +525,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: '#eafbf1',
+    backgroundColor: colors.brandSoft,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: spacing.md,
@@ -594,7 +546,7 @@ const styles = StyleSheet.create({
   },
   reminderHint: {
     marginTop: spacing.xs,
-    color: '#9a6b22',
+    color: colors.warning,
     fontSize: fontSizes.sm,
     lineHeight: 18,
   },

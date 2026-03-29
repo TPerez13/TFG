@@ -14,15 +14,12 @@ import {
 } from 'react-native';
 import { ProgressBar } from '../components/ProgressBar';
 import { Screen } from '../components/layout/Screen';
-import { ReminderDebugPanel } from '../components/settings/ReminderDebugPanel';
 import { TimePickerField } from '../components/settings/TimePickerField';
 import { Snackbar } from '../components/ui/Snackbar';
 import type { HabitsStackParamList } from '../navigation/types';
 import { baseStyles } from '../theme/components';
 import { colors, fontSizes, radius, spacing } from '../theme/tokens';
-import { sendHabitTestNotification } from '../features/notifications/localNotifications';
 import { saveHabitReminderPatch } from '../features/notifications/reminderSettings';
-import { useHabitReminderDebug } from '../features/notifications/useHabitReminderDebug';
 import { emitExerciseFlash, subscribeExerciseFlash } from '../features/exercise/exerciseFlash';
 import {
   EXERCISE_ACTIVITY_TYPES,
@@ -55,14 +52,12 @@ export default function EjercicioScreen({ navigation, route }: EjercicioScreenPr
   const [reminderEnabled, setReminderEnabled] = useState(true);
   const [reminderTime, setReminderTime] = useState('20:00');
   const [reminderSaving, setReminderSaving] = useState(false);
-  const [sendingTest, setSendingTest] = useState(false);
   const [snackbar, setSnackbar] = useState<SnackbarState>({
     visible: false,
     message: '',
   });
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { data, loading, error, reload } = useExerciseToday(today, selectedType);
-  const reminderDebug = useHabitReminderDebug('ejercicio', data.reminderSnapshot);
   const { deleteEntry, deleting } = useDeleteHabitEntry();
 
   useEffect(() => {
@@ -97,8 +92,8 @@ export default function EjercicioScreen({ navigation, route }: EjercicioScreenPr
 
   useFocusEffect(
     React.useCallback(() => {
-      void Promise.all([reload(), reminderDebug.reload()]);
-    }, [reload, reminderDebug.reload]),
+      void reload();
+    }, [reload]),
   );
 
   const historyItems = showAll ? data.history : data.history.slice(0, 5);
@@ -156,21 +151,6 @@ export default function EjercicioScreen({ navigation, route }: EjercicioScreenPr
     }
   };
 
-  const sendTestNow = async () => {
-    setSendingTest(true);
-    try {
-      const sent = await sendHabitTestNotification('ejercicio');
-      await reminderDebug.reload();
-      if (!sent) {
-        Alert.alert('Permisos pendientes', 'El sistema no tiene permisos para mostrar notificaciones.');
-      }
-    } catch (err) {
-      Alert.alert('Error', err instanceof Error ? err.message : 'No se pudo lanzar la prueba.');
-    } finally {
-      setSendingTest(false);
-    }
-  };
-
   const onUndo = async () => {
     if (!snackbar.undoEntryId || deleting) return;
     try {
@@ -205,10 +185,11 @@ export default function EjercicioScreen({ navigation, route }: EjercicioScreenPr
           <Text style={styles.stateCount}>
             {Math.round(data.totalMin)} de {data.goalMin} min
           </Text>
-          <ProgressBar progress={data.progress} fillColor={colors.textAccent} height={12} style={styles.stateBar} />
+          <ProgressBar progress={data.progress} fillColor={colors.accent} height={12} style={styles.stateBar} />
         </View>
 
         <Pressable
+          accessibilityRole="button"
           onPress={() =>
             navigation.navigate('RegistrarEjercicio', {
               mode: 'quick',
@@ -314,18 +295,10 @@ export default function EjercicioScreen({ navigation, route }: EjercicioScreenPr
             value={reminderEnabled}
             onValueChange={handleReminderToggle}
             disabled={reminderSaving}
-            trackColor={{ false: '#d1d5db', true: colors.textAccent }}
+            trackColor={{ false: '#d1d5db', true: colors.accent }}
             thumbColor="#ffffff"
           />
         </View>
-        <ReminderDebugPanel
-          data={reminderDebug.data}
-          loading={reminderDebug.loading}
-          onSendTest={() => {
-            void sendTestNow();
-          }}
-          sendingTest={sendingTest}
-        />
       </ScrollView>
 
       <Snackbar
@@ -349,9 +322,9 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xl,
   },
   iconButton: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     borderWidth: 1,
     borderColor: colors.surfaceBorder,
     backgroundColor: colors.surface,
@@ -363,12 +336,13 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 30,
+    lineHeight: 34,
     fontWeight: '800',
     color: colors.textPrimary,
   },
   headerSpacer: {
-    width: 38,
-    height: 38,
+    width: 44,
+    height: 44,
   },
   stateCard: {
     backgroundColor: colors.surface,
@@ -404,18 +378,21 @@ const styles = StyleSheet.create({
   },
   addButton: {
     borderRadius: radius.lg,
-    backgroundColor: colors.textAccent,
-    minHeight: 62,
+    backgroundColor: colors.accent,
+    borderWidth: 1,
+    borderColor: colors.accent,
+    minHeight: 64,
     alignItems: 'center',
     justifyContent: 'center',
+    paddingHorizontal: spacing.xl,
     marginBottom: spacing.lg,
   },
   addButtonText: {
     color: colors.textOnAccent,
-    fontSize: 24,
-    lineHeight: 28,
+    fontSize: 22,
+    lineHeight: 26,
     fontWeight: '800',
-    letterSpacing: 1,
+    letterSpacing: 0.5,
   },
   chipRow: {
     gap: spacing.sm,
@@ -430,8 +407,8 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
   },
   filterChipActive: {
-    borderColor: colors.textAccent,
-    backgroundColor: '#eafbf1',
+    borderColor: colors.accent,
+    backgroundColor: colors.brandSoft,
   },
   filterChipText: {
     color: colors.textMuted,
@@ -439,7 +416,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   filterChipTextActive: {
-    color: '#167a43',
+    color: colors.textAccent,
   },
   summaryRow: {
     flexDirection: 'row',
@@ -487,7 +464,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   errorText: {
-    color: '#b84a4a',
+    color: colors.error,
     marginBottom: spacing.md,
   },
   emptyText: {
@@ -576,7 +553,7 @@ const styles = StyleSheet.create({
   },
   reminderHint: {
     marginTop: spacing.xs,
-    color: '#9a6b22',
+    color: colors.warning,
     fontSize: fontSizes.sm,
     lineHeight: 18,
   },

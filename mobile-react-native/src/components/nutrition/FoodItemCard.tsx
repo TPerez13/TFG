@@ -24,9 +24,6 @@ export function FoodItemCard({ item, onAdd, compact = false }: FoodItemCardProps
           style={({ pressed }) => [styles.addButton, pressed ? styles.addButtonPressed : null]}
         >
           <Text style={styles.addText}>Añadir</Text>
-          <View style={styles.addIconWrap}>
-            <Ionicons name="add" size={16} color={colors.textOnAccent} />
-          </View>
         </Pressable>
       </View>
       <View style={styles.imagePlaceholder}>
@@ -56,42 +53,35 @@ const styles = StyleSheet.create({
     marginRight: spacing.md,
   },
   title: {
-    fontSize: 21,
-    fontWeight: '700',
+    fontSize: 18,
+    lineHeight: 22,
+    fontWeight: '800',
     color: colors.textPrimary,
     marginBottom: spacing.xs,
   },
   kcal: {
-    fontSize: fontSizes.xl,
+    fontSize: fontSizes.base,
     fontWeight: '600',
     color: colors.textMuted,
     marginBottom: spacing.md,
   },
   addButton: {
     alignSelf: 'flex-start',
-    borderRadius: radius.lg,
-    backgroundColor: '#22c55e',
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.md,
-    flexDirection: 'row',
+    borderRadius: 18,
+    backgroundColor: colors.accent,
+    minHeight: 44,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
     alignItems: 'center',
-    gap: spacing.sm,
+    justifyContent: 'center',
   },
   addButtonPressed: {
     opacity: 0.85,
   },
   addText: {
-    fontSize: fontSizes.xl,
-    fontWeight: '700',
+    fontSize: fontSizes.base,
+    fontWeight: '800',
     color: colors.textOnAccent,
-  },
-  addIconWrap: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   imagePlaceholder: {
     width: 120,

@@ -94,14 +94,17 @@ const styles = StyleSheet.create({
   },
   addButton: {
     borderRadius: 18,
-    backgroundColor: colors.textAccent,
-    paddingHorizontal: spacing.md,
+    backgroundColor: colors.accent,
+    minHeight: 44,
+    paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   addText: {
     color: colors.textOnAccent,
-    fontSize: fontSizes.md,
-    fontWeight: '700',
+    fontSize: fontSizes.base,
+    fontWeight: '800',
   },
   pressed: {
     opacity: 0.85,

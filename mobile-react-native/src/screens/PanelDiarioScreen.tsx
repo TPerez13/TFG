@@ -20,7 +20,7 @@ import {
   selectClosestLockedAchievements,
   useAchievements,
 } from '../features/achievements/useAchievements';
-import { habitRegistry } from '../features/habits/habitRegistry';
+import { habitRegistry, type HabitKey } from '../features/habits/habitRegistry';
 import { apiFetch } from '../services/api';
 import type { HabitEntry, User } from '../types/models';
 import { baseStyles } from '../theme/components';
@@ -29,7 +29,7 @@ import { colors, fontSizes, spacing } from '../theme/tokens';
 type PanelDiarioScreenProps = NativeStackScreenProps<HomeStackParamList, 'PanelDiario'>;
 
 type HabitState = {
-  key: string;
+  key: HabitKey;
   total: number;
   progress: number;
 };
@@ -193,23 +193,7 @@ export default function PanelDiarioScreen({ navigation }: PanelDiarioScreenProps
   const greetingName = user?.nombre ?? user?.username ?? user?.correo ?? 'Usuario';
   const globalPercent = Math.round(globalProgress * 100);
 
-  const onHabitAction = (habitKey: string) => {
-    const habit = habitRegistry.find((item) => item.key === habitKey);
-    if (!habit?.action) return;
-
-    if (habit.action.intent === 'navigate' && habit.action.routeName) {
-      const parent = navigation.getParent<any>();
-      if (parent) {
-        parent.navigate(habit.action.routeName as never);
-        return;
-      }
-      return;
-    }
-
-    Alert.alert('Accion rapida', `Listo para ${habit.title.toLowerCase()}.`);
-  };
-
-  const onHabitCardPress = (habitKey: string) => {
+  const onHabitCardPress = (habitKey: HabitKey) => {
     const parent = navigation.getParent<any>();
     if (!parent) return;
 
@@ -238,6 +222,52 @@ export default function PanelDiarioScreen({ navigation }: PanelDiarioScreenProps
     }
 
     parent.navigate('HabitosTab' as never);
+  };
+
+  const onHabitQuickAdd = (habitKey: HabitKey) => {
+    const parent = navigation.getParent<any>();
+    if (!parent) return;
+
+    if (habitKey === 'agua') {
+      parent.navigate(
+        'HabitosTab' as never,
+        { screen: 'RegistrarAgua', params: { mode: 'quick' } } as never,
+      );
+      return;
+    }
+    if (habitKey === 'ejercicio') {
+      parent.navigate(
+        'HabitosTab' as never,
+        { screen: 'RegistrarEjercicio', params: { mode: 'quick' } } as never,
+      );
+      return;
+    }
+    if (habitKey === 'sueno') {
+      parent.navigate(
+        'HabitosTab' as never,
+        { screen: 'RegistrarSueno', params: { mode: 'quick' } } as never,
+      );
+      return;
+    }
+    if (habitKey === 'meditacion') {
+      parent.navigate(
+        'HabitosTab' as never,
+        { screen: 'RegistrarMeditacion', params: { mode: 'quick' } } as never,
+      );
+      return;
+    }
+    if (habitKey === 'comidas') {
+      parent.navigate(
+        'HabitosTab' as never,
+        {
+          screen: 'NutritionQuickAdd',
+          params: { tipoComidaSeleccionada: defaultMealType },
+        } as never,
+      );
+      return;
+    }
+
+    Alert.alert('Accion rapida', 'No se pudo abrir el registro rapido.');
   };
 
   const onOpenAchievements = () => {
@@ -304,8 +334,8 @@ export default function PanelDiarioScreen({ navigation }: PanelDiarioScreenProps
                   progress={progress}
                   style={styles.habitCard}
                   onPress={() => onHabitCardPress(habit.key)}
-                  actionLabel={habit.key === 'agua' || habit.key === 'ejercicio' ? '' : habit.action?.label}
-                  onPressAction={() => onHabitAction(habit.key)}
+                  showPlusButton={habit.quickAdd.enabled}
+                  onQuickAdd={() => onHabitQuickAdd(habit.key)}
                 />
               );
             })}

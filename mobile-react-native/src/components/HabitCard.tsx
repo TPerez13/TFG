@@ -90,7 +90,7 @@ export function HabitCard({
         ) : null}
       </View>
       <ProgressBar progress={progress} fillColor={habit.accentColor} style={styles.progressBar} />
-      {isHome && homeActionLabel ? (
+      {!showPlusButton && isHome && homeActionLabel ? (
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={homeActionLabel}
