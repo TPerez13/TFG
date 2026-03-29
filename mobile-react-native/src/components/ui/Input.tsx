@@ -18,6 +18,7 @@ export function Input({
   containerStyle,
   inputStyle,
   placeholderTextColor = colors.placeholder,
+  selectionColor = colors.textAccent,
   ...props
 }: InputProps) {
   return (
@@ -27,8 +28,9 @@ export function Input({
         {...props}
         style={[styles.input, inputStyle]}
         placeholderTextColor={placeholderTextColor}
+        selectionColor={selectionColor}
       />
-      {right}
+      {right ? <View style={styles.rightSlot}>{right}</View> : null}
     </View>
   );
 }
@@ -37,17 +39,17 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 2,
-    borderColor: colors.outline,
+    borderWidth: 1,
+    borderColor: colors.borderSubtle,
     borderRadius: radius.lg,
     paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
+    paddingVertical: spacing.mdPlus,
     backgroundColor: colors.surface,
     marginBottom: spacing.lg,
-    minHeight: 54,
+    minHeight: 56,
   },
   icon: {
-    width: 22,
+    width: 24,
     textAlign: 'center',
     color: colors.textAccent,
     fontSize: fontSizes.base,
@@ -55,7 +57,12 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: fontSizes.base,
+    lineHeight: 22,
     color: colors.textPrimary,
     paddingVertical: 0,
+  },
+  rightSlot: {
+    marginLeft: spacing.sm,
+    justifyContent: 'center',
   },
 });

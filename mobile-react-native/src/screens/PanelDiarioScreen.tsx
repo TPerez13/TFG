@@ -260,7 +260,7 @@ export default function PanelDiarioScreen({ navigation }: PanelDiarioScreenProps
           <View style={styles.headerSpacer} />
         </View>
         <Text style={styles.greeting}>Buenos días, {greetingName}</Text>
-        <Text style={styles.subtitle}>Es un dia hermoso para estar saludable.</Text>
+        <Text style={styles.subtitle}>Es un día hermoso para estar saludable.</Text>
 
         <View style={styles.progressSection}>
           {loading ? <ActivityIndicator size="large" color={colors.textAccent} /> : <ProgressRing progress={globalProgress} />}

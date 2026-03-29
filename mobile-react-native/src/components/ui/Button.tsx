@@ -28,6 +28,7 @@ export function Button({
   return (
     <Pressable
       accessibilityRole="button"
+      accessibilityState={{ disabled }}
       style={({ pressed }) => [
         styles.button,
         isOutline ? styles.buttonOutline : styles.buttonPrimary,
@@ -50,10 +51,11 @@ const styles = StyleSheet.create({
   button: {
     borderRadius: radius.lg,
     paddingVertical: spacing.mdPlus,
-    paddingHorizontal: spacing.lg,
+    paddingHorizontal: spacing.xl,
     alignItems: 'center',
     marginTop: 2,
-    minHeight: 54,
+    justifyContent: 'center',
+    minHeight: 56,
   },
   buttonPrimary: {
     backgroundColor: colors.accent,
@@ -66,20 +68,22 @@ const styles = StyleSheet.create({
   buttonOutline: {
     backgroundColor: 'transparent',
     borderWidth: 2,
-    borderColor: colors.accent,
+    borderColor: colors.textAccent,
   },
   pressed: {
     opacity: 0.85,
   },
   disabled: {
-    opacity: 0.6,
+    opacity: 0.55,
   },
   content: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: spacing.sm,
   },
   iconSlot: {
-    marginLeft: spacing.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   text: {
     fontSize: fontSizes.base,

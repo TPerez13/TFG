@@ -104,7 +104,7 @@ export default function RegistrarSuenoScreen({ navigation, route }: RegistrarSue
         routes: [
           { name: 'Habits' },
           {
-            name: 'Sueño',
+            name: 'Sueno',
             params: {
               refreshToken: Date.now(),
             },

@@ -42,6 +42,9 @@ export function HabitCard({
   return (
     <Pressable
       accessibilityRole={isPressable ? 'button' : undefined}
+      accessibilityLabel={
+        isPressable ? `${habit.title}. ${subtitle}. Progreso ${percent}.` : undefined
+      }
       disabled={!isPressable}
       onPress={onPress}
       style={({ pressed }) => [styles.card, style, isPressable && pressed ? styles.cardPressed : null]}
@@ -90,6 +93,7 @@ export function HabitCard({
       {isHome && homeActionLabel ? (
         <Pressable
           accessibilityRole="button"
+          accessibilityLabel={homeActionLabel}
           onPress={onPressAction}
           style={({ pressed }) => [
             styles.actionButton,
@@ -111,7 +115,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
     borderWidth: 1,
-    borderColor: colors.surfaceBorder,
+    borderColor: colors.borderSubtle,
     padding: spacing.lgPlus,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 8 },
@@ -140,7 +144,7 @@ const styles = StyleSheet.create({
   },
   progressText: {
     fontSize: fontSizes.sm,
-    color: colors.textSubtle,
+    color: colors.textMuted,
     fontWeight: '600',
   },
   titleWithIcon: {
@@ -163,9 +167,9 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   quickAddButton: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     backgroundColor: colors.accent,
     alignItems: 'center',
     justifyContent: 'center',
@@ -175,8 +179,8 @@ const styles = StyleSheet.create({
     opacity: 0.85,
   },
   quickAddText: {
-    fontSize: 18,
-    lineHeight: 18,
+    fontSize: 22,
+    lineHeight: 22,
     color: colors.textOnAccent,
     fontWeight: '700',
   },
@@ -205,6 +209,7 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: fontSizes.md,
     color: colors.textMuted,
+    lineHeight: 20,
   },
   progressBar: {
     marginBottom: spacing.md,
@@ -218,17 +223,20 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     alignSelf: 'flex-start',
+    minHeight: 44,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
     borderRadius: radius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   actionPrimary: {
     backgroundColor: colors.accent,
   },
   actionOutline: {
     borderWidth: 1,
-    borderColor: colors.surfaceBorder,
-    backgroundColor: colors.surfaceMuted,
+    borderColor: colors.borderSubtle,
+    backgroundColor: colors.surface,
   },
   actionPressed: {
     opacity: 0.85,
@@ -241,6 +249,6 @@ const styles = StyleSheet.create({
     color: colors.textOnAccent,
   },
   actionTextOutline: {
-    color: colors.textPrimary,
+    color: colors.textAccent,
   },
 });

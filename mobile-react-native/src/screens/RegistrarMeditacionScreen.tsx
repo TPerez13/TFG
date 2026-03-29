@@ -122,7 +122,7 @@ export default function RegistrarMeditacionScreen({
         routes: [
           { name: 'Habits' },
           {
-            name: 'Meditación',
+            name: 'Meditacion',
             params: {
               sessionTypeSeleccionada: template.type,
               refreshToken: Date.now(),

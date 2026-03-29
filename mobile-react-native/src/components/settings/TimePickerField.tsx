@@ -53,18 +53,24 @@ function TimeColumn({ label, values, selectedValue, onSelect, accentColor }: Tim
       <ScrollView style={styles.columnScroll} showsVerticalScrollIndicator={false}>
         {values.map((value) => {
           const selected = value === selectedValue;
+          const selectedTextColor = accentColor === colors.textAccent ? accentColor : colors.textAccent;
           return (
             <Pressable
               key={value}
               accessibilityRole="button"
+              accessibilityState={{ selected }}
               onPress={() => onSelect(value)}
               style={({ pressed }) => [
                 styles.option,
-                selected ? [styles.optionSelected, { borderColor: accentColor, backgroundColor: '#eef8f1' }] : null,
+                selected
+                  ? [styles.optionSelected, { borderColor: accentColor, backgroundColor: colors.brandSoft }]
+                  : null,
                 pressed ? styles.optionPressed : null,
               ]}
             >
-              <Text style={[styles.optionText, selected ? { color: accentColor } : null]}>{pad(value)}</Text>
+              <Text style={[styles.optionText, selected ? { color: selectedTextColor } : null]}>
+                {pad(value)}
+              </Text>
             </Pressable>
           );
         })}
@@ -86,6 +92,8 @@ export function TimePickerField({
   const [visible, setVisible] = useState(false);
   const [selectedHour, setSelectedHour] = useState(parsedValue.hour);
   const [selectedMinute, setSelectedMinute] = useState(parsedValue.minute);
+  const primaryButtonTextColor =
+    accentColor === colors.textAccent ? colors.surface : colors.textOnAccent;
 
   useEffect(() => {
     if (visible) return;
@@ -114,6 +122,8 @@ export function TimePickerField({
     <>
       <Pressable
         accessibilityRole="button"
+        accessibilityLabel={`${modalTitle}: ${formatTime(parsedValue.hour, parsedValue.minute)}`}
+        accessibilityState={{ disabled }}
         disabled={disabled}
         onPress={openPicker}
         style={({ pressed }) => [
@@ -169,7 +179,9 @@ export function TimePickerField({
                   pressed ? styles.buttonPressed : null,
                 ]}
               >
-                <Text style={styles.primaryButtonText}>Aplicar</Text>
+                <Text style={[styles.primaryButtonText, { color: primaryButtonTextColor }]}>
+                  Aplicar
+                </Text>
               </Pressable>
             </View>
           </View>
@@ -182,10 +194,11 @@ export function TimePickerField({
 const styles = StyleSheet.create({
   field: {
     minWidth: 108,
+    minHeight: 48,
     borderWidth: 1,
-    borderColor: colors.surfaceBorder,
-    borderRadius: 10,
-    paddingHorizontal: spacing.sm,
+    borderColor: colors.borderSubtle,
+    borderRadius: 14,
+    paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     backgroundColor: colors.surface,
     flexDirection: 'row',
@@ -205,8 +218,8 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   fieldChevron: {
-    color: colors.textSubtle,
-    fontSize: fontSizes.sm,
+    color: colors.textMuted,
+    fontSize: fontSizes.base,
     fontWeight: '700',
   },
   backdrop: {
@@ -253,14 +266,16 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   columnScroll: {
-    maxHeight: 240,
+    maxHeight: 248,
   },
   option: {
     borderWidth: 1,
-    borderColor: colors.surfaceBorder,
+    borderColor: colors.borderSubtle,
     borderRadius: 12,
+    minHeight: 44,
     paddingVertical: spacing.sm,
     alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: spacing.xs,
     backgroundColor: colors.surface,
   },
@@ -288,10 +303,15 @@ const styles = StyleSheet.create({
     marginTop: spacing.lg,
   },
   secondaryButton: {
+    minHeight: 44,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
     borderRadius: 999,
-    backgroundColor: colors.surfaceMuted,
+    borderWidth: 1,
+    borderColor: colors.borderSubtle,
+    backgroundColor: colors.surface,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   secondaryButtonText: {
     color: colors.textPrimary,
@@ -299,12 +319,14 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   primaryButton: {
+    minHeight: 44,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
     borderRadius: 999,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   primaryButtonText: {
-    color: '#ffffff',
     fontSize: fontSizes.base,
     fontWeight: '800',
   },
