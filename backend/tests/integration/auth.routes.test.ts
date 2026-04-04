@@ -106,10 +106,9 @@ describe("auth routes integration", () => {
     }
   });
 
-  it("POST /api/password/forgot delegates to the auth service", async () => {
+  it("POST /api/password/forgot delegates to the auth service without exposing any code", async () => {
     mock.method(authService, "requestPasswordReset", async () => ({
       message: "Si el correo existe, enviamos instrucciones para restablecer la contraseña.",
-      devResetCode: "123456",
     }));
 
     const server = await startTestServer(createApp());
@@ -124,8 +123,8 @@ describe("auth routes integration", () => {
       assert.equal(response.status, 200);
       assert.deepEqual(response.json, {
         message: "Si el correo existe, enviamos instrucciones para restablecer la contraseña.",
-        devResetCode: "123456",
       });
+      assert.equal("code" in response.json, false);
     } finally {
       await server.close();
     }
@@ -133,7 +132,7 @@ describe("auth routes integration", () => {
 
   it("POST /api/password/reset maps AppError through the error handler", async () => {
     mock.method(authService, "resetPassword", async () => {
-      throw new AppError("Código inválido o expirado.", 400);
+      throw new AppError("El código de recuperación ha expirado.", 400);
     });
 
     const server = await startTestServer(createApp());
@@ -151,7 +150,7 @@ describe("auth routes integration", () => {
 
       assert.equal(response.status, 400);
       assert.deepEqual(response.json, {
-        message: "Código inválido o expirado.",
+        message: "El código de recuperación ha expirado.",
       });
     } finally {
       await server.close();

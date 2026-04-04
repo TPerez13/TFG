@@ -1,22 +1,26 @@
 import bcrypt from "bcryptjs";
 import { createHash, randomInt } from "crypto";
 import type {
+  ForgotPasswordRequest,
+  ForgotPasswordResponse,
   LoginRequest,
   LoginResponse,
   RegisterRequest,
   RegisterResponse,
+  ResetPasswordRequest,
+  ResetPasswordResponse,
   UserSummary,
 } from "@muchasvidas/shared";
-import { AppError } from "../utils/errors";
-import { signAccessToken } from "../utils/jwt";
+import {
+  createPasswordResetToken,
+  consumePasswordResetToken,
+  deletePasswordResetTokensByUserId,
+} from "../model/passwordResetModel";
 import type { UserRecord } from "../model/userModel";
 import { createUser, findByEmail, updatePasswordHash } from "../model/userModel";
-import { createPasswordResetToken, consumePasswordResetToken } from "../model/passwordResetModel";
-import {
-  assertPasswordResetEmailConfigured,
-  isPasswordResetEmailConfigured,
-  sendPasswordResetEmail,
-} from "./emailService";
+import { AppError } from "../utils/errors";
+import { signAccessToken } from "../utils/jwt";
+import { assertPasswordResetEmailConfigured, sendPasswordResetEmail } from "./emailService";
 import { getDefaultNotificationSettings } from "./notificationSettingsService";
 
 const DEFAULT_PREFERENCIAS: Record<string, unknown> = {
@@ -30,6 +34,11 @@ const DEFAULT_PREFERENCIAS: Record<string, unknown> = {
 };
 
 const PASSWORD_RESET_EXPIRATION_MINUTES = 15;
+const PASSWORD_RESET_GENERIC_MESSAGE =
+  "Si el correo existe, enviamos instrucciones para restablecer la contraseña.";
+const PASSWORD_RESET_INVALID_CODE_MESSAGE = "El código de recuperación no es válido.";
+const PASSWORD_RESET_EXPIRED_CODE_MESSAGE = "El código de recuperación ha expirado.";
+const PASSWORD_RESET_USED_CODE_MESSAGE = "El código de recuperación ya fue utilizado.";
 
 const toIsoString = (value: unknown): string | undefined => {
   if (value instanceof Date) {
@@ -123,26 +132,19 @@ export async function register(payload: Partial<RegisterRequest>): Promise<Regis
   return response;
 }
 
-export async function requestPasswordReset(payload: { correo?: string }): Promise<{
-  message: string;
-  devResetCode?: string;
-}> {
+export async function requestPasswordReset(
+  payload: Partial<ForgotPasswordRequest>
+): Promise<ForgotPasswordResponse> {
   const correo = (payload?.correo ?? "").trim();
   if (!correo) {
     throw new AppError("Correo requerido.", 400);
   }
 
-  const genericMessage =
-    "Si el correo existe, enviamos instrucciones para restablecer la contraseña.";
-  const shouldRequireEmailDelivery = process.env.NODE_ENV === "production";
-
-  if (shouldRequireEmailDelivery) {
-    assertPasswordResetEmailConfigured();
-  }
+  assertPasswordResetEmailConfigured();
 
   const user = await findByEmail(correo);
   if (!user) {
-    return { message: genericMessage };
+    return { message: PASSWORD_RESET_GENERIC_MESSAGE };
   }
 
   const resetCode = generateResetCode();
@@ -151,33 +153,23 @@ export async function requestPasswordReset(payload: { correo?: string }): Promis
 
   await createPasswordResetToken(user.id_usuario, tokenHash, expiresAt);
 
-  if (isPasswordResetEmailConfigured()) {
-    const emailDelivered = await sendPasswordResetEmail({
-      to: user.correo,
-      resetCode,
-      expiresInMinutes: PASSWORD_RESET_EXPIRATION_MINUTES,
-    });
+  const emailResult = await sendPasswordResetEmail({
+    to: user.correo,
+    resetCode,
+    expiresInMinutes: PASSWORD_RESET_EXPIRATION_MINUTES,
+  });
 
-    if (!emailDelivered) {
-      console.error(`[mail] Password reset code could not be delivered to ${user.correo}.`);
-    }
+  if (!emailResult.ok) {
+    await deletePasswordResetTokensByUserId(user.id_usuario);
+    throw new AppError(emailResult.message, emailResult.statusCode);
   }
 
-  if (process.env.NODE_ENV !== "production") {
-    return {
-      message: genericMessage,
-      devResetCode: resetCode,
-    };
-  }
-
-  return { message: genericMessage };
+  return { message: PASSWORD_RESET_GENERIC_MESSAGE };
 }
 
-export async function resetPassword(payload: {
-  correo?: string;
-  code?: string;
-  newPassword?: string;
-}): Promise<{ message: string }> {
+export async function resetPassword(
+  payload: Partial<ResetPasswordRequest>
+): Promise<ResetPasswordResponse> {
   const correo = (payload?.correo ?? "").trim();
   const code = (payload?.code ?? "").trim();
   const newPassword = payload?.newPassword ?? "";
@@ -186,19 +178,32 @@ export async function resetPassword(payload: {
     throw new AppError("Correo, código y nueva contraseña son requeridos.", 400);
   }
 
+  if (!/^\d{6}$/.test(code)) {
+    throw new AppError("El código debe tener 6 dígitos numéricos.", 400);
+  }
+
   if (newPassword.length < 6) {
     throw new AppError("La nueva contraseña debe tener al menos 6 caracteres.", 400);
   }
 
   const user = await findByEmail(correo);
   if (!user) {
-    throw new AppError("Código inválido o expirado.", 400);
+    throw new AppError(PASSWORD_RESET_INVALID_CODE_MESSAGE, 400);
   }
 
   const tokenHash = hashResetCode(code);
-  const tokenConsumed = await consumePasswordResetToken(user.id_usuario, tokenHash, new Date());
-  if (!tokenConsumed) {
-    throw new AppError("Código inválido o expirado.", 400);
+  const tokenConsumption = await consumePasswordResetToken(user.id_usuario, tokenHash, new Date());
+
+  if (tokenConsumption === "expired") {
+    throw new AppError(PASSWORD_RESET_EXPIRED_CODE_MESSAGE, 400);
+  }
+
+  if (tokenConsumption === "already_used") {
+    throw new AppError(PASSWORD_RESET_USED_CODE_MESSAGE, 400);
+  }
+
+  if (tokenConsumption !== "consumed") {
+    throw new AppError(PASSWORD_RESET_INVALID_CODE_MESSAGE, 400);
   }
 
   const hash = await bcrypt.hash(newPassword, 10);

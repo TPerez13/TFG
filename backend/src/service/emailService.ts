@@ -2,12 +2,26 @@ import { config } from "../config";
 import { AppError } from "../utils/errors";
 
 const PASSWORD_RESET_SUBJECT = "Recuperación de contraseña - TrackHabit Loop";
+const PASSWORD_RESET_EMAIL_UNAVAILABLE_MESSAGE =
+  "La recuperación por correo no está disponible en este momento.";
+const PASSWORD_RESET_EMAIL_DELIVERY_FAILED_MESSAGE =
+  "No se pudo enviar el correo de recuperación. Revisa la configuración de Resend y MAIL_FROM.";
+const PASSWORD_RESET_EMAIL_ONBOARDING_LIMITATION_MESSAGE =
+  "No se pudo enviar el correo de recuperación. Con onboarding@resend.dev solo puedes enviar al correo propietario de la cuenta de Resend; para destinatarios externos necesitas un dominio verificado y MAIL_FROM con ese dominio.";
 
 type PasswordResetEmailInput = {
   expiresInMinutes: number;
   resetCode: string;
   to: string;
 };
+
+export type PasswordResetEmailResult =
+  | { ok: true }
+  | {
+      ok: false;
+      message: string;
+      statusCode: number;
+    };
 
 const escapeHtml = (value: string): string =>
   value
@@ -50,6 +64,9 @@ const buildPasswordResetHtml = ({
   `.trim();
 };
 
+const usesResendOnboardingSender = (): boolean =>
+  config.mail.provider === "resend" && config.mail.from.toLowerCase() === "onboarding@resend.dev";
+
 export function isPasswordResetEmailConfigured(): boolean {
   const mailConfig = config.mail;
   if (mailConfig.provider === "disabled") {
@@ -68,14 +85,14 @@ export function assertPasswordResetEmailConfigured(): void {
     return;
   }
 
-  throw new AppError("La recuperación por correo no está disponible en este momento.", 503);
+  throw new AppError(PASSWORD_RESET_EMAIL_UNAVAILABLE_MESSAGE, 503);
 }
 
 async function sendWithResend({
   expiresInMinutes,
   resetCode,
   to,
-}: PasswordResetEmailInput): Promise<boolean> {
+}: PasswordResetEmailInput): Promise<PasswordResetEmailResult> {
   const mailConfig = config.mail;
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -93,17 +110,30 @@ async function sendWithResend({
   });
 
   if (response.ok) {
-    return true;
+    return { ok: true };
   }
 
   const errorBody = await response.text();
   console.error("[mail] Resend password reset delivery failed:", response.status, errorBody);
-  return false;
+
+  return {
+    ok: false,
+    message: usesResendOnboardingSender()
+      ? PASSWORD_RESET_EMAIL_ONBOARDING_LIMITATION_MESSAGE
+      : PASSWORD_RESET_EMAIL_DELIVERY_FAILED_MESSAGE,
+    statusCode: response.status >= 500 ? 502 : 503,
+  };
 }
 
-export async function sendPasswordResetEmail(input: PasswordResetEmailInput): Promise<boolean> {
+export async function sendPasswordResetEmail(
+  input: PasswordResetEmailInput
+): Promise<PasswordResetEmailResult> {
   if (!isPasswordResetEmailConfigured()) {
-    return false;
+    return {
+      ok: false,
+      message: PASSWORD_RESET_EMAIL_UNAVAILABLE_MESSAGE,
+      statusCode: 503,
+    };
   }
 
   const mailConfig = config.mail;
@@ -115,5 +145,9 @@ export async function sendPasswordResetEmail(input: PasswordResetEmailInput): Pr
     console.error("[mail] Unexpected password reset delivery error:", error);
   }
 
-  return false;
+  return {
+    ok: false,
+    message: PASSWORD_RESET_EMAIL_DELIVERY_FAILED_MESSAGE,
+    statusCode: 502,
+  };
 }

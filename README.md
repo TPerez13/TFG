@@ -27,11 +27,12 @@ El backend usa `DATABASE_URL` para conectarse a PostgreSQL.
 Variables opcionales para recuperación de contraseña por correo:
 
 - `MAIL_PROVIDER=disabled|resend`
-- `MAIL_FROM=no-reply@tu-dominio.com`
+- `MAIL_FROM=onboarding@resend.dev|no-reply@tu-dominio.com`
 - `RESEND_API_KEY=re_xxxxx`
 
-Si `MAIL_PROVIDER=resend`, el backend enviará correos reales de recuperación.
-Si está en `disabled`, en desarrollo seguirá devolviendo el código temporal en la respuesta del endpoint.
+Si `MAIL_PROVIDER=resend` y completas `MAIL_FROM` + `RESEND_API_KEY`, el backend enviará correos reales de recuperación.
+Si el proveedor está desactivado o incompleto, la recuperación devolverá `503` también en local para mantener un comportamiento alineado con producción.
+Si usas `onboarding@resend.dev`, Resend solo permite enviar al correo propietario de esa cuenta; para destinatarios externos reales necesitas un dominio verificado y un `MAIL_FROM` que pertenezca a ese dominio.
 
 ## Base de datos
 
@@ -89,6 +90,8 @@ Si `http://localhost:5050` no abre (connection refused):
 Endpoints de referencia:
 - `GET /api/health`
 - `POST /api/login`
+- `POST /api/password/forgot`
+- `POST /api/password/reset`
 - `GET /api/notifications`
 - `GET /api/notifications/unread-count`
 - `PATCH /api/notifications/:id/read`

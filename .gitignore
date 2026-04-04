@@ -13,3 +13,7 @@ backend/.env
 # Documentation and image files
 *.md
 *.png
+!branding/Logo.png
+!mobile-react-native/assets/logo.png
+!mobile-react-native/android/app/src/main/res/mipmap-*/ic_launcher.png
+!mobile-react-native/android/app/src/main/res/mipmap-*/ic_launcher_round.png

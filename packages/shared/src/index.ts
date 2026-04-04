@@ -34,6 +34,24 @@ export type RegisterResponse = {
   token?: string;
 };
 
+export type ForgotPasswordRequest = {
+  correo: string;
+};
+
+export type ForgotPasswordResponse = {
+  message: string;
+};
+
+export type ResetPasswordRequest = {
+  correo: string;
+  code: string;
+  newPassword: string;
+};
+
+export type ResetPasswordResponse = {
+  message: string;
+};
+
 export type HabitEntry = {
   id_registro_habito: number;
   id_usuario: number;

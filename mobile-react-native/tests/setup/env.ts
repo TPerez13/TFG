@@ -1,3 +1,4 @@
+import React from 'react';
 import Module from 'module';
 
 type AsyncStorageShape = {
@@ -5,6 +6,15 @@ type AsyncStorageShape = {
   getItem: (key: string) => Promise<string | null>;
   removeItem: (key: string) => Promise<void>;
   setItem: (key: string, value: string) => Promise<void>;
+};
+
+type PressableState = {
+  pressed: boolean;
+};
+
+type HostProps = Record<string, unknown> & {
+  children?: React.ReactNode | ((state: PressableState) => React.ReactNode);
+  style?: unknown | ((state: PressableState) => unknown);
 };
 
 const moduleWithLoad = Module as typeof Module & {
@@ -28,6 +38,33 @@ const asyncStorageStub: AsyncStorageShape = {
   },
 };
 
+const createHostComponent = (name: string) => {
+  const Component = ({ children, ...props }: HostProps) =>
+    React.createElement(name, props, children as React.ReactNode);
+  Component.displayName = name;
+  return Component;
+};
+
+const View = createHostComponent('View');
+const Text = createHostComponent('Text');
+const ScrollView = createHostComponent('ScrollView');
+const SafeAreaView = createHostComponent('SafeAreaView');
+
+const TextInput = ({ children, ...props }: HostProps) =>
+  React.createElement('TextInput', props, children as React.ReactNode);
+TextInput.displayName = 'TextInput';
+
+const Pressable = ({ children, style, ...props }: HostProps) =>
+  React.createElement(
+    'Pressable',
+    {
+      ...props,
+      style: typeof style === 'function' ? style({ pressed: false }) : style,
+    },
+    typeof children === 'function' ? children({ pressed: false }) : children
+  );
+Pressable.displayName = 'Pressable';
+
 const reactNativeStub = {
   Alert: {
     alert: () => undefined,
@@ -38,6 +75,23 @@ const reactNativeStub = {
       return options.ios ?? options.default;
     },
   },
+  Pressable,
+  ScrollView,
+  StyleSheet: {
+    create<T extends Record<string, unknown>>(styles: T): T {
+      return styles;
+    },
+    flatten<T>(style: T): T {
+      return style;
+    },
+  },
+  Text,
+  TextInput,
+  View,
+};
+
+const safeAreaContextStub = {
+  SafeAreaView,
 };
 
 const expoNotificationsStub = {
@@ -68,6 +122,10 @@ moduleWithLoad._load = function patchedLoad(
 ) {
   if (request === 'react-native') {
     return reactNativeStub;
+  }
+
+  if (request === 'react-native-safe-area-context') {
+    return safeAreaContextStub;
   }
 
   if (request === '@react-native-async-storage/async-storage') {

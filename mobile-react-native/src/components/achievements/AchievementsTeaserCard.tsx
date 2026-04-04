@@ -67,7 +67,7 @@ export function AchievementsTeaserCard({
 
       {!loading && !error && !isEmptyHistory && items.length === 0 ? (
         <View style={styles.stateWrap}>
-          <Text style={styles.stateText}>Sigue asi, pronto desbloquearas nuevos logros.</Text>
+          <Text style={styles.stateText}>Sigue así, pronto desbloquearás nuevos logros.</Text>
         </View>
       ) : null}
 

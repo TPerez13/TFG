@@ -5,11 +5,21 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "platforms": ["android"],
+    "icon": "./assets/logo.png",
+    "splash": {
+      "image": "./assets/logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FFFFFF"
+    },
     "plugins": ["expo-notifications"],
     "android": {
       "package": "com.muchasvidas.client",
       "usesCleartextTraffic": true,
-      "permissions": ["SCHEDULE_EXACT_ALARM"]
+      "permissions": ["SCHEDULE_EXACT_ALARM"],
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/logo.png",
+        "backgroundColor": "#FFFFFF"
+      }
     }
   }
 }

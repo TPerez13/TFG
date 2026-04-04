@@ -204,7 +204,7 @@ export default function MonthlyProgressScreen({ navigation }: MonthlyProgressScr
               isEmpty={data.isEmpty}
             />
 
-            <AchievementCard title={data.achievementTitle} onShare={handleShare} />
+            {!data.isEmpty ? <AchievementCard title={data.achievementTitle} onShare={handleShare} /> : null}
           </>
         ) : null}
       </ScrollView>

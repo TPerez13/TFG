@@ -220,8 +220,8 @@ export const evaluateAchievements = (context: AchievementEvaluationContext): Ach
     },
     {
       id: 'STREAK_3',
-      title: 'Racha de 3 dias',
-      description: 'Registra actividad durante 3 dias consecutivos.',
+      title: 'Racha de 3 días',
+      description: 'Registra actividad durante 3 días consecutivos.',
       icon: 'flame-outline',
       unlocked: Boolean(streak3.unlockedAt),
       unlockedAt: streak3.unlockedAt,
@@ -232,8 +232,8 @@ export const evaluateAchievements = (context: AchievementEvaluationContext): Ach
     },
     {
       id: 'STREAK_7',
-      title: 'Racha de 7 dias',
-      description: 'Mantiene una racha de una semana completa.',
+      title: 'Racha de 7 días',
+      description: 'Mantén una racha de una semana completa.',
       icon: 'flame',
       unlocked: Boolean(streak7.unlockedAt),
       unlockedAt: streak7.unlockedAt,
@@ -244,7 +244,7 @@ export const evaluateAchievements = (context: AchievementEvaluationContext): Ach
     },
     {
       id: 'PERFECT_DAY',
-      title: 'Dia perfecto',
+      title: 'Día perfecto',
       description: 'Cumple todos los hábitos objetivo en un mismo día.',
       icon: 'star-outline',
       unlocked: Boolean(firstPerfectDay),
@@ -257,7 +257,7 @@ export const evaluateAchievements = (context: AchievementEvaluationContext): Ach
     {
       id: 'WEEK_80',
       title: 'Semana constante',
-      description: 'Consigue al menos 80% de cumplimiento en una ventana de 7 dias.',
+      description: 'Consigue al menos un 80 % de cumplimiento en una ventana de 7 días.',
       icon: 'calendar-outline',
       unlocked: Boolean(week80.unlockedAt),
       unlockedAt: week80.unlockedAt,

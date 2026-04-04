@@ -31,6 +31,16 @@ type UseMonthlyProgressResult = {
   firstAvailableMonth: Date | null;
 };
 
+type MonthlyAchievementTitleInput = {
+  entriesCount: number;
+  goalsCount: number;
+  isEmpty: boolean;
+  maxMetHabitsInDay: number;
+  monthlyAvg: number;
+  streakDays: number;
+  bestWeekPct: number;
+};
+
 const CORE_HABIT_KEYS = ['agua', 'comidas', 'ejercicio', 'sueno', 'meditacion'] as const;
 
 const startOfMonth = (baseDate: Date) =>
@@ -66,6 +76,42 @@ export const formatMonthLabel = (month: Date) =>
     }).format(month),
   );
 
+export const resolveMonthlyAchievementTitle = ({
+  entriesCount,
+  goalsCount,
+  isEmpty,
+  maxMetHabitsInDay,
+  monthlyAvg,
+  streakDays,
+  bestWeekPct,
+}: MonthlyAchievementTitleInput): string => {
+  if (isEmpty || entriesCount <= 0) {
+    return 'Sin logro destacado';
+  }
+
+  if (monthlyAvg >= 70) {
+    return 'Mes consistente';
+  }
+
+  if (bestWeekPct >= 80) {
+    return 'Semana constante';
+  }
+
+  if (streakDays >= 7) {
+    return 'Racha de 7 días';
+  }
+
+  if (goalsCount > 0 && maxMetHabitsInDay >= goalsCount) {
+    return 'Día perfecto';
+  }
+
+  if (streakDays >= 3) {
+    return 'Racha de 3 días';
+  }
+
+  return 'Primer registro';
+};
+
 const resolveCoreHabitGoals = (preferences: unknown): CoreHabitGoal[] => {
   const goals =
     preferences && typeof preferences === 'object'
@@ -97,7 +143,15 @@ const createDefaultData = (selectedMonth: Date): MonthlyProgressData => ({
   weekly: [0, 0, 0, 0, 0],
   bestWeekIndex: 0,
   bestWeekPct: 0,
-  achievementTitle: 'Medalla de Constancia',
+  achievementTitle: resolveMonthlyAchievementTitle({
+    entriesCount: 0,
+    goalsCount: 0,
+    isEmpty: true,
+    maxMetHabitsInDay: 0,
+    monthlyAvg: 0,
+    streakDays: 0,
+    bestWeekPct: 0,
+  }),
   statusLabel: 'SIN DATOS',
   isEmpty: true,
 });
@@ -204,6 +258,7 @@ export function useMonthlyProgress(selectedMonth: Date): UseMonthlyProgressResul
     let completedTotal = 0;
     let streakCurrent = 0;
     let streakMax = 0;
+    let maxMetHabitsInDay = 0;
 
     for (let day = 1; day <= lastDayForCalc; day += 1) {
       const date = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth(), day, 12, 0, 0, 0);
@@ -217,6 +272,10 @@ export function useMonthlyProgress(selectedMonth: Date): UseMonthlyProgressResul
           metHabits += 1;
         }
       });
+
+      if (metHabits > maxMetHabitsInDay) {
+        maxMetHabitsInDay = metHabits;
+      }
 
       completedTotal += metHabits;
       const pct = (metHabits / goals.length) * 100;
@@ -276,7 +335,15 @@ export function useMonthlyProgress(selectedMonth: Date): UseMonthlyProgressResul
       weekly,
       bestWeekIndex,
       bestWeekPct,
-      achievementTitle: 'Medalla de Constancia',
+      achievementTitle: resolveMonthlyAchievementTitle({
+        entriesCount: entries.length,
+        goalsCount: goals.length,
+        isEmpty,
+        maxMetHabitsInDay,
+        monthlyAvg,
+        streakDays: streakMax,
+        bestWeekPct,
+      }),
       statusLabel: isEmpty ? 'SIN DATOS' : completionRate === 1 ? 'CUMPLIDO' : 'EN PROCESO',
       isEmpty,
     };

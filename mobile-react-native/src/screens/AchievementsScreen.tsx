@@ -213,7 +213,7 @@ export default function AchievementsScreen({ navigation }: AchievementsScreenPro
         <View style={styles.modalOverlay}>
           <Pressable style={StyleSheet.absoluteFill} onPress={() => setSelectedDay(null)} />
           <View style={styles.modalCard}>
-            <Text style={styles.modalTitle}>Logros del dia</Text>
+            <Text style={styles.modalTitle}>Logros del día</Text>
             <Text style={styles.modalDate}>
               {selectedDay ? formatSelectedDayLabel(selectedDay.dayKey) : ''}
             </Text>
