@@ -13,7 +13,7 @@ import {
 import { Screen } from '../components/layout/Screen';
 import { AchievementListItem } from '../components/achievements/AchievementListItem';
 import { MonthlyCalendar } from '../components/achievements/MonthlyCalendar';
-import type { AchievementItem } from '../features/achievements/achievementRegistry';
+import type { AchievementItem } from '../types/models';
 import { startOfMonth } from '../features/achievements/calendarUtils';
 import { useAchievements } from '../features/achievements/useAchievements';
 import type { ProfileStackParamList } from '../navigation/types';

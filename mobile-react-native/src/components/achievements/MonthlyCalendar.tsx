@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import type { AchievementItem } from '../../features/achievements/achievementRegistry';
+import type { AchievementItem } from '../../types/models';
 import {
   addMonths,
   formatMonthLabel,

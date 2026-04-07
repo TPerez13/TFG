@@ -8,7 +8,7 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "npm --prefix backend run build && npm --prefix packages/shared run build",
+    "build": "npm --prefix packages/shared run build && npm --prefix backend run build",
     "dev:backend": "npm --prefix backend run dev",
     "start:backend": "npm --prefix backend run start",
     "start:mobile": "npm --prefix mobile-react-native run start",
@@ -17,6 +17,8 @@
     "db:up": "docker-compose up -d db pgadmin",
     "db:down": "docker-compose down",
     "db:reset": "docker-compose down -v && docker-compose up -d db pgadmin",
+    "db:sync-schema": "docker-compose exec -T db psql -U postgres -d muchasvidas -f /docker-entrypoint-initdb.d/init.sql",
+    "db:seed": "npm run build && npm --prefix backend run seed",
     "db:logs": "docker-compose logs -f db pgadmin",
     "android": "npm --prefix mobile-react-native run android",
     "ios": "npm --prefix mobile-react-native run ios"

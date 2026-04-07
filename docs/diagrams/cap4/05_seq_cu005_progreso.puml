@@ -24,24 +24,51 @@ participant "App móvil" as App
 participant "API" as API
 database "Base de datos" as DB
 
-Usuario -> App : Solicitar progreso mensual
-App -> API : GET /habits/entries?from,to
-API -> DB : Consultar registros del usuario
-DB --> API : Registros del período
-API --> App : Registros
+Usuario -> App : Abrir pantalla de progreso mensual
+par Cargar registros del período
+  App -> API : GET /api/habits/entries?from=...&to=...
+  API -> API : Validar token
+  API -> DB : Consultar registro_habito del usuario en el período
+  DB --> API : Registros del período
+  API --> App : Registros
+else Cargar perfil y preferencias
+  App -> API : GET /api/users/me
+  API -> API : Validar token
+  API -> DB : Consultar usuario y preferencias
+  DB --> API : Perfil y preferencias
+  API --> App : Perfil y preferencias
+else Cargar logros del usuario
+  App -> API : GET /api/achievements
+  API -> API : Validar token
+  API -> DB : Consultar usuario y preferencias
+  DB --> API : Usuario y preferencias
+  API -> DB : Sincronizar catálogo logro
+  DB --> API : Catálogo sincronizado
+  API -> DB : Consultar usuario_logro y registro_habito histórico
+  DB --> API : Desbloqueos persistidos e histórico
+  API -> API : Evaluar desbloqueos y progreso de logros
+  API -> DB : Registrar nuevos desbloqueos en usuario_logro
+  DB --> API : Estado consolidado de logros
+  API --> App : Logros y progreso de logros
+end
 
-App -> API : GET /users/me
-API -> DB : Consultar preferencias del usuario
-DB --> API : Preferencias
-API --> App : Preferencias
-
-App -> App : Calcular agregados y tendencias
-App -> App : Derivar progreso mensual
-App --> Usuario : Mostrar estadísticas y resumen
+App -> App : Calcular agregados y tendencias del mes
+App -> App : Derivar racha, promedio, semanas y estado mensual
+App -> App : Filtrar logros desbloqueados del mes
+App -> App : Ordenar por prioridad de compartición, dificultad y fecha de obtención
+App --> Usuario : Mostrar estadísticas, resumen y logro destacado
 
 note right of App
-El cálculo del progreso se realiza en cliente
-a partir de registros y preferencias del usuario.
+La app calcula el progreso mensual con los registros del período
+y las preferencias del usuario.
+El logro destacado se selecciona entre los logros desbloqueados
+del mes consultados a la API.
+end note
+
+note right of API
+GET /api/achievements sincroniza el catálogo de logros,
+evalúa el histórico del usuario y devuelve el estado
+consolidado de cada logro.
 end note
 
 @enduml

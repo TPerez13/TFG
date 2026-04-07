@@ -7,14 +7,11 @@ import { HistoryHabitCard } from '../components/progress/HistoryHabitCard';
 import {
   aggregateByHabitAndDay,
   formatClock,
-  formatHabitValue,
   getDayRange,
   formatLongDate,
   getMotivationalText,
   parseDayKey,
   resolveHabitGoals,
-  type AggregatedHabitDay,
-  type HabitGoalConfig,
 } from '../features/progress/historyUtils';
 import { useHistoryRange } from '../features/progress/useHistoryRange';
 import { useMe } from '../features/users/useMe';
@@ -23,17 +20,6 @@ import { baseStyles } from '../theme/components';
 import { colors, radius, spacing } from '../theme/tokens';
 
 type DayHistoryDetailScreenProps = NativeStackScreenProps<ProgressStackParamList, 'DayHistoryDetail'>;
-
-const getFallbackDayItems = (goals: HabitGoalConfig[]): AggregatedHabitDay[] =>
-  goals.map((goal) => ({
-    ...goal,
-    total: 0,
-    latestAt: null,
-    achieved: false,
-    pct: 0,
-    displayValue: formatHabitValue(goal.habitKey, 0, goal.goalUnit),
-    entries: [],
-  }));
 
 export default function DayHistoryDetailScreen({
   navigation,
@@ -56,9 +42,11 @@ export default function DayHistoryDetailScreen({
   );
   const loading = historyLoading || meLoading;
 
-  const dayItems = aggregated.get(dayKey) ?? getFallbackDayItems(goals);
+  const dayItems = aggregated.get(dayKey) ?? [];
   const visibleItems =
-    filter === 'todos' ? dayItems.filter((item) => item.total > 0) : dayItems.filter((item) => item.habitKey === filter);
+    filter === 'todos'
+      ? dayItems.filter((item) => item.entries.length > 0)
+      : dayItems.filter((item) => item.habitKey === filter && item.entries.length > 0);
 
   const handleRetry = async () => {
     await Promise.all([reload(), reloadMe()]);

@@ -8,13 +8,10 @@ import {
   aggregateByHabitAndDay,
   formatClock,
   formatDaySectionLabel,
-  formatHabitValue,
   getDayRange,
   getMotivationalText,
   lastNDays,
   resolveHabitGoals,
-  type AggregatedHabitDay,
-  type HabitGoalConfig,
 } from '../features/progress/historyUtils';
 import { useHistoryRange } from '../features/progress/useHistoryRange';
 import { useMe } from '../features/users/useMe';
@@ -32,17 +29,6 @@ const FILTER_OPTIONS: Array<{ key: HistoryFilterKey; label: string }> = [
   { key: 'meditacion', label: 'Meditación' },
   { key: 'comidas', label: 'Comidas' },
 ];
-
-const getFallbackDayItems = (goals: HabitGoalConfig[]): AggregatedHabitDay[] =>
-  goals.map((goal) => ({
-    ...goal,
-    total: 0,
-    latestAt: null,
-    achieved: false,
-    pct: 0,
-    displayValue: formatHabitValue(goal.habitKey, 0, goal.goalUnit),
-    entries: [],
-  }));
 
 export default function HistoryScreen({ navigation }: HistoryScreenProps) {
   const [selectedFilter, setSelectedFilter] = useState<HistoryFilterKey>('todos');
@@ -73,6 +59,25 @@ export default function HistoryScreen({ navigation }: HistoryScreenProps) {
   const aggregated = useMemo(
     () => aggregateByHabitAndDay(entries, goals),
     [entries, goals],
+  );
+  const visibleDaySections = useMemo(
+    () =>
+      dayListDesc.flatMap((date) => {
+        const dayKey = `${date.getFullYear()}-${`${date.getMonth() + 1}`.padStart(2, '0')}-${`${date.getDate()}`.padStart(2, '0')}`;
+        const dayTitle = formatDaySectionLabel(date);
+        const dayItems = aggregated.get(dayKey) ?? [];
+        const visibleItems =
+          selectedFilter === 'todos'
+            ? dayItems.filter((item) => item.entries.length > 0)
+            : dayItems.filter((item) => item.habitKey === selectedFilter && item.entries.length > 0);
+
+        if (selectedFilter !== 'todos' && visibleItems.length === 0) {
+          return [];
+        }
+
+        return [{ dayKey, dayTitle, visibleItems }];
+      }),
+    [aggregated, dayListDesc, selectedFilter],
   );
 
   const loading = historyLoading || meLoading;
@@ -154,15 +159,7 @@ export default function HistoryScreen({ navigation }: HistoryScreenProps) {
         {isEmpty ? <Text style={styles.emptyText}>Aún no hay registros.</Text> : null}
 
         {!loading && !error
-          ? dayListDesc.map((date) => {
-              const dayKey = `${date.getFullYear()}-${`${date.getMonth() + 1}`.padStart(2, '0')}-${`${date.getDate()}`.padStart(2, '0')}`;
-              const dayTitle = formatDaySectionLabel(date);
-              const dayItems = aggregated.get(dayKey) ?? getFallbackDayItems(goals);
-              const visibleItems =
-                selectedFilter === 'todos'
-                  ? dayItems.filter((item) => item.total > 0)
-                  : dayItems.filter((item) => item.habitKey === selectedFilter);
-
+          ? visibleDaySections.map(({ dayKey, dayTitle, visibleItems }) => {
               return (
                 <View key={dayKey} style={styles.daySection}>
                   <View style={styles.dayHeader}>

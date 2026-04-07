@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import authRouter from "./routes/auth";
+import achievementsRouter from "./routes/achievements";
 import habitsRouter from "./routes/habits";
 import usersRouter from "./routes/users";
 import notificationsRouter from "./routes/notifications";
@@ -29,6 +30,7 @@ export function createApp() {
   });
 
   app.use("/api", authRouter);
+  app.use("/api", achievementsRouter);
   app.use("/api", usersRouter);
   app.use("/api", habitsRouter);
   app.use("/api", notificationsRouter);

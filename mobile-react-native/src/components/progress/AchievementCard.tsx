@@ -5,16 +5,17 @@ import { Button } from '../ui/Button';
 import { colors, radius, spacing } from '../../theme/tokens';
 
 type AchievementCardProps = {
+  iconName?: string;
   title: string;
   onShare: () => void;
 };
 
-export function AchievementCard({ title, onShare }: AchievementCardProps) {
+export function AchievementCard({ iconName, title, onShare }: AchievementCardProps) {
   return (
     <View style={styles.card}>
       <View style={styles.top}>
         <View style={styles.medalWrap}>
-          <Ionicons name="medal-outline" size={28} color="#fff" />
+          <Ionicons name={(iconName ?? 'medal-outline') as any} size={28} color="#fff" />
         </View>
         <View style={styles.titleWrap}>
           <Text style={styles.eyebrow}>LOGRO DEL MES</Text>

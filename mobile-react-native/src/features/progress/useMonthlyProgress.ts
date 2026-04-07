@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { HabitEntry, User } from '../../types/models';
 import { fetchHabitEntries } from '../habits/entriesApi';
-import { getHabitByKey } from '../habits/habitRegistry';
 import { apiFetch } from '../../services/api';
+import { normalizeEntryValueForGoal, resolveHabitGoals } from './historyUtils';
 
 type CoreHabitGoal = {
   key: 'agua' | 'comidas' | 'ejercicio' | 'sueno' | 'meditacion';
   typeId: number;
   target: number;
+  unit: string;
 };
 
 export type MonthlyProgressData = {
@@ -18,7 +19,6 @@ export type MonthlyProgressData = {
   weekly: number[];
   bestWeekIndex: number;
   bestWeekPct: number;
-  achievementTitle: string;
   statusLabel: 'CUMPLIDO' | 'EN PROCESO' | 'SIN DATOS';
   isEmpty: boolean;
 };
@@ -30,18 +30,6 @@ type UseMonthlyProgressResult = {
   reload: () => Promise<void>;
   firstAvailableMonth: Date | null;
 };
-
-type MonthlyAchievementTitleInput = {
-  entriesCount: number;
-  goalsCount: number;
-  isEmpty: boolean;
-  maxMetHabitsInDay: number;
-  monthlyAvg: number;
-  streakDays: number;
-  bestWeekPct: number;
-};
-
-const CORE_HABIT_KEYS = ['agua', 'comidas', 'ejercicio', 'sueno', 'meditacion'] as const;
 
 const startOfMonth = (baseDate: Date) =>
   new Date(baseDate.getFullYear(), baseDate.getMonth(), 1, 0, 0, 0, 0);
@@ -76,65 +64,6 @@ export const formatMonthLabel = (month: Date) =>
     }).format(month),
   );
 
-export const resolveMonthlyAchievementTitle = ({
-  entriesCount,
-  goalsCount,
-  isEmpty,
-  maxMetHabitsInDay,
-  monthlyAvg,
-  streakDays,
-  bestWeekPct,
-}: MonthlyAchievementTitleInput): string => {
-  if (isEmpty || entriesCount <= 0) {
-    return 'Sin logro destacado';
-  }
-
-  if (monthlyAvg >= 70) {
-    return 'Mes consistente';
-  }
-
-  if (bestWeekPct >= 80) {
-    return 'Semana constante';
-  }
-
-  if (streakDays >= 7) {
-    return 'Racha de 7 días';
-  }
-
-  if (goalsCount > 0 && maxMetHabitsInDay >= goalsCount) {
-    return 'Día perfecto';
-  }
-
-  if (streakDays >= 3) {
-    return 'Racha de 3 días';
-  }
-
-  return 'Primer registro';
-};
-
-const resolveCoreHabitGoals = (preferences: unknown): CoreHabitGoal[] => {
-  const goals =
-    preferences && typeof preferences === 'object'
-      ? ((preferences as Record<string, unknown>).goals as Record<string, unknown> | undefined)
-      : undefined;
-
-  return CORE_HABIT_KEYS.map((key) => {
-    const fallbackDefinition = getHabitByKey(key);
-    const fallbackTarget = fallbackDefinition?.goal.value ?? 1;
-    const nestedGoal = goals?.[key];
-    const target =
-      nestedGoal && typeof nestedGoal === 'object'
-        ? Number((nestedGoal as Record<string, unknown>).value)
-        : NaN;
-
-    return {
-      key,
-      typeId: fallbackDefinition?.idTipoHabito ?? 0,
-      target: Number.isFinite(target) && target > 0 ? target : fallbackTarget,
-    };
-  });
-};
-
 const createDefaultData = (selectedMonth: Date): MonthlyProgressData => ({
   monthLabel: formatMonthLabel(selectedMonth),
   streakDays: 0,
@@ -143,15 +72,6 @@ const createDefaultData = (selectedMonth: Date): MonthlyProgressData => ({
   weekly: [0, 0, 0, 0, 0],
   bestWeekIndex: 0,
   bestWeekPct: 0,
-  achievementTitle: resolveMonthlyAchievementTitle({
-    entriesCount: 0,
-    goalsCount: 0,
-    isEmpty: true,
-    maxMetHabitsInDay: 0,
-    monthlyAvg: 0,
-    streakDays: 0,
-    bestWeekPct: 0,
-  }),
   statusLabel: 'SIN DATOS',
   isEmpty: true,
 });
@@ -230,11 +150,17 @@ export function useMonthlyProgress(selectedMonth: Date): UseMonthlyProgressResul
       return defaults;
     }
 
-    const goals = resolveCoreHabitGoals(user?.preferencias ?? null).filter((goal) => goal.typeId > 0);
+    const goals: CoreHabitGoal[] = resolveHabitGoals(user?.preferencias ?? null).map((goal) => ({
+      key: goal.habitKey,
+      typeId: goal.typeId,
+      target: goal.goalValue,
+      unit: goal.goalUnit,
+    }));
     if (!goals.length) {
       return defaults;
     }
 
+    const goalsByType = new Map(goals.map((goal) => [goal.typeId, goal]));
     const totalsByDay = new Map<string, Map<number, number>>();
     entries.forEach((entry) => {
       const parsedDate = new Date(entry.f_registro);
@@ -247,10 +173,15 @@ export function useMonthlyProgress(selectedMonth: Date): UseMonthlyProgressResul
       ) {
         return;
       }
+      const goal = goalsByType.get(entry.id_tipo_habito);
+      if (!goal) {
+        return;
+      }
       const key = dayKeyFromDate(parsedDate);
       const dayTotals = totalsByDay.get(key) ?? new Map<number, number>();
       const current = dayTotals.get(entry.id_tipo_habito) ?? 0;
-      dayTotals.set(entry.id_tipo_habito, current + (Number(entry.valor) || 0));
+      const normalizedValue = normalizeEntryValueForGoal(goal.key, entry, goal.unit);
+      dayTotals.set(entry.id_tipo_habito, current + normalizedValue);
       totalsByDay.set(key, dayTotals);
     });
 
@@ -258,7 +189,6 @@ export function useMonthlyProgress(selectedMonth: Date): UseMonthlyProgressResul
     let completedTotal = 0;
     let streakCurrent = 0;
     let streakMax = 0;
-    let maxMetHabitsInDay = 0;
 
     for (let day = 1; day <= lastDayForCalc; day += 1) {
       const date = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth(), day, 12, 0, 0, 0);
@@ -272,10 +202,6 @@ export function useMonthlyProgress(selectedMonth: Date): UseMonthlyProgressResul
           metHabits += 1;
         }
       });
-
-      if (metHabits > maxMetHabitsInDay) {
-        maxMetHabitsInDay = metHabits;
-      }
 
       completedTotal += metHabits;
       const pct = (metHabits / goals.length) * 100;
@@ -324,7 +250,6 @@ export function useMonthlyProgress(selectedMonth: Date): UseMonthlyProgressResul
       0,
     );
     const bestWeekPct = weekly[bestWeekIndex] ?? 0;
-
     const isEmpty = entries.length === 0 || plannedChecks === 0;
 
     return {
@@ -335,15 +260,6 @@ export function useMonthlyProgress(selectedMonth: Date): UseMonthlyProgressResul
       weekly,
       bestWeekIndex,
       bestWeekPct,
-      achievementTitle: resolveMonthlyAchievementTitle({
-        entriesCount: entries.length,
-        goalsCount: goals.length,
-        isEmpty,
-        maxMetHabitsInDay,
-        monthlyAvg,
-        streakDays: streakMax,
-        bestWeekPct,
-      }),
       statusLabel: isEmpty ? 'SIN DATOS' : completionRate === 1 ? 'CUMPLIDO' : 'EN PROCESO',
       isEmpty,
     };

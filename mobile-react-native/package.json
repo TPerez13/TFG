@@ -9,7 +9,7 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
-    "test:build": "tsc -p tsconfig.test.json",
+    "test:build": "node -e \"require('fs').rmSync('dist-test', { recursive: true, force: true })\" && tsc -p tsconfig.test.json",
     "test": "npm run test:build && node --require ./dist-test/tests/setup/env.js --test ./dist-test/tests/unit"
   },
   "dependencies": {

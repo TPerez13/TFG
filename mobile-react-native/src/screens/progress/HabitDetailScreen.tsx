@@ -9,6 +9,7 @@ import {
   dateToLocalKey,
   formatClock,
   formatEntryValue,
+  normalizeEntryValueForGoal,
   resolveHabitGoals,
 } from '../../features/progress/historyUtils';
 import { useHistoryRange } from '../../features/progress/useHistoryRange';
@@ -62,13 +63,15 @@ export default function HabitDetailScreen({ navigation, route }: HabitDetailScre
 
   const summary = useMemo(() => {
     const goalValue = goalConfig?.goalValue ?? definition?.goal.value ?? 1;
+    const goalUnit = goalConfig?.goalUnit ?? definition?.goal.unit ?? '';
     const totalByDay = new Map<string, number>();
     entries.forEach((entry) => {
       const parsed = new Date(entry.f_registro);
       if (Number.isNaN(parsed.getTime())) return;
       const key = dateToLocalKey(parsed);
       const current = totalByDay.get(key) ?? 0;
-      totalByDay.set(key, current + (Number(entry.valor) || 0));
+      const normalizedValue = normalizeEntryValueForGoal(habitKey, entry, goalUnit);
+      totalByDay.set(key, current + normalizedValue);
     });
 
     const today = new Date();
@@ -93,7 +96,7 @@ export default function HabitDetailScreen({ navigation, route }: HabitDetailScre
       completionPct: Math.round(completionRate * 100),
       statusLabel,
     };
-  }, [definition?.goal.value, entries, goalConfig?.goalValue]);
+  }, [definition?.goal.unit, definition?.goal.value, entries, goalConfig?.goalUnit, goalConfig?.goalValue, habitKey]);
 
   const olderRecent = useMemo(() => {
     const today = new Date();

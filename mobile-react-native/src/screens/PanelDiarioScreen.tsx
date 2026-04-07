@@ -21,6 +21,7 @@ import {
   useAchievements,
 } from '../features/achievements/useAchievements';
 import { habitRegistry, type HabitKey } from '../features/habits/habitRegistry';
+import { normalizeEntryValueForGoal, resolveHabitGoals } from '../features/progress/historyUtils';
 import { apiFetch } from '../services/api';
 import type { HabitEntry, User } from '../types/models';
 import { baseStyles } from '../theme/components';
@@ -166,23 +167,35 @@ export default function PanelDiarioScreen({ navigation }: PanelDiarioScreenProps
 
   const totalsByType = useMemo(() => {
     const totals = new Map<number, number>();
+    const goalsByHabit = new Map(resolveHabitGoals(user?.preferencias ?? null).map((goal) => [goal.habitKey, goal]));
     entries.forEach((entry) => {
+      const habit = habitRegistry.find((item) => item.idTipoHabito === entry.id_tipo_habito);
+      if (!habit) return;
+      const goal = goalsByHabit.get(habit.key);
+      const normalizedValue = normalizeEntryValueForGoal(habit.key, entry, goal?.goalUnit);
       const current = totals.get(entry.id_tipo_habito) ?? 0;
-      totals.set(entry.id_tipo_habito, current + (entry.valor ?? 0));
+      totals.set(entry.id_tipo_habito, current + normalizedValue);
     });
     return totals;
-  }, [entries]);
+  }, [entries, user?.preferencias]);
+
+  const goalsByHabit = useMemo(() => {
+    const goals = resolveHabitGoals(user?.preferencias ?? null);
+    return new Map(goals.map((goal) => [goal.habitKey, goal]));
+  }, [user?.preferencias]);
 
   const habitStates = useMemo(() => {
     return habitRegistry
       .filter((habit) => habit.visible !== false)
       .map((habit) => {
+        const goal = goalsByHabit.get(habit.key);
+        const target = goal?.goalValue ?? habit.goal.value;
         const total = totalsByType.get(habit.idTipoHabito) ?? 0;
-        const progress = habit.goal.value > 0 ? Math.min(total / habit.goal.value, 1) : 0;
+        const progress = target > 0 ? Math.min(total / target, 1) : 0;
         const state: HabitState = { key: habit.key, total, progress };
         return state;
       });
-  }, [totalsByType]);
+  }, [goalsByHabit, totalsByType]);
 
   const globalProgress = useMemo(() => {
     if (habitStates.length === 0) return 0;
@@ -319,12 +332,17 @@ export default function PanelDiarioScreen({ navigation }: PanelDiarioScreenProps
           {habitRegistry
             .filter((habit) => habit.visible !== false)
             .map((habit) => {
+              const goal = goalsByHabit.get(habit.key);
+              const target = {
+                value: goal?.goalValue ?? habit.goal.value,
+                unit: goal?.goalUnit ?? habit.goal.unit,
+              };
               const state = habitStates.find((item) => item.key === habit.key);
               const total = state?.total ?? 0;
               const progress = state?.progress ?? 0;
               const subtitle = habit.formatSummary
-                ? habit.formatSummary(total, habit.goal)
-                : `${total} de ${habit.goal.value} ${habit.goal.unit}`;
+                ? habit.formatSummary(total, target)
+                : `${total} de ${target.value} ${target.unit}`;
               return (
                 <HabitCard
                   key={habit.key}

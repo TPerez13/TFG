@@ -5,10 +5,11 @@ import { Pressable, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-
 import { HabitCard } from '../components/HabitCard';
 import { Screen } from '../components/layout/Screen';
 import { habitRegistry, type HabitKey } from '../features/habits/habitRegistry';
+import { normalizeEntryValueForGoal, resolveHabitGoals } from '../features/progress/historyUtils';
 import type { MealType } from '../features/nutrition/types';
 import type { HabitsStackParamList } from '../navigation/types';
 import { apiFetch } from '../services/api';
-import type { HabitEntry } from '../types/models';
+import type { HabitEntry, User } from '../types/models';
 import { baseStyles } from '../theme/components';
 import { colors, spacing } from '../theme/tokens';
 
@@ -22,6 +23,7 @@ const clamp = (value: number) => Math.max(0, Math.min(1, value));
 const defaultMealType: MealType = 'DESAYUNO';
 
 export default function HabitsScreen({ navigation }: HabitsScreenProps) {
+  const [user, setUser] = useState<User | null>(null);
   const [entries, setEntries] = useState<HabitEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -35,17 +37,30 @@ export default function HabitsScreen({ navigation }: HabitsScreenProps) {
     const to = endOfDay(today).toISOString();
 
     try {
-      const response = await apiFetch(`/habits/entries?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`);
-      if (!response.ok) {
+      const [entriesRes, userRes] = await Promise.all([
+        apiFetch(`/habits/entries?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`),
+        apiFetch('/users/me'),
+      ]);
+
+      if (!entriesRes.ok) {
         setEntries([]);
         setError('No se pudo cargar el progreso de hoy.');
+        setUser(null);
         return;
       }
 
-      const payload = (await response.json()) as { entries?: HabitEntry[] };
+      const payload = (await entriesRes.json()) as { entries?: HabitEntry[] };
       setEntries(payload.entries ?? []);
+
+      if (userRes.ok) {
+        const userPayload = (await userRes.json()) as { user?: User };
+        setUser(userPayload.user ?? null);
+      } else {
+        setUser(null);
+      }
     } catch {
       setEntries([]);
+      setUser(null);
       setError('No se pudo cargar el progreso de hoy.');
     } finally {
       setLoading(false);
@@ -58,24 +73,38 @@ export default function HabitsScreen({ navigation }: HabitsScreenProps) {
     }, [loadEntries]),
   );
 
+  const goalsByHabit = useMemo(() => {
+    const goals = resolveHabitGoals(user?.preferencias ?? null);
+    return new Map(goals.map((goal) => [goal.habitKey, goal]));
+  }, [user?.preferencias]);
+
   const totalsByType = useMemo(() => {
     const totals = new Map<number, number>();
     entries.forEach((entry) => {
+      const habit = habitRegistry.find((item) => item.idTipoHabito === entry.id_tipo_habito);
+      if (!habit) return;
+      const goal = goalsByHabit.get(habit.key);
+      const normalizedValue = normalizeEntryValueForGoal(habit.key, entry, goal?.goalUnit);
       const current = totals.get(entry.id_tipo_habito) ?? 0;
-      totals.set(entry.id_tipo_habito, current + (entry.valor ?? 0));
+      totals.set(entry.id_tipo_habito, current + normalizedValue);
     });
     return totals;
-  }, [entries]);
+  }, [entries, goalsByHabit]);
 
   const habits = useMemo(() => habitRegistry.filter((habit) => habit.showInGoals !== false), []);
 
   const goalCards = useMemo(() => {
     return habits.map((habit) => {
+      const goal = goalsByHabit.get(habit.key);
+      const target = {
+        value: goal?.goalValue ?? habit.goal.value,
+        unit: goal?.goalUnit ?? habit.goal.unit,
+      };
       const total = totalsByType.get(habit.idTipoHabito) ?? 0;
-      const progress = habit.goal.value > 0 ? clamp(total / habit.goal.value) : 0;
+      const progress = target.value > 0 ? clamp(total / target.value) : 0;
       const subtitle = habit.formatSummary
-        ? habit.formatSummary(total, habit.goal)
-        : `${total} de ${habit.goal.value} ${habit.goal.unit}`;
+        ? habit.formatSummary(total, target)
+        : `${total} de ${target.value} ${target.unit}`;
 
       return {
         habit,
@@ -84,7 +113,7 @@ export default function HabitsScreen({ navigation }: HabitsScreenProps) {
         subtitle,
       };
     });
-  }, [habits, totalsByType]);
+  }, [goalsByHabit, habits, totalsByType]);
 
   const onHabitPress = (habitKey: HabitKey, typeId: number) => {
     if (habitKey === 'agua') {

@@ -58,6 +58,24 @@ export async function listEntriesForUser(
   return result.rows;
 }
 
+export async function listAllEntriesForUser(userId: number): Promise<HabitEntryRecord[]> {
+  const result = await pool.query<HabitEntryRecord>(
+    `SELECT id_registro_habito,
+            id_usuario,
+            id_tipo_habito,
+            f_registro,
+            valor::float AS valor,
+            unidad,
+            notas
+       FROM registro_habito
+      WHERE id_usuario = $1
+      ORDER BY f_registro ASC`,
+    [userId]
+  );
+
+  return result.rows;
+}
+
 /**
  * Lists recent habit entries for export purposes.
  * Side effects: database read.

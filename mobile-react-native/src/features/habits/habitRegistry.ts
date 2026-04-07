@@ -41,7 +41,7 @@ export const habitRegistry: HabitDefinition[] = [
     label: 'AGUA',
     title: 'Agua',
     icon: 'water-outline',
-    goal: { value: 8, unit: 'vasos' },
+    goal: { value: 2000, unit: 'ml' },
     quickAdd: { enabled: true, value: 1, unit: 'vaso' },
     accentColor: '#2d7ff9',
     softColor: '#eaf3ff',

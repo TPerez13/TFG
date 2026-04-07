@@ -1,7 +1,7 @@
 import React from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { StyleSheet, Text, View } from 'react-native';
-import type { AchievementItem } from '../../features/achievements/achievementRegistry';
+import type { AchievementItem } from '../../types/models';
 import { colors, fontSizes, spacing } from '../../theme/tokens';
 
 type AchievementListItemProps = {
@@ -12,8 +12,16 @@ const clamp = (value: number, min: number, max: number) => Math.max(min, Math.mi
 
 const formatUnlockedAt = (unlockedAt: string | null) => {
   if (!unlockedAt) return null;
-  const parsed = new Date(`${unlockedAt}T12:00:00`);
-  if (Number.isNaN(parsed.getTime())) return unlockedAt;
+  const parsed = new Date(unlockedAt);
+  if (Number.isNaN(parsed.getTime())) {
+    const fallback = new Date(`${unlockedAt}T12:00:00`);
+    if (Number.isNaN(fallback.getTime())) return unlockedAt;
+    return new Intl.DateTimeFormat('es-ES', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    }).format(fallback);
+  }
   return new Intl.DateTimeFormat('es-ES', {
     day: '2-digit',
     month: 'short',

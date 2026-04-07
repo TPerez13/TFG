@@ -191,3 +191,5 @@ export type AppInfoResponse = {
   commitHash: string | null;
   environment: string;
 };
+
+export * from "./achievements";

@@ -208,7 +208,7 @@ export default function NutritionScreen({ navigation, route }: NutritionScreenPr
           onPress={() => navigation.navigate('NutritionQuickAdd', { tipoComidaSeleccionada: selectedType })}
           style={({ pressed }) => [styles.addButton, pressed ? styles.buttonPressed : null]}
         >
-          <Text style={styles.addButtonText}>AÑADIR COMIDA</Text>
+          <Text style={styles.addButtonText}>+ AÑADIR COMIDA</Text>
         </Pressable>
 
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tabsRow}>
@@ -390,7 +390,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: spacing.xl,
-    marginBottom: spacing.xl,
+    marginBottom: spacing.lg,
   },
   addButtonText: {
     fontSize: 22,

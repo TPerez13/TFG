@@ -1,0 +1,2809 @@
+
+
+--- PAGE 1 ---
+     ESCUELA  SUPERIOR  DE  INGENIERÍA  GRADO DE INGENIERÍA INFORMÁTICA  
+APLICACIÓN PARA ESTUDIAR ESTRATEGIAS DE GAMIFICACIÓN SOBRE LA PLATAFORMA MOODLE EN UN ENTORNO DE SIMULACIÓN CON ANYLOGIC 
+AUTOR: DANIEL GUERRERO MOLINA Cádiz, octubre 2016 		 	
+
+
+--- PAGE 2 ---
+		 	
+
+--- PAGE 3 ---
+     ESCUELA  SUPERIOR  DE  INGENIERÍA  GRADO DE INGENIERÍA INFORMÁTICA  
+APLICACIÓN PARA ESTUDIAR ESTRATEGIAS DE GAMIFICACIÓN SOBRE LA PLATAFORMA MOODLE EN UN ENTORNO DE SIMULACIÓN CON ANYLOGIC 
+DIRECTOR: MERCEDES RUIZ CARREIRA AUTOR: DANIEL GUERRERO MOLINA Cádiz, octubre 2016 		 	
+
+
+--- PAGE 4 ---
+	
+
+--- PAGE 5 ---
+Dedicado a
+mis padres.
+I
+
+--- PAGE 6 ---
+
+
+--- PAGE 7 ---
+Agradecimientos
+Quiero dar las gracias a aquellas personas que me han apoyado no solo en la rea-
+lizaci´ on de este trabajo, sino durante toda la carrera y algunas, durante toda la
+vida.
+A mi familia y en especial a mis padres, que gracias a su esfuerzo he podido tener
+la oportunidad de estudiar esta carrera y, porque todo lo que soy se lo debo a ellos.
+A mi novia, por estar siempre a mi lado, porque seguimos superando etapas de la
+vida, pero siempre juntos.
+Agradecerle a Mercedes, mi tutora, su paciencia y dedicaci´ on. Por todos esos con-
+sejos, por demostrar que para ella lo primero son sus alumnos, por esas charlas de
+tutor´ ıa, en las que parec´ ıa m´ as mi psic´ ologa que mi profesora. Si alg´ un d´ ıa llego a
+ser un buen profesional, ella tendr´ a gran parte de culpa.
+Por ´ ultimo, acordarme de aquellos compa˜ neros que se han convertido en amigos y,
+con los que he pasado de ser compa˜ neros de universidad a ser compa˜ neros de trabajo,
+por haber estado ah´ ı en todo momento y por aguantarme tantos a˜ nos.
+Muchas gracias a todos.
+III
+
+--- PAGE 8 ---
+
+
+--- PAGE 9 ---
+´Indice general
+Lista de ﬁguras IX
+Lista de tablas XI
+1. Introducci´ on 1
+1.1. Motivaci´ on . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 1
+1.2. Objetivos y ´ ambito del sistema . . . . . . . . . . . . . . . . . . . . . 2
+1.2.1. Objetivos del sistema . . . . . . . . . . . . . . . . . . . . . . . 2
+1.3. Acr´ onimos y Deﬁniciones . . . . . . . . . . . . . . . . . . . . . . . . . 4
+2. Generalidades 7
+2.1. Introducci´ on . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+2.2. Introducci´ on a la simulaci´ on . . . . . . . . . . . . . . . . . . . . . . . 7
+2.2.1. Modelado . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+2.2.2. M´ etodos en los modelos de simulaci´ on . . . . . . . . . . . . . 8
+2.2.3. Herramientas software de simulaci´ on . . . . . . . . . . . . . . 10
+2.2.4. Anylogic . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 10
+2.2.5. Ventajas . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+2.3. Introducci´ on a la gamiﬁcaci´ on . . . . . . . . . . . . . . . . . . . . . . 11
+2.3.1. Deﬁnici´ on . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+2.3.2. ´Ambitos de aplicaci´ on . . . . . . . . . . . . . . . . . . . . . . 11
+2.3.3. Estrategias de gamiﬁcaci´ on . . . . . . . . . . . . . . . . . . . . 12
+3. Planiﬁcaci´ on del Proyecto 15
+3.1. Metodolog´ ıa . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 15
+3.2. Fases del Proyecto . . . . . . . . . . . . . . . . . . . . . . . . . . . . 16
+3.2.1. Adquisici´ on de conocimientos . . . . . . . . . . . . . . . . . . 16
+3.2.2. Iteraci´ on 0: Prototipo de modelo de simulaci´ on . . . . . . . . . 16
+3.2.3. Iteraci´ on 1: Lectura de estrategias . . . . . . . . . . . . . . . . 17
+3.2.4. Iteraci´ on 2: Generar del modelo de simulaci´ on . . . . . . . . . 17
+3.2.5. Iteraci´ on 3: Aplicar estrategia a Moodle . . . . . . . . . . . . 17
+3.3. Riesgos . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 18
+3.4. Distribuci´ on Temporal . . . . . . . . . . . . . . . . . . . . . . . . . . 20
+3.5. Costes . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 24
+3.5.1. Costes Directos . . . . . . . . . . . . . . . . . . . . . . . . . . 24
+3.5.2. Costes Indirectos . . . . . . . . . . . . . . . . . . . . . . . . . 24
+V
+
+--- PAGE 10 ---
+VI ´INDICE GENERAL
+3.5.3. Coste Total . . . . . . . . . . . . . . . . . . . . . . . . . . . . 25
+3.6. Precio . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 25
+4. Estudio del sistema 27
+4.1. Descripci´ on del sistema . . . . . . . . . . . . . . . . . . . . . . . . . . 27
+4.2. Formulaci´ on del problema . . . . . . . . . . . . . . . . . . . . . . . . 28
+4.2.1. Objetivos . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 29
+4.2.2. Variables . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 30
+4.2.3. F´ ormulas . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 33
+4.2.4. Datos de salida . . . . . . . . . . . . . . . . . . . . . . . . . . 33
+4.3. An´ alisis y validaci´ on del modelo . . . . . . . . . . . . . . . . . . . . . 34
+4.3.1. An´ alisis . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 34
+5. An´ alisis del Sistema 39
+5.1. Requisitos de informaci´ on . . . . . . . . . . . . . . . . . . . . . . . . 39
+5.2. Requisitos funcionales . . . . . . . . . . . . . . . . . . . . . . . . . . 43
+5.2.1. Cat´ alogo de Actores . . . . . . . . . . . . . . . . . . . . . . . 46
+5.2.2. Diagramas de Casos de Uso . . . . . . . . . . . . . . . . . . . 46
+5.2.3. Especiﬁcaci´ on de Casos de Uso . . . . . . . . . . . . . . . . . 46
+5.2.4. Diagramas de Secuencia . . . . . . . . . . . . . . . . . . . . . 53
+5.3. Requisitos no funcionales . . . . . . . . . . . . . . . . . . . . . . . . . 57
+5.4. Reglas de negocio . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 58
+5.5. Estudio de alternativas tecnol´ ogicas . . . . . . . . . . . . . . . . . . . 59
+5.6. Mapeo Requisitos-Iteraciones . . . . . . . . . . . . . . . . . . . . . . 60
+6. Dise˜ no 61
+6.1. Arquitectura del Sistema . . . . . . . . . . . . . . . . . . . . . . . . . 61
+6.1.1. Arquitectura f´ ısica . . . . . . . . . . . . . . . . . . . . . . . . 61
+6.1.2. Arquitectura l´ ogica . . . . . . . . . . . . . . . . . . . . . . . . 62
+6.1.3. Patr´ on de dise˜ no . . . . . . . . . . . . . . . . . . . . . . . . . 63
+6.2. Modelo de dominio . . . . . . . . . . . . . . . . . . . . . . . . . . . . 64
+6.3. Dise˜ no de la interfaz de usuario . . . . . . . . . . . . . . . . . . . . . 65
+6.4. Mapeo Dise˜ no-Iteraciones . . . . . . . . . . . . . . . . . . . . . . . . 70
+7. Desarrollo del Sistema 71
+7.1. Entorno de desarrollo . . . . . . . . . . . . . . . . . . . . . . . . . . . 71
+7.1.1. L´ ogica de negocio . . . . . . . . . . . . . . . . . . . . . . . . . 72
+7.1.2. Capa de persistencia . . . . . . . . . . . . . . . . . . . . . . . 74
+7.1.3. Interfaz de usuario . . . . . . . . . . . . . . . . . . . . . . . . 77
+7.2. C´ odigo fuente . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 77
+7.3. Otras herramientas . . . . . . . . . . . . . . . . . . . . . . . . . . . . 79
+7.3.1. Subversion . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 79
+7.3.2. Assembla . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 80
+7.3.3. Trello . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 80
+7.3.4. MAMP . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 81
+7.3.5. Cacoo . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 82
+7.3.6. SoapUI . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 83
+
+--- PAGE 11 ---
+´INDICE GENERAL VII
+7.3.7. L ATEX . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 83
+7.4. Mapeo Implementaci´ on-Iteraciones . . . . . . . . . . . . . . . . . . . 84
+8. Pruebas 85
+8.1. Estrategia . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 85
+8.1.1. Descripci´ on del entorno de pruebas . . . . . . . . . . . . . . . 85
+8.2. Pruebas no funcionales . . . . . . . . . . . . . . . . . . . . . . . . . . 86
+8.3. Pruebas funcionales . . . . . . . . . . . . . . . . . . . . . . . . . . . . 88
+8.3.1. Pruebas unitarias . . . . . . . . . . . . . . . . . . . . . . . . . 88
+8.3.2. Pruebas de integraci´ on . . . . . . . . . . . . . . . . . . . . . . 90
+8.3.3. Pruebas de implantaci´ on . . . . . . . . . . . . . . . . . . . . . 91
+8.4. Resultado de las pruebas . . . . . . . . . . . . . . . . . . . . . . . . . 91
+8.5. Mapeo Pruebas-Iteraciones . . . . . . . . . . . . . . . . . . . . . . . . 92
+9. Manuales de usuario 93
+9.1. Descarga e Instalaci´ on de Anylogic . . . . . . . . . . . . . . . . . . . 93
+9.1.1. Instalaci´ on en Windows . . . . . . . . . . . . . . . . . . . . . 93
+9.1.2. Instalaci´ on de Anylogic en Mac . . . . . . . . . . . . . . . . . 94
+9.2. Manual de uso de Strategy Simulator . . . . . . . . . . . . . . . . . . 96
+10.Conclusiones 103
+10.1. Objetivos alcanzados . . . . . . . . . . . . . . . . . . . . . . . . . . . 103
+10.2. Lecciones aprendidas . . . . . . . . . . . . . . . . . . . . . . . . . . . 103
+10.3. Trabajos futuros . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 104
+Bibliograf´ ıa 105
+
+--- PAGE 12 ---
+
+
+--- PAGE 13 ---
+´Indice de ﬁguras
+2.1. Enfoques de modelado en la escala de abstracci´ on . . . . . . . . . . . 8
+3.1. Metodolog´ ıa Iterativo e Incremental . . . . . . . . . . . . . . . . . . . 15
+3.2. Distribuci´ on Temporal Estimada . . . . . . . . . . . . . . . . . . . . 22
+3.3. Distribuci´ on Temporal Real . . . . . . . . . . . . . . . . . . . . . . . 23
+4.1. Ejemplo Estados . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 28
+4.2. Resultados Simulaci´ on A . . . . . . . . . . . . . . . . . . . . . . . . . 35
+4.3. Resultados Simulaci´ on B . . . . . . . . . . . . . . . . . . . . . . . . . 36
+4.4. Resultados Simulaci´ on C . . . . . . . . . . . . . . . . . . . . . . . . . 37
+5.1. Diagrama Casos de Uso . . . . . . . . . . . . . . . . . . . . . . . . . 46
+5.2. Diagrama de Secuencia CU-001 . . . . . . . . . . . . . . . . . . . . . 53
+5.3. Diagrama de Secuencia CU-002 . . . . . . . . . . . . . . . . . . . . . 53
+5.4. Diagrama de Secuencia CU-004 . . . . . . . . . . . . . . . . . . . . . 53
+5.5. Diagrama de Secuencia CU-003 . . . . . . . . . . . . . . . . . . . . . 54
+5.6. Diagrama de Secuencia CU-005 . . . . . . . . . . . . . . . . . . . . . 55
+5.7. Diagrama de Secuencia CU-006 . . . . . . . . . . . . . . . . . . . . . 56
+6.1. Arquitectura F´ ısica . . . . . . . . . . . . . . . . . . . . . . . . . . . . 62
+6.2. Arquitectura L´ ogica . . . . . . . . . . . . . . . . . . . . . . . . . . . . 63
+6.3. Patr´ on de dise˜ no MVC . . . . . . . . . . . . . . . . . . . . . . . . . . 64
+6.4. Modelo de dominio . . . . . . . . . . . . . . . . . . . . . . . . . . . . 65
+6.5. Navegaci´ on de la aplicaci´ on . . . . . . . . . . . . . . . . . . . . . . . 66
+6.6. Pantalla Principal . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 66
+6.7. Pantalla de Simulaci´ on . . . . . . . . . . . . . . . . . . . . . . . . . . 67
+6.8. Pantalla de Moodle . . . . . . . . . . . . . . . . . . . . . . . . . . . . 67
+6.9. Navegaci´ on del archivo ejecutable . . . . . . . . . . . . . . . . . . . . 68
+6.10. Pantalla Principal Anylogic . . . . . . . . . . . . . . . . . . . . . . . 68
+6.11. Pantalla de resultados 1 . . . . . . . . . . . . . . . . . . . . . . . . . 69
+6.12. Pantalla de resultados 2 . . . . . . . . . . . . . . . . . . . . . . . . . 69
+7.1. Esquema Tablas: mdl
+assign y mdl assign grades . . . . . . . . . . . 75
+7.2. Estructura del proyecto bajo control de versiones . . . . . . . . . . . 80
+7.3. Herramienta Trello . . . . . . . . . . . . . . . . . . . . . . . . . . . . 81
+7.4. MAMP . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 82
+7.5. Herramienta Cacoo . . . . . . . . . . . . . . . . . . . . . . . . . . . . 83
+IX
+
+--- PAGE 14 ---
+X ´INDICE DE FIGURAS
+8.1. Errores encontrados en Pruebas Unitarias . . . . . . . . . . . . . . . 92
+9.1. Descargar Anylogic . . . . . . . . . . . . . . . . . . . . . . . . . . . . 93
+9.2. Instalaci´ on Anylogic en Windows . . . . . . . . . . . . . . . . . . . . 94
+9.3. Instalaci´ on de Anylogic en Windows . . . . . . . . . . . . . . . . . . . 94
+9.4. Instalaci´ on de Anylogic en Mac . . . . . . . . . . . . . . . . . . . . . 95
+9.5. Instalaci´ on de Anylogic en Mac . . . . . . . . . . . . . . . . . . . . . 95
+9.6. Instalaci´ on de Anylogic en Mac . . . . . . . . . . . . . . . . . . . . . 96
+9.7. Instalaci´ on de Anylogic en Mac . . . . . . . . . . . . . . . . . . . . . 96
+9.8. Uso de Strategy Simulator . . . . . . . . . . . . . . . . . . . . . . . . 97
+9.9. Uso de Strategy Simulator . . . . . . . . . . . . . . . . . . . . . . . . 97
+9.10. Uso de Strategy Simulator . . . . . . . . . . . . . . . . . . . . . . . . 98
+9.11. Uso de Strategy Simulator . . . . . . . . . . . . . . . . . . . . . . . . 98
+9.12. Uso de Strategy Simulator . . . . . . . . . . . . . . . . . . . . . . . . 99
+9.13. Uso de Strategy Simulator . . . . . . . . . . . . . . . . . . . . . . . . 99
+9.14. Uso de Strategy Simulator . . . . . . . . . . . . . . . . . . . . . . . . 99
+9.15. Uso de Strategy Simulator . . . . . . . . . . . . . . . . . . . . . . . . 100
+9.16. Uso de Strategy Simulator . . . . . . . . . . . . . . . . . . . . . . . . 100
+9.17. Uso de Strategy Simulator . . . . . . . . . . . . . . . . . . . . . . . . 101
+9.18. Uso de Strategy Simulator . . . . . . . . . . . . . . . . . . . . . . . . 101
+9.19. Uso de Strategy Simulator . . . . . . . . . . . . . . . . . . . . . . . . 102
+
+--- PAGE 15 ---
+´Indice de cuadros
+1.1. Objetivos del Sistema: OBJ-001 . . . . . . . . . . . . . . . . . . . . . 3
+1.2. Objetivos del Sistema: SUBOBJ-002 . . . . . . . . . . . . . . . . . . 3
+1.3. Objetivos del Sistema: SUBOBJ-003 . . . . . . . . . . . . . . . . . . 3
+1.4. Objetivos del Sistema: SUBOBJ-004 . . . . . . . . . . . . . . . . . . 4
+3.1. Riesgos: R-001 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 18
+3.2. Riesgos: R-002 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 19
+3.3. Riesgos: R-003 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 19
+3.4. Riesgos: R-004 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 20
+3.5. Riesgos: R-005 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 20
+4.1. Par´ ametros de entrada al modelo . . . . . . . . . . . . . . . . . . . . 30
+4.2. Distribuci´ on uniforme . . . . . . . . . . . . . . . . . . . . . . . . . . . 31
+4.3. Distribuci´ on extremos mayores . . . . . . . . . . . . . . . . . . . . . . 31
+4.4. Distribuci´ on extremos menores . . . . . . . . . . . . . . . . . . . . . . 32
+4.5. Tabla de tasa de ´ exito . . . . . . . . . . . . . . . . . . . . . . . . . . 33
+5.1. Requisitos de Informaci´ on: IRQ-001 . . . . . . . . . . . . . . . . . . . 39
+5.2. Requisitos de Informaci´ on: IRQ-002 . . . . . . . . . . . . . . . . . . . 40
+5.3. Requisitos de Informaci´ on: IRQ-003 . . . . . . . . . . . . . . . . . . . 40
+5.4. Requisitos de Informaci´ on: IRQ-004 . . . . . . . . . . . . . . . . . . . 41
+5.5. Requisitos de Informaci´ on: IRQ-005 . . . . . . . . . . . . . . . . . . . 41
+5.6. Requisitos de Informaci´ on: IRQ-006 . . . . . . . . . . . . . . . . . . . 42
+5.7. Requisitos de Informaci´ on: IRQ-007 . . . . . . . . . . . . . . . . . . . 43
+5.8. Requisitos Funcionales: FRQ-001 . . . . . . . . . . . . . . . . . . . . 44
+5.9. Requisitos Funcionales: FRQ-002 . . . . . . . . . . . . . . . . . . . . 44
+5.10. Requisitos Funcionales: FRQ-003 . . . . . . . . . . . . . . . . . . . . 44
+5.11. Requisitos Funcionales: FRQ-004 . . . . . . . . . . . . . . . . . . . . 45
+5.12. Requisitos Funcionales: FRQ-005 . . . . . . . . . . . . . . . . . . . . 45
+5.13. Requisitos Funcionales: FRQ-006 . . . . . . . . . . . . . . . . . . . . 45
+5.14. Cat´ alogo de Actores: ACT-001 . . . . . . . . . . . . . . . . . . . . . . 46
+5.15. Casos de Uso: CU-001 . . . . . . . . . . . . . . . . . . . . . . . . . . 47
+5.16. Casos de Uso: CU-002 . . . . . . . . . . . . . . . . . . . . . . . . . . 48
+5.17. Casos de Uso: CU-003 . . . . . . . . . . . . . . . . . . . . . . . . . . 49
+5.18. Casos de Uso: CU-004 . . . . . . . . . . . . . . . . . . . . . . . . . . 50
+5.19. Casos de Uso: CU-005 . . . . . . . . . . . . . . . . . . . . . . . . . . 51
+XI
+
+--- PAGE 16 ---
+XII ´INDICE DE CUADROS
+5.20. Casos de Uso: CU-006 . . . . . . . . . . . . . . . . . . . . . . . . . . 52
+5.21. Requisitos no Funcionales: NRQ-001 . . . . . . . . . . . . . . . . . . 57
+5.22. Requisitos no Funcionales: NRQ-002 . . . . . . . . . . . . . . . . . . 57
+5.23. Requisitos no Funcionales: NRQ-003 . . . . . . . . . . . . . . . . . . 57
+5.24. Requisitos no Funcionales: NRQ-004 . . . . . . . . . . . . . . . . . . 57
+5.25. Requisitos no Funcionales: NRQ-005 . . . . . . . . . . . . . . . . . . 58
+5.26. Requisitos no Funcionales: NRQ-006 . . . . . . . . . . . . . . . . . . 58
+5.27. Mapeo Requisitos-Iteraciones . . . . . . . . . . . . . . . . . . . . . . 60
+6.1. Mapeo Dise˜ no-Iteraciones . . . . . . . . . . . . . . . . . . . . . . . . 70
+7.1. Mapeo Implementaci´ on-Iteraciones . . . . . . . . . . . . . . . . . . . 84
+8.1. Pruebas no funcionales: PNF-001 . . . . . . . . . . . . . . . . . . . . 86
+8.2. Pruebas no funcionales: PNF-002 . . . . . . . . . . . . . . . . . . . . 86
+8.3. Pruebas no funcionales: PNF-003 . . . . . . . . . . . . . . . . . . . . 87
+8.4. Pruebas no funcionales: PNF-004 . . . . . . . . . . . . . . . . . . . . 87
+8.5. Pruebas no funcionales: PNF-005 . . . . . . . . . . . . . . . . . . . . 87
+8.6. Pruebas no funcionales: PNF-006 . . . . . . . . . . . . . . . . . . . . 87
+8.7. Pruebas Unitarias: PU-001 . . . . . . . . . . . . . . . . . . . . . . . . 88
+8.8. Pruebas Unitarias: PU-002 . . . . . . . . . . . . . . . . . . . . . . . . 88
+8.9. Pruebas Unitarias: PU-003 . . . . . . . . . . . . . . . . . . . . . . . . 89
+8.10. Pruebas Unitarias: PU-004 . . . . . . . . . . . . . . . . . . . . . . . . 89
+8.11. Pruebas Unitarias: PU-005 . . . . . . . . . . . . . . . . . . . . . . . . 89
+8.12. Pruebas Unitarias: PU-006 . . . . . . . . . . . . . . . . . . . . . . . . 89
+8.13. Pruebas Unitarias: PU-007 . . . . . . . . . . . . . . . . . . . . . . . . 90
+8.14. Pruebas Unitarias: PU-008 . . . . . . . . . . . . . . . . . . . . . . . . 90
+8.15. Pruebas Integraci´ on: PI-001 . . . . . . . . . . . . . . . . . . . . . . . 90
+8.16. Pruebas Integraci´ on: PI-002 . . . . . . . . . . . . . . . . . . . . . . . 91
+8.17. Pruebas Sistema: PI-002 . . . . . . . . . . . . . . . . . . . . . . . . . 91
+8.18. Mapeo Pruebas-Iteraciones . . . . . . . . . . . . . . . . . . . . . . . . 92
+
+--- PAGE 17 ---
+Cap´ ıtulo 1
+Introducci´ on
+En este documento se redactar´ an todos los aspectos claves del desarrollo de la apli-
+caci´ on Strategy Simulator, aplicaci´ on desarrollada como trabajo ﬁn de grado, del
+grado de ingenier´ ıa inform´ atica. Esta aplicaci´ on une dos conceptos innovadores, y
+en pleno crecimiento. Estos dos conceptos son la gamiﬁcaci´ on y la simulaci´ on, sien-
+do esta ´ ultima el pilar fundamental de este proyecto. A continuaci´ on se describir´ a
+la motivaci´ on del proyecto, los objetivos que se quieren alcanzar y los acr´ onimos
+utilizados en el documento.
+1.1. Motivaci´ on
+La aparici´ on de la web 2.0 ha acelerado la creaci´ on de comunidades en torno a todo
+tipo de redes sociales, medios digitales, etc. Pero no siempre es f´ acil estimular la
+actividad din´ amica y frecuente entre los miembros de una comunidad. Y aparece
+el concepto de Gamiﬁcaci´ on, que se podr´ ıa deﬁnir como el empleo de mec´ anicas de
+juego en entornos y aplicaciones no l´ udicas con el ﬁn de potenciar la motivaci´ on, la
+concentraci´ on, el esfuerzo, la ﬁdelizaci´ on y otros valores positivos comunes a todos
+los juegos. Se trata de una nueva y poderosa estrategia para inﬂuir y motivar a
+grupos de personas.
+La principal motivaci´ on de este proyecto radica en aplicar la gamiﬁcaci´ on a la plata-
+forma de aprendizaje Moodle y as´ ı promover una mayor participaci´ on de sus usuarios.
+Dado que no se sabe si el impacto de aplicar la gamiﬁcaci´ on a Moodle ser´ ıa positivo
+o negativo, surge el desarrollo de esta aplicaci´ on.
+Esta aplicaci´ on se encarga de generar un modelo de simulaci´ on de cu´ al ser´ ıa el
+comportamiento de los alumnos frente a una estrategia de gamiﬁcaci´ on aplicada a un
+curso de Moodle. Este modelo se ejecutar´ ıa en el software Anylogic. Esta aplicaci´ on
+tambi´ en ofrece la posibilidad de aplicar una estrategia de gamiﬁcaci´ on a un curso
+real de Moodle y as´ ı ver c´ omo habr´ ıan sido los resultados. Adem´ as, estos resultados
+se pueden publicar en SmartWeb, una red social creada por un compa˜ nero de la
+UCA, as´ ı los alumnos podr´ an compartir sus logros con otros compa˜ neros.
+1
+
+--- PAGE 18 ---
+2 1. Introducci´ on
+1.2. Objetivos y ´ ambito del sistema
+El principal objetivo del sistema es ofrecer al usuario la posibilidad aplicar a los
+cursos de la plataforma Moodle estrategias de gamiﬁcaci´ on en un entorno de Si-
+mulaci´ on. Las estrategias de gamiﬁcaci´ on son dise˜ nadas en una aplicaci´ on externa
+a ´ esta. Una estrategia de gamiﬁcaci´ on es una secuencia de actividades, en la que
+cada actividad tiene tiene una o varias recompensas que ser´ an asignadas al usuario
+que supera la actividad con ´ exito. Es importante destacar que las actividades de
+la estrategia tienen unos o varios criterios que son los que permiten evaluar si una
+actividad se ha superado o no. La estrategia o estrategias est´ an almacenadas en un
+archivo en formato XML, este archivo es le´ ıdo por nuestra aplicaci´ on para cargar
+las estrategias y poder trabajar con ellas. En el Cap´ ıtulo 7, se explicar´ a de manera
+detallada la estructura del XML.
+Esto permite realizar un estudio de las repercusiones, tanto positivas como negati-
+vas, que tendr´ ıa el uso de gamiﬁcaci´ on en esta plataforma de aprendizaje. Al estar
+en un entorno de simulaci´ on permite al usuario obtener una muestra de c´ omo res-
+ponder´ ıan los estudiantes ante esta propuesta. En este caso, la aplicaci´ on utilizada
+para ejecutar la simulaci´ on ser´ a Anylogic.
+A parte de la simulaci´ on, el sistema ofrece la posibilidad de aplicar las estrategias a
+Moodle, obteniendo resultados reales de su base de datos y aplicando la estrategia a
+estos datos para ver los resultados que habr´ ıan obtenido los alumnos. Estos resultado
+se podr´ an guardar en una base de datos de otra aplicaci´ on independiente de esta,
+para un uso posterior.
+Este sistema tiene una principal ventaja y es que gracias a la simulaci´ on podemos
+realizar un estudio de viabilidad y, en caso de obtener resultados negativos, se aho-
+rrar´ ıa el coste signiﬁcativo que implicar´ ıa implantar este sistema en un entorno real.
+El ´ ambito del sistema es que la aplicaci´ on pueda ser utilizada por cualquier persona,
+sin necesidad de que conozca conceptos de simulaci´ on. Est´ a dirigida a docentes que
+hagan uso de la plataforma Moodle y que est´ en interesados en estudiar la posibilidad
+de gamiﬁcar el entorno de aprendizaje, se˜ nalando que en la actualidad es un m´ etodo
+que est´ a en crecimiento por los buenos resultados que ofrece.
+1.2.1. Objetivos del sistema
+En esta secci´ on se describir´ an los principales objetivos del sistema. El objetivo prin-
+cipal es simular estrategias de gamiﬁcaci´ on aplicadas a Moodle en Anylogic, tambi´ en
+ofrecer al usuario la posibilidad de aplicar estar estrategias a un curso real de Mood-
+le, para posteriormente publicar los resultados obtenidos en la red social SmartWeb.
+A continuaci´ on, en los Cuadros 1.1, 1.2, 1.3 y 1.4 se describen con mayor detalle
+todos los objetivos.
+
+--- PAGE 19 ---
+1.2. Objetivos y ´ ambito del sistema 3
+C´ odigo OBJ-001
+Descripci´ on Simular estrategias de gamiﬁcaci´ on sobre cursos de Moodle
+utilizando Anylogic.
+Importancia Vital.
+Estado Terminado.
+Estabilidad Alta.
+Cuadro 1.1: Objetivos del Sistema: OBJ-001
+C´ odigo SUBOBJ-002
+Descripci´ on Generar ﬁchero con el c´ odigo fuente del modelo de simula-
+ci´ on.
+Importancia Vital.
+Estado Terminado.
+Estabilidad Alta.
+Cuadro 1.2: Objetivos del Sistema: SUBOBJ-002
+C´ odigo SUBOBJ-003
+Descripci´ on Aplicar estrategia de gamiﬁcaci´ on a un curso de Moodle.
+Importancia Importante.
+Estado Terminado.
+Estabilidad Alta.
+Cuadro 1.3: Objetivos del Sistema: SUBOBJ-003
+
+--- PAGE 20 ---
+4 1. Introducci´ on
+C´ odigo SUBOBJ-004
+Descripci´ on Dar persistencia a resultados de aplicar la estrategia de
+gamiﬁcaci´ on en el sistema externo SmartWeb.
+Importancia Importante.
+Estado Terminado.
+Estabilidad Alta.
+Cuadro 1.4: Objetivos del Sistema: SUBOBJ-004
+1.3. Acr´ onimos y Deﬁniciones
+A continuaci´ on, se proporcionan una serie de acr´ onimos y deﬁniciones, que ser´ an
+utilizadas durante el proyecto, para facilitar la comprensi´ on del mismo.
+Java:Es un lenguaje de programaci´ on de prop´ osito general, concurrente, orien-
+tado a objetos que fue dise˜ nado espec´ ıﬁcamente para tener tan pocas depen-
+dencias de implementaci´ on como fuera posible. Su intenci´ on es permitir que
+los desarrolladores de aplicaciones escriban el programa una vez y lo ejecuten
+en cualquier dispositivo.
+JavaFx: Es una familia de productos y tecnolog´ ıas de Sun Microsystems,
+adquirida por Oracle Corporation, para la creaci´ on de aplicaciones web que
+tienen las caracter´ ısticas y capacidades de aplicaciones de escritorio, incluyendo
+aplicaciones multimedia interactivas.
+Las aplicaciones JavaFX pueden ser ejecutadas en una amplia variedad de
+dispositivos. JavaFX un lenguaje declarativo, adem´ as puede integrarse c´ odigo
+Java en programas JavaFX. JavaFX es compilado a c´ odigo Java, por lo que las
+aplicaciones JavaFX pueden ser ejecutadas en computadores con la m´ aquina
+virtual de Java instalada.
+SVN: Apache Subversion, abreviado frecuentemente como SVN, es una he-
+rramienta de control de versiones open source basada en un repositorio cuyo
+funcionamiento se asemeja enormemente al de un sistema de ﬁcheros. Es soft-
+ware libre bajo una licencia de tipo Apache/BSD.
+Repositorio: Es un sitio centralizado donde se almacena y mantiene informa-
+ci´ on digital, habitualmente bases de datos o archivos inform´ aticos.
+Anylogic: Es una herramienta desarrollada por The AnyLogic Company que
+incluye todos los m´ etodos de simulaci´ on m´ as comunes en practica hoy.
+MBA: Un modelo basado en agentes (MBA) es un tipo de modelo compu-
+
+--- PAGE 21 ---
+1.3. Acr´ onimos y Deﬁniciones 5
+tacional que permite la simulaci´ on de acciones e interacciones de individuos
+dentro de un entorno.
+Gamiﬁcaci´ on:Es el uso de t´ ecnicas, elementos y din´ amicas propias de los
+juegos y el ocio en actividades no recreativas con el ﬁn de potenciar la motiva-
+ci´ on, as´ ı como de reforzar la conducta para solucionar un problema u obtener
+un objetivo.
+Lenguaje XML (Extensible Markup Language): Permite deﬁnir la gra-
+m´ atica de lenguajes espec´ ıﬁcos para estructurar documentos grandes. A dife-
+rencia de otros lenguajes, XML da soporte a bases de datos, siendo ´ util cuando
+varias aplicaciones deben comunicarse entre s´ ı o integrar informaci´ on.
+Eclipse: Es un programa inform´ atico compuesto por un conjunto de herra-
+mientas de programaci´ on de c´ odigo abierto multiplataforma para desarrollar
+aplicaciones. Esta plataforma, t´ ıpicamente ha sido usada para desarrollar en-
+tornos de desarrollo integrados (del ingl´ es IDE), como el IDE de Java llamado
+Java Development Toolkit (JDT) y el compilador (ECJ) que se entrega como
+parte de Eclipse y que son usados tambi´ en para desarrollar el mismo Eclipse.
+Sin embargo, tambi´ en se puede usar para otros tipos de aplicaciones cliente,
+como BitTorrent o Azureus.
+Metodolog´ ıa de desarrollo:Metodolog´ ıa de desarrollo de software en inge-
+nier´ ıa de software es un marco de trabajo usado para estructurar, planiﬁcar y
+controlar el proceso de desarrollo en sistemas de informaci´ on.
+Kanban: Es un sistema de informaci´ on que controla de modo arm´ onico la
+fabricaci´ on de los productos necesarios en la cantidad y tiempo necesarios en
+cada uno de los procesos que tienen lugar tanto en el interior de la f´ abrica,
+como entre distintas empresas.
+Tambi´ en se denomina “sistema de tarjetas”, pues en su implementaci´ on m´ as
+sencilla utiliza tarjetas que se pegan en los contenedores de materiales y que se
+despegan cuando estos contenedores son utilizados, para asegurar la reposici´ on
+de dichos materiales. Las tarjetas act´ uan de testigo del proceso de producci´ on.
+Otras implementaciones m´ as soﬁsticadas utilizan la misma ﬁlosof´ ıa, sustitu-
+yendo las tarjetas por otros m´ etodos de visualizaci´ on del ﬂujo.
+IDE: Integrated Development Environment (IDE),entorno de desarrollo inte-
+grado, es una aplicaci´ on inform´ atica que proporciona servicios integrales para
+facilitarle al programador el desarrollo de software.
+Normalmente, un IDE consiste de un editor de c´ odigo fuente, herramientas
+de construcci´ on autom´ aticas y un depurador. La mayor´ ıa de los IDE tienen
+auto-completado inteligente de c´ odigo.
+SGBD: Sistema de gesti´ on de base de datos, es una agrupaci´ on de programas
+que sirven para deﬁnir, construir y manipular una base de datos.
+• Deﬁnir una base de datos: consiste en especiﬁcar los tipos de datos, es-
+tructuras y restricciones para los datos que se almacenar´ an.
+
+--- PAGE 22 ---
+6 1. Introducci´ on
+• Construir una base de datos: es el proceso de almacenar los datos sobre
+alg´ un medio de almacenamiento.
+• Manipular una base de datos: incluye funciones sobre la base de datos
+como pueden ser, una consulta, actualizaci´ on, etc.
+
+--- PAGE 23 ---
+Cap´ ıtulo 2
+Generalidades
+2.1. Introducci´ on
+En este cap´ ıtulo se describen conceptos necesarios para entender mejor el ´ ambito
+de este proyecto. Este trabajo tiene como pilares fundamentales la gamiﬁcaci´ on y la
+simulaci´ on, que son conceptos innovadores, y por ello, la necesidad de explicarlos.
+2.2. Introducci´ on a la simulaci´ on
+La simulaci´ on es la replicaci´ on de un sistema dado mediante el uso de m´ etodos
+artiﬁciales. Puede ser puramente anal´ ıtico (a trav´ es de ecuaciones matem´ aticas) o
+computacional. Aunque es posible replicar las actividades de baja y mediana com-
+plejidad anal´ ıtica, es extremadamente dif´ ıcil construir modelos ﬂexibles y obtener
+resultados precisos, por lo tanto, el uso de ordenadores se convierte en esencial.
+Las simulaciones se pueden utilizar para comprender mejor el impacto de decisiones
+espec´ ıﬁcas, mediante el uso de la simulaci´ on por ordenador de sistemas reales. Las
+simulaciones por ordenador se pueden utilizar tambi´ en en los centros educativos con
+el ﬁn de desarrollar habilidades espec´ ıﬁcas, en las que los estudiantes controlan parte
+de las variables de simulaci´ on por ordenador a trav´ es de interfaces de usuario.
+2.2.1. Modelado
+El modelado es una manera con la que podemos resolver problemas del mundo real.
+En muchos casos, no podemos permitirnos experimentar con objetos reales para
+encontrar las soluciones adecuadas: construcci´ on, destrucci´ on, y haciendo cambios
+pueden ser demasiado caro, peligroso, o simplemente imposible. Si ese es el caso,
+podemos construir un modelo que utiliza un lenguaje de modelado para representar
+7
+
+--- PAGE 24 ---
+8 2. Generalidades
+el sistema real. Este proceso supone la abstracci´ on: incluimos los detalles que creemos
+que son importantes y dejar de lado los que creemos que no son importantes. El
+modelo es siempre menos complejo que el sistema original.
+Los modelos de simulaci´ on requiere de herramientas especiales de software que uti-
+lizan lenguajes espec´ ıﬁcos para la simulaci´ on. Es muy complejo realizar bien un
+modelo de simulaci´ on, pero su tiempo y esfuerzo ser´ an recompensados cuando su
+modelo ofrezca un an´ alisis de alta calidad de un sistema din´ amico.
+2.2.2. M´ etodos en los modelos de simulaci´ on
+En los modelos de simulaci´ on, un m´ etodo es un marco que usamos para trazar un
+sistema del mundo real para su modelo. Se puede pensar en un m´ etodo como un
+tipo de lenguaje o una especie de t´ erminos y condiciones para la construcci´ on de
+modelos.
+Hay tres m´ etodos:
+Din´ amica de sistemas
+Modelado de eventos discretos
+Modelado basado en agentes
+Figura 2.1: Enfoques de modelado en la escala de abstracci´ on
+Seg´ un se observa en la Figura 2.1, cada m´ etodo de modelado tiene un rango espec´ ıﬁco
+de niveles de abstracci´ on. La din´ amica de sistemas asume la abstracci´ on muy alta,
+y que por lo general se utiliza para el modelado estrat´ egico. El modelado de eventos
+discretos da soporte a la abstracci´ on media y media-baja. En el medio est´ an los
+modelos basados en agentes, que pueden variar a partir de modelos muy detallados
+
+--- PAGE 25 ---
+2.2. Introducci´ on a la simulaci´ on 9
+donde los agentes representan objetos f´ ısicos para los modelos altamente abstractos
+donde los agentes representan a empresas de la competencia o de los gobiernos.
+Siempre se debe seleccionar el m´ etodo despu´ es de que se hayan examinado cuidado-
+samente el sistema que se desea modelar y sus objetivos.
+Modelo basado en agentes (MBA)
+Dado que para la naturaleza de esta aplicaci´ on se va a utilizar el enfoque MBA, en
+este apartado se describe en profundidad este tipo de modelado.
+Un modelo basado en agentes (MBA) es un tipo de modelo computacional que per-
+mite la simulaci´ on de acciones e interacciones de individuos aut´ onomos dentro de
+un entorno, y permite determinar qu´ e efectos producen en el conjunto del sistema.
+Combina elementos de teor´ ıa de juegos, sistemas complejos, emergencia, sociolog´ ıa
+computacional, sistemas multi-agente, y programaci´ on evolutiva. Los modelos simu-
+lan las operaciones simult´ aneas de entidades m´ ultiples (agentes) en un intento de
+recrear y predecir las acciones de fen´ omenos complejos. Es un proceso de emergencia
+desde el nivel m´ as elemental al m´ as elevado.
+El modelado basado en agentes es un m´ etodo relativamente nuevo en comparaci´ on
+con la din´ amica de sistemas y el modelado de eventos discretos. De hecho, el mo-
+delado basado en agentes fue en gran medida un tema acad´ emico hasta que los
+practicantes de simulaci´ on lo comenzaron a usar hace unos 15 a˜ nos.
+Se desencadena por:
+Una deseo de obtener una visi´ on m´ as profunda en los sistemas que los m´ etodos
+de modelado tradicionales no captan bien.
+Los avances en la tecnolog´ ıa de modelado posibles gracias a la inform´ atica,
+tales como el modelado orientado a objetos, UML, y gr´ aﬁcos de estado.
+El r´ apido crecimiento de la potencia de la CPU y la memoria. Los modelos
+basados en agentes son m´ as exigentes que la din´ amica de sistemas y modelos
+de eventos discretos.
+No hay lenguaje est´ andar para el modelado basado en agentes, y la estructura de un
+modelo basado en agentes proviene de editores gr´ aﬁcos o secuencias de comandos.
+Hay muchas formas de especiﬁcar el comportamiento de un agente. Con frecuencia
+agente tiene una noci´ on de estado y sus acciones y reacciones dependen del esta-
+do, entonces el comportamiento se deﬁne mejor con gr´ aﬁcos de estado. A veces, el
+comportamiento se deﬁne en las reglas ejecutadas en eventos especiales.
+En muchos casos, la mejor manera de capturar la din´ amica interna del agente es el
+uso de la din´ amica de sistemas o un enfoque de eventos discretos, y despu´ es colocar
+un diagrama de ﬂujo dentro de un agente. Del mismo modo, los agentes externos
+a la din´ amica del entorno en el que se encuentran a menudo se modelan de forma
+normal utilizando m´ etodos tradicionales. Es por eso que muchos modelos basados
+en agentes son modelos multi-m´ etodo.
+
+--- PAGE 26 ---
+10 2. Generalidades
+Los agentes en un modelo basado en agentes pueden representar cosas muy diversas:
+veh´ ıculos, unidades de equipos, proyectos, productos, ideas, organizaciones, inver-
+siones, parcelas de tierra, las personas en diferentes roles, etc.
+2.2.3. Herramientas software de simulaci´ on
+Actualmente podemos encontrar una gran variedad de programas de simulaci´ on
+para la mayor´ ıa de industrias, manejando proyectos complejos, y a gran escala,
+relacionados con la fabricaci´ on, procesos, log´ ıstica, distribuci´ on, almacenamiento o
+sistemas de servicios. Entre los m´ as conocidos podemos encontrar:
+Promodel es una tecnolog´ ıa de simulaci´ on de eventos discretos que se utiliza
+para planiﬁcar, dise˜ nar y mejorar nuevas o existentes de fabricaci´ on, log´ ıstica
+y otros sistemas operativos. Representa con precisi´ on los procesos del mundo
+real, incluyendo su variabilidad inherente y las interdependencias, con el ﬁn de
+realizar un an´ alisis predictivo de los cambios potenciales.
+Arena ha sido durante 30 a˜ nos el software de simulaci´ on de eventos discretos
+l´ ıder en el mundo. La simulaci´ on de eventos discretos describe un proceso con
+un conjunto de eventos ´ unicos, espec´ ıﬁcos en el tiempo. Estos modelos ﬂexibles,
+basados en la actividad pueden ser utilizados eﬁcazmente para simular casi
+cualquier proceso.
+Anylogic es considerada como una herramienta de simulaci´ on de ´ ultima ge-
+neraci´ on. Un software que ofrece un sistema ﬂexible, orientado a objetos para
+el desarrollo de la simulaci´ on de eventos discretos, modelos basados en agen-
+tes y de din´ amica de sistemas. Los modelos de AnyLogic se pueden exportar
+como applets Java o aplicaciones Java aut´ onomas (versi´ on Professional) sin
+necesidad de un entorno de desarrollo AnyLogic en funcionamiento.
+2.2.4. Anylogic
+De los diferentes software de simulaci´ on presentados en el apartado anterior el elegido
+para realizar este proyecto es el software de simulaci´ on Anylogic. Los motivos de esta
+elecci´ on han sido b´ asicamente dos:
+A pesar de ser un software muy completo, su aprendizaje es muy sencillo. Tiene
+una interfaz muy atractiva para el usuario y su compatibilidad con el lenguaje
+Java es total.
+Permite, con una cierta facilidad, generar desde otras aplicaciones, modelos
+ejecutables. Estos modelos son construidos a trav´ es de ﬁcheros XML que con-
+tienen el c´ odigo tanto del modelo como de la interfaz.
+Contar con el apoyo de la tutora de este proyecto, que ya ten´ ıa conocimientos
+previos de la herramienta, as´ ı como la posibilidad de contar con otros alumnos
+que han trabajado con Anylogic en ocasiones anteriores.
+
+--- PAGE 27 ---
+2.3. Introducci´ on a la gamiﬁcaci´ on 11
+La versi´ on utilizada para realizar todos los experimentos va a ser la PLE.
+2.2.5. Ventajas
+A continuaci´ on las principales ventajas de practicar la simulaci´ on.
+Un modelo de simulaci´ on permite analizar sistemas y encontrar soluciones
+donde los m´ etodos tales como c´ alculos anal´ ıticos y de programaci´ on lineal
+fallan.
+Una vez que haya elegido un nivel de abstracci´ on, es m´ as f´ acil de desarrollar
+un modelo de simulaci´ on que un modelo anal´ ıtico.
+La estructura de un modelo de simulaci´ on reﬂeja, naturalmente, la estructura
+del sistema.
+En un modelo de simulaci´ on, se puede medir los valores y se pueden a˜ nadir
+mediciones y an´ alisis estad´ ısticos en cualquier momento.
+Los modelos de simulaci´ on son mucho m´ as convincentes que las hojas de c´ alcu-
+lo.
+2.3. Introducci´ on a la gamiﬁcaci´ on
+2.3.1. Deﬁnici´ on
+Se puede deﬁnir el concepto de gamiﬁcaci´ on como el uso de t´ ecnicas, elementos y
+din´ amicas propias de los juegos y el ocio en actividades no recreativas con el ﬁn
+de potenciar la motivaci´ on, as´ ı como de reforzar la conducta para solucionar un
+problema u obtener un objetivo.
+2.3.2. ´Ambitos de aplicaci´ on
+Actualmente, la gamiﬁcaci´ on tiene muchos ´ ambitos de aplicaci´ on, entre los que se
+encuentran:
+Salud, existen juegos que ayudan a ejercitar la memoria, la agilidad mental,
+etc.
+Empresas, cada vez hay mas empresas que aplican la gamiﬁcaci´ on para promo-
+ver la participaci´ on de los empleados en actividades corporativas, para mante-
+ner la motivaci´ on, promover el trabajo colaborativo, aumentar la productivi-
+dad, etc.
+Aunque, si hay que destacar un ´ ambito de aplicaci´ on de la gamiﬁcaci´ on, ese es el de la
+educaci´ on. El aprendizaje es uno de los procesos que podr´ ıan considerarse como m´ as
+
+--- PAGE 28 ---
+12 2. Generalidades
+complicados y aburridos, al menos desde el punto de vista del alumno, considerando
+los modelos de ense˜ nanza tradicional. Por ello es importante considerar la gamiﬁca-
+ci´ on como una alternativa de apoyo en los procesos de ense˜ nanza-aprendizaje debido
+a las siguientes razones:
+Estimula y hace m´ as atractiva la participaci´ on de los estudiantes.
+Simpliﬁca las actividades dif´ ıciles.
+Motiva la participaci´ on constante.
+Crea una retroalimentaci´ on positiva a trav´ es de recompensas.
+Promueve la perseverancia y el triunfo.
+Aumenta el compa˜ nerismo.
+Transforma actividades aburridas en divertidas e interesantes.
+Fomenta la comunicaci´ on entre pares.
+Crea ambientes de conﬁanza.
+A pesar de los beneﬁcios, nunca debemos olvidar que la gamiﬁcaci´ on es solo una
+estrategia de apoyo en el aula y que las din´ amicas de juego nunca deben sustituir
+el verdadero prop´ osito de los procesos de aprendizaje. El contenido acad´ emico debe
+ser el principal motor que impulse las mec´ anicas del juego, de ah´ ı la responsabilidad
+del docente para controlar y mediar la gamiﬁcaci´ on en el ´ area educativa.
+2.3.3. Estrategias de gamiﬁcaci´ on
+En este apartado se describir´ an los principales elementos de una estrategia de gami-
+ﬁcaci´ on.
+Mec´ anicas de gamiﬁcaci´ on
+Como cualquier juego que se preste, la gamiﬁcaci´ on no est´ a exenta de unas normas
+de funcionamiento. Dichas mec´ anicas permiten que los usuarios adquieran un com-
+promiso para superar los distintos retos a los que se someten. De entre las mec´ anicas
+que m´ as aceptaci´ on tienen se pueden destacar:
+Colecci´ on: Se parte de la importancia que tiene para los usuarios los logros y
+las recompensas.
+Puntos: Muy usados para conseguir la ﬁdelizaci´ on de los usuarios en la tarea
+que se les ha sido asignada.
+Ranking: Se establece una clasiﬁcaci´ on o comparaci´ on entre los usuarios.
+Nivel: Muy comunes en los deportes como, por ejemplo, el f´ utbol o el balon-
+cesto. Los niveles dan fe de los progresos de los usuarios en las actividades a
+
+--- PAGE 29 ---
+2.3. Introducci´ on a la gamiﬁcaci´ on 13
+las que han sido asignadas.
+Progresi´ on: La progresi´ on es otra t´ ecnica muy usual en la gamiﬁcaci´ on y con-
+siste en completar el 100 % de la actividad que se ha encomendado. Publicar
+estos progresos en redes sociales es una pr´ actica habitual.
+Din´ amicas de gamiﬁcaci´ on
+Las din´ amicas de juego son un aspecto indispensable para la elaboraci´ on de cualquier
+actividad relacionada con la gamiﬁcaci´ on.
+Si antes se explicaba la importancia de que los usuarios conozcan las normas de
+cualquier juego, en este caso de cara a la gamiﬁcaci´ on se hace imprescindible que
+los usuarios tengan perfectamente asimiladas qu´ e din´ amicas de juego se llevar´ an a
+cabo. Dichas din´ amicas de juego tienen por objeto la motivaci´ on y la implicaci´ on en
+la realizaci´ on de una actividad.
+A trav´ es de las din´ amicas de juego, se consigue despertar el inter´ es de los usuarios
+por las actividades que est´ an llevando a cabo. Entre las din´ amicas m´ as conocidas
+destacan:
+Recompensa: La recompensa en una actividad no tiene otra funci´ on que des-
+pertar el inter´ es por el juego.
+Competici´ on: Aunque no siempre es vista como una cualidad positiva, la buena
+gesti´ on de la competici´ on es un magn´ ıﬁco instrumento para atraer el inter´ es
+del usuario por una actividad. Adem´ as, dicha competici´ on tiene la ventaja de
+poder realizarse de forma individual, por parejas o en grupo.
+Estatus: El estatus logrado a trav´ es de la gamiﬁcaci´ on incentiva enormemente
+al usuario en la consecuci´ on y realizaci´ on de la actividad que se le ha enco-
+mendado.
+Cooperaci´ on: Se trata de otra forma de competir, pero en este caso se juega
+con el hecho de que es un mismo grupo el que persigue un mismo ﬁn.
+Solidaridad: Se trata de una din´ amica muy interesante y muy ligada con la
+cooperaci´ on. Mediante la solidaridad se fomenta la ayuda mutua entre compa-
+˜ neros y de una manera altruista, es decir, sin esperar ninguna recompensa a
+cambio.
+Proceso de gamiﬁcaci´ on
+Para realizar un proceso de gamiﬁcaci´ on exitoso, es imprescindible seguir ciertas
+pautas.
+Viabilidad: En primer lugar hay que valorar si la gamiﬁcaci´ on es aplicable. Hay
+ciertos campos en los que la aplicaci´ on de la gamiﬁcaci´ on no es exitosa.
+
+--- PAGE 30 ---
+14 2. Generalidades
+Objetivos: Hay que deﬁnir cu´ ales ser´ an los objetivos de la gamiﬁcaci´ on. Es
+muy importante tener claro los objetivos que se persiguen con la aplicaci´ on de
+esta t´ ecnica.
+Motivaci´ on: Otro aspecto a valorar es la predisposici´ on y el perﬁl de las per-
+sonas con las que se va a llevar a cabo la gamiﬁcaci´ on en una actividad.
+Resultados: Es imprescindible realizar una evaluaci´ on de los resultados de la
+propuesta de gamiﬁcaci´ on que se haya llevado a cabo.
+
+--- PAGE 31 ---
+Cap´ ıtulo 3
+Planiﬁcaci´ on del Proyecto
+En esta secci´ on del documento se describen todos los aspectos relativos a la gesti´ on
+del proyecto: metodolog´ ıa, fases del proyecto, costes, riesgos y planiﬁcaci´ on.
+3.1. Metodolog´ ıa
+Este proyecto se ha desarrollado siguiendo una metodolog´ ıa iterativa e incremental
+[V´ ease en Figura 3.1]. Cada iteraci´ on ha tenido su fase de an´ alisis, dise˜ no, desarrollo
+y pruebas. Se ha elegido esta metodolog´ ıa de desarrollo porque era la mejor ma-
+nera de agilizar el desarrollo de la aplicaci´ on, teniendo as´ ı versiones funcionales y
+permitiendo un mayor feedback con la tutora del proyecto. Esto ha permitido hacer
+peque˜ nos cambios despu´ es de cada iteraci´ on que no han repercutido mucho en el
+tiempo de desarrollo.
+Figura 3.1: Metodolog´ ıa Iterativo e Incremental
+15
+
+--- PAGE 32 ---
+16 3. Planiﬁcaci´ on del Proyecto
+Para la organizaci´ on y desglose de las tareas de cada iteraci´ on se ha utilizado el
+sistema Kanban, teniendo as´ ı un gran control de las tareas que est´ an pendientes,
+las que se est´ an realizando y de las que est´ an ﬁnalizadas. Para este sistema, se ha
+utilizado la herramienta online Trello[13].
+3.2. Fases del Proyecto
+Se ha realizado una fase previa de gran importancia, realizando el aprendizaje ne-
+cesario para familiarizarse con las t´ ecnicas de gamiﬁcaci´ on, para la construcci´ on de
+un modelo de simulaci´ on y para el uso de la herramienta Anylogic. Posteriormente,
+se han realizado tres iteraciones con versiones funcionales de la aplicaci´ on. Cada
+iteraci´ on incrementa y mejora la funcionalidad de la iteraci´ on anterior.
+A continuaci´ on, se describir´ an cada una de las fases por la que ha pasado el proyecto:
+3.2.1. Adquisici´ on de conocimientos
+La adquisici´ on de conocimientos necesarios para el desarrollo del proyecto se ha
+llevado a cabo en todas las fases del proyecto desde el inicio hasta el ﬁnal.
+En la documentaci´ on de cada fase del proyecto, se especiﬁca con detalle el aprendi-
+zaje adquirido durante cada etapa.
+3.2.2. Iteraci´ on 0: Prototipo de modelo de simulaci´ on
+Durante la fase previa del proyecto, se construy´ o un modelo de simulaci´ on base. Para
+ello, se realizaron las siguientes tareas:
+Aprendizaje de la herramienta de simulaci´ on Anylogic, y de los conceptos ne-
+cesarios para entender la simulaci´ on basada en agentes.
+Toma de decisi´ on de las variables, par´ ametros, f´ ormulas, gr´ aﬁcas, etc. que se
+han utilizado para la construcci´ on del modelo.
+Construcci´ on de un modelo de simulaci´ on en Anylogic que posteriormente se
+utilizar´ ıa como base para la construcci´ on din´ amica de los modelos de simula-
+ci´ on.
+Realizar una API de los distintos elementos de Anylogic que se han usado en la
+simulaci´ on, con su correspondiente c´ odigo XML para su generaci´ on din´ amica.
+Validaci´ on del modelo base, comprobando que tiene un comportamiento razo-
+nable y acorde a los par´ ametros de entrada que recibe.
+
+--- PAGE 33 ---
+3.2. Fases del Proyecto 17
+3.2.3. Iteraci´ on 1: Lectura de estrategias
+Durante la iteraci´ on 1 del proyecto, se desarroll´ o el m´ odulo para la lectura de las
+estrategias guardadas en un archivo XML. Para ello, se realizaron las siguientes
+tareas:
+Aprendizaje de JavaFx para empezar a desarrollar la aplicaci´ on, aprendizaje
+de la librer´ ıa JDOM para la lectura y escritura de un archivo XML desde java.
+Toma de decisi´ on de la estructura del archivo XML en el cual se encuentran
+las estrategias de gamiﬁcaci´ on.
+Desarrollo de los objetos y clases necesarios para la utilizaci´ on de la informaci´ on
+obtenida en el archivo XML.
+Desarrollo de una interfaz de usuario base para probar la funcionalidad de leer
+el archivo XML, mostrando en pantalla las estrategias le´ ıdas y la interacci´ on
+con ´ estas.
+Pruebas de lectura del archivo XML.
+3.2.4. Iteraci´ on 2: Generar del modelo de simulaci´ on
+Durante la iteraci´ on 2 del proyecto se desarroll´ o el m´ odulo para generar el archivo
+de simulaci´ on. Para ello, se realizaron las siguientes tareas:
+Desarrollo de interfaz de usuario para la generaci´ on del modelo de simula-
+ci´ on. Se ha desarrollado una pantalla con un formulario para que el usuario
+introduzca los par´ ametros de entrada necesarios para la simulaci´ on.
+Desarrollo de los algoritmos necesarios para construir el modelo de simulaci´ on
+din´ amicamente.
+Validaci´ on de los campos del formulario, controlando que se reciben los par´ ame-
+tros en el formato deseado, y en caso contrario mostrando ventanas informando
+al usuario.
+Pruebas de la creaci´ on del archivo con extensi´ on .ALP.
+Veriﬁcaci´ on que el archivo generado se abre sin problemas en Anylogic, y que
+el modelo cumple con lo esperado.
+Pruebas de la ejecuci´ on correcta del modelo en Anylogic.
+3.2.5. Iteraci´ on 3: Aplicar estrategia a Moodle
+Durante la iteraci´ on 3 del proyecto se desarroll´ o el m´ odulo para aplicar la estrategia
+a Moodle y posteriormente guardar los resultados obtenidos. Para ello, se realizaron
+las siguientes tareas:
+
+--- PAGE 34 ---
+18 3. Planiﬁcaci´ on del Proyecto
+Instalaci´ on y aprendizaje del entorno de Moodle.
+Conexi´ on a Moodle utilizando JDBC.
+Aprendizaje de librer´ ıas Jersey para la utilizaci´ on de servicios web REST.
+Desarrollo de los algoritmos necesarios para construir las consultas a base de
+datos para recuperar la informaci´ on necesaria y su posterior utilizaci´ on.
+Desarrollo de la interfaz de usuario para esta funcionalidad.
+Pruebas de conexi´ on con Moodle, as´ ı como la gesti´ on de los posibles errores.
+Pruebas de los servicios REST, as´ ı como la gesti´ on de los posibles errores.
+3.3. Riesgos
+En esta secci´ on se realizar´ a un an´ alisis de los riesgos contemplados en el desarrollo de
+esta aplicaci´ on. A continuaci´ on, en los Cuadros 3.1, 3.2, 3.3, 3.4 y 3.5 se describir´ an
+cada uno de los riesgos contemplados durante el desarrollo de este proyecto y en el
+posterior uso de la aplicaci´ on:
+ID Riesgo: R-001 Impacto: Muy alto
+Probabilidad 5 %
+Descripci´ on Actualizaciones de Anylogic.
+Contexto Anylogic suele cambiar la estructura de la cabecera de sus
+archivos, al hacer actualizaciones de software. Esto podr´ ıa
+suponer incompatibilidades con los archivos generados por
+la aplicaci´ on.
+Reducci´ on Si se produce alguna actualizaci´ on durante el desarrollo,
+hay que comprobar si ha habido alguna modiﬁcaci´ on que
+perjudique a la aplicaci´ on en desarrollo.
+Plan de contingencia Adaptarse a posibles cambios con la menor repercusi´ on po-
+sible.
+Estado actual Este riesgo ser´ a constante durante todo el tiempo que est´ e
+la aplicaci´ on en uso.
+Cuadro 3.1: Riesgos: R-001
+
+--- PAGE 35 ---
+3.3. Riesgos 19
+ID Riesgo: R-002 Impacto: Medio-Alto
+Descripci´ on Inestabilidad de Anylogic en sistemas MAC OS.
+Probabilidad 40 %
+Contexto Anylogic es bastante inestable en MAC OS.
+Reducci´ on No es posible reducir la probabilidad de que ocurra.
+Plan de contingencia Tener una versi´ on de Anylogic en Windows.
+Estado Este riesgo solo estar´ a presente para usuarios de la aplica-
+ci´ on en sistemas MAC OS.
+Cuadro 3.2: Riesgos: R-002
+ID Riesgo: R-003 Impacto: Medio
+Probabilidad 10 %
+Descripci´ on Escritura de los resultados de aplicar una estrategia a
+Moodle en base de datos.
+Contexto La base de datos se encuentra en un servidor al cual se
+accede con peticiones REST, es posible que el servidor falle
+en alg´ un momento.
+Reducci´ on Esta parte es externa a este proyecto, luego no se puede
+reducir la probabilidad de que ocurra.
+Plan de contingencia Controlar el fallo e informar al usuario y al administrador
+del sistema externo.
+Estado Este riesgo ser´ a constante durante todo el tiempo que est´ e
+la aplicaci´ on en uso.
+Cuadro 3.3: Riesgos: R-003
+
+--- PAGE 36 ---
+20 3. Planiﬁcaci´ on del Proyecto
+ID Riesgo: R-004 Impacto: Medio
+Probabilidad 5 %
+Descripci´ on Ninguna experiencia con simulaci´ on.
+Contexto Nunca antes se hab´ ıa tenido contacto con la simulaci´ on.
+Reducci´ on Tener material disponible para cualquier consulta.
+Plan de contingencia Realizar un buen aprendizaje.
+Estado No est´ a contemplado.
+Cuadro 3.4: Riesgos: R-004
+ID Riesgo: R-005 Impacto: Alto
+Probabilidad 10 %
+Descripci´ on No explotaci´ on de la aplicaci´ on.
+Contexto Si los resultados de la simulaci´ on no se acercan a la realidad
+es posible que la aplicaci´ on no llegue a ser usada.
+Reducci´ on Hacer un buen estudio del comportamiento de los agentes.
+Plan de contingencia Hacer numerosos experimentos para observar los resultados
+e intentar acercarse lo m´ aximo posible a la realidad.
+Estado Este riesgo estar´ a presente durante la explotaci´ on de la
+aplicaci´ on.
+Cuadro 3.5: Riesgos: R-005
+3.4. Distribuci´ on Temporal
+A continuaci´ on, se muestra la distribuci´ on temporal del proyecto. Para ello, se mues-
+tran dos diagramas de Gantt, en el primero se muestra la primera estimaci´ on tem-
+poral realizada [V´ ease en Figura 3.2], y en el segundo la duraci´ on real del proyecto
+[V´ ease en Figura 3.3].
+
+--- PAGE 37 ---
+3.4. Distribuci´ on Temporal 21
+Seg´ un la primera estimaci´ on el proyecto durar´ ıa en total 10 meses aproximadamen-
+te. Esta primera estimaci´ on se hizo teniendo en cuenta la ﬁnalizaci´ on de todas las
+asignaturas del Grado de Ingenier´ ıa Inform´ atica y estimando una dedicaci´ on plena
+a este proyecto.
+Por motivos laborales, la dedicaci´ on al proyecto no ha sido la que se estim´ o en
+primera instancia y, ﬁnalmente, la duraci´ on total del proyecto ha sido de 19 meses,
+aproximadamente. Cabe decir que durante este tiempo no ha habido una dedicaci´ on
+regular, habiendo periodos de m´ as carga de trabajo y otros periodos de menos. En
+el segundo diagrama, es donde podemos ver representada la duraci´ on real de cada
+una de las tareas realizadas para el desarrollo de este proyecto.
+Ambos diagramas se han estructurado de la misma manera, en ellos se pueden ob-
+servar 4 iteraciones, descritas en apartados anteriores, compuestas por la fase de
+an´ alisis, la fase de dise˜ no, la fase de implementaci´ on y la fase de pruebas. Estas ta-
+reas, en algunos casos, se solapan en el tiempo dado que no depend´ ıan unas de otras.
+Tambi´ en hay una tarea de aprendizaje que pr´ acticamente abarca toda la duraci´ on
+del proyecto y, por ´ ultimo, el tiempo dedicado a la documentaci´ on.
+
+--- PAGE 38 ---
+22 3. Planiﬁcaci´ on del Proyecto
+Figura 3.2: Distribuci´ on Temporal Estimada
+
+--- PAGE 39 ---
+3.4. Distribuci´ on Temporal 23
+Figura 3.3: Distribuci´ on Temporal Real
+
+--- PAGE 40 ---
+24 3. Planiﬁcaci´ on del Proyecto
+3.5. Costes
+En este apartado se analizar´ a los costes necesarios para el desarrollo de este proyecto.
+El coste total del proyecto se ha calculado con la siguiente f´ ormula:
+CosteTotal =CostesDirectos +CostesIndirectos
+3.5.1. Costes Directos
+Seg´ un el Diagrama de Gantt expuesto en la Figura 3.3, el proyecto se ha realizado
+en 19 meses. Quitando ﬁnes de semana tenemos un total de 380 d´ ıas, estableciendo
+una media de trabajo de 2 horas/d´ ıa. En total ser´ ıan 760 horas de trabajo.
+Estableciendo una categor´ ıa de Analista-Programador, seg´ un las tablas salariales
+del convenio para las empresas de Tecnolog´ ıas de la Informaci´ on y la Comunicaci´ on,
+publicado en el Bolet´ ın oﬁcial del Estado de abril de 2009 y vigentes a septiembre
+2016[22], el sueldo medio es de 10 euros/hora. Por lo que tenemos un coste:
+CostesDirectos = 760horas × 10euros/hora
+CostesDirectos = 7600 e
+3.5.2. Costes Indirectos
+En este proyecto no ha sido necesario ning´ un coste en material. En lo referente al
+hardware, s´ olo ha sido necesario un port´ atil, propiedad del desarrollador del proyecto.
+Las licencias de casi todo el software utilizado son libres, en el caso de alg´ un software
+sin licencia libre se ha utilizado versiones de prueba, por lo tanto no ha requerido
+coste alguno.
+Respecto a gastos de electricidad, seg´ un los c´ alculos realizados anteriormente se ha
+dedicado a este proyecto 760 horas de trabajo, que equivale aproximadamente a 31
+d´ ıas. Con una media del gasto obtenido en las facturas de electricidad se ha realizado
+un c´ alculo de cuanto habr´ ıa supuesto estos 31 d´ ıas de trabajo. Este gasto asciende
+a 100 e.
+CostesIndirectos = 100 e
+
+--- PAGE 41 ---
+3.6. Precio 25
+3.5.3. Coste Total
+En total tenemos que el coste total del proyecto es:
+CosteTotal = 7600 e + 100 e
+CosteTotal = 7700 e
+3.6. Precio
+El precio ﬁnal de la aplicaci´ on sera la suma de los costes totales, el margen de
+beneﬁcio y el 21 % de IVA que ﬁja la ley en Espa˜ na. Se ha ﬁjado un margen de
+beneﬁcio de 1500 e.
+Precio = 7700 e + 1500 e +IVA
+Precio = 11132 e
+
+--- PAGE 42 ---
+
+
+--- PAGE 43 ---
+Cap´ ıtulo 4
+Estudio del sistema
+Para construir el modelo de un sistema real, es necesario recorrer una serie de etapas
+de modelado. Se comienza haciendo una descripci´ on del sistema real, para ello es
+necesario realizar un estudio de toda la informaci´ on disponible. Entre otras cosas,
+es necesario identiﬁcar cu´ ales ser´ an las entradas y las salidas de nuestro modelo.
+Una vez identiﬁcadas las diferentes partes del sistema real se construye un modelo
+conceptual que contenga todos los elementos que se consideren relevantes del sistema.
+Desde este se pasa a un modelo l´ ogico que contiene las relaciones l´ ogicas entre los
+elementos. Por ´ ultimo se construye el modelo de ordenador (o modelo de simulaci´ on)
+que ejecuta la l´ ogica recogida en la fase anterior.
+4.1. Descripci´ on del sistema
+Actualmente en la Universidad de C´ adiz, se utiliza Moodle como plataforma de
+aprendizaje, un sistema de gesti´ on de cursos, que ayuda a los educadores a crear
+comunidades de aprendizaje en l´ ınea. Este tipo de plataformas tecnol´ ogicas tambi´ en
+se conocen como LCMS (Learning Content Management System).
+Estas herramientas son de gran utilidad en el ´ ambito educativo, ya que permiten a
+los profesores la gesti´ on de cursos virtuales para sus alumnos, o la utilizaci´ on de un
+espacio en l´ ınea que d´ e apoyo.
+A pesar de ser una herramienta muy potente, tiene una principal desventaja. Algunas
+actividades pueden ser un poco mec´ anicas, por lo que puede crear desmotivaci´ on
+entre los alumnos y provocar que el uso de la plataforma no sea el esperado. Con
+el ﬁn de buscar una soluci´ on a este problema, realizamos este caso de estudio, en el
+que se estudiar´ a la posibilidad del uso de t´ ecnicas, elementos y din´ amicas propias
+de los juegos en la plataforma Moodle con el ﬁn de potenciar la motivaci´ on de los
+alumnos para su uso.
+27
+
+--- PAGE 44 ---
+28 4. Estudio del sistema
+4.2. Formulaci´ on del problema
+En este apartado se va a deﬁnir de forma detallada los objetivos, las restricciones y
+las variables que se van a utilizar para deﬁnir el modelo de simulaci´ on.
+El modelo a dise˜ nar debe de ser capaz de simular el proceso por el cual un alumno
+va realizando una secuencia de actividades, dise˜ nadas por el profesor. Para ello el
+profesor introduce una serie de par´ ametros de entrada al modelo, estos par´ ametros
+determinar´ an el comportamiento de los alumnos en la simulaci´ on.
+Para la modelado del sistema, se utilizar´ a el modelado basado en agentes. Este tipo
+de modelos se componen principalmente de una poblaci´ on de agentes y de una serie
+de estados por el cual pasar´ an los agentes. A continuaci´ on se describir´ a los elementos
+que componen este sistema:
+Agente
+El modelo tendr´ a una poblaci´ on de agentes que representar´ a a los alumnos parti-
+cipantes del curso. Cada agente representa a un alumno, que tendr´ a un comporta-
+miento propio dentro del sistema dependiendo de una serie de par´ ametros. Se ha
+decidido que cada agente tenga una variable que represente la motivaci´ on de este
+y que dependiendo de esta el alumno tenga un comportamiento u otro dentro del
+sistema.
+Estados
+Los agentes de este modelo pasar´ an por una serie de estados [V´ ease en Figura 4.1].
+Estos estados representan la secuencia de actividades dise˜ nadas por el profesor para
+la estrategia de gamiﬁcaci´ on. Cuando un agente se encuentra en un determinado
+estado, se entender´ a que se encuentra realizando la actividad que este estado repre-
+senta.
+Figura 4.1: Ejemplo Estados
+Cuando el agente se encuentra en el Estado C, signiﬁca que esta realizando la acti-
+vidad que este estado representa, y que ha superado con ´ exito las actividades que
+representan el Estado A y el Estado B.
+Como uno de los principales objetivos es aplicar el concepto de gamiﬁcaci´ on, es muy
+importante que tras la ﬁnalizaci´ on con ´ exito de una actividad el alumno reciba una
+recompensa, para as´ ı premiar el esfuerzo realizado y reforzar su motivaci´ on de cara
+
+--- PAGE 45 ---
+4.2. Formulaci´ on del problema 29
+a la superaci´ on de pr´ oximas tareas. Es por eso, que cada actividad llevar´ a asignada
+una serie de recompensas o premios, que se le conceder´ an a aquellos alumnos que la
+superen con ´ exito.
+Nuestro modelo contar´ a con los siguientes tipos de recompensas :
+Puntos, representa la recompensa con menor valor y se puede asignar cuando
+el alumnos realiza una actividad que no requiere de gran esfuerzo.
+Puntos de experiencia, estos se s´ olo se obtienen cuando un usuario ha com-
+pletado una subsecuencia de la estrategia.
+Puntos de Level-up , al igual, que antes, s´ olo se pueden asignar cuando se
+ha completado una subsecuencia de la estrategia, y signiﬁcar´ ıa subir de nivel.
+Badges, representa una medalla. Este tipo de recompensa tiene un alto valor
+y puede ser utilizado en actividades que tengan un gran peso en el transcurso
+de la estrategia: ex´ amenes, trabajos ﬁnales, practicas, etc.
+Random, si el dise˜ nador de la estrategia elige esta opci´ on, indica que alea-
+toriamente se asignar´ a una recompensa que ´ el puede elegir. Esta recompensa
+deber´ ıa de ser de bajo nivel como por ejemplo puntos.
+Puntos First-time, el dise˜ nador podr´ a elegir esta recompensa si desea que
+tras realizar una determinada actividad por primera vez el usuario reciba una
+recompensa.
+Transiciones
+Las transiciones son la comunicaci´ on entre estados. En nuestro modelo tienen una
+gran importancia ya que son las encargadas de evaluar si un alumno ha realizado
+una actividad con ´ exito o no. Esta condici´ on de guarda que eval´ ua si el alumno
+pasa al siguiente estado o no viene determinada por una probabilidad de ´ exito p,
+determinada por una tabla que describiremos m´ as adelante. Donde la probabilidad
+de que el alumno no tenga ´ exito es1 - p .
+En nuestro modelo la transici´ on de un estado a otro es de tipo temporal, es decir, una
+vez que el agente supera la condici´ on de guarda, lo ´ unico que le separa del siguiente
+estado es el tiempo. Este tiempo representa el empleado en realizar la actividad.
+En nuestro modelo la unidad de tiempo establecida es la hora, por lo que cualquier
+unidad de tiempo cuantiﬁca el n´ umero de horas.
+4.2.1. Objetivos
+Los principales objetivos de este modelo de simulaci´ on son los siguientes:
+Estudiar el posible comportamiento de los alumnos ante una posible gamiﬁca-
+ci´ on de un curso en la plataforma Moodle.
+Realizar un estudio de las actividades m´ as propensas a ser abandonadas por
+
+--- PAGE 46 ---
+30 4. Estudio del sistema
+el alumno, es decir que no se completen con ´ exito.
+Obtener un balance general del tiempo medio empleado por los alumnos en las
+distintas actividades.
+Ver los logros conseguidos por los participantes del curso.
+4.2.2. Variables
+Para deﬁnir el modelo del sistema es necesario identiﬁcar las variables que puedan
+representar el funcionamiento del sistema real.
+Par´ ametros de entrada
+Nombre Descripci´ on
+N´ umero de alumnos N´ umero de alumnos que participar´ an en la
+simulaci´ on.
+Motivaci´ on Motivaci´ on que tendr´ an los alumnos.
+Duraci´ on Duraci´ on m´ axima de la simulaci´ on.
+Distribuci´ on La distribuci´ on que van a seguir los rangos
+de valores utilizados en la representaci´ on de
+la motivaci´ on y de la diﬁcultad de las activi-
+dades.
+Diﬁcultad El tipo de diﬁcultad que se le asignar´ a a cada
+actividad.
+Tasa de ´ exito Es la probabilidad de que un alumno realice
+las actividades con ´ exito.
+Cuadro 4.1: Par´ ametros de entrada al modelo
+Valores de los par´ ametros de entrada
+A continuaci´ on se describir´ an los valores que pueden tener los par´ ametros que apa-
+recen en el Cuadro 4.1.
+N´ umero de alumnos, este par´ ametro ser´ a un n´ umero entero mayor que 0.
+Distribuci´ on, algunos de los par´ ametros de entrada son conceptuales, como
+por ejemplo la diﬁcultad de las actividades o la motivaci´ on de los alumnos cuyo
+valor puede ser baja, media o alta. Detr´ as de estos conceptos hay unos valores
+num´ ericos para poder realizar el modelo. Para que el modelo tenga una cierta
+
+--- PAGE 47 ---
+4.2. Formulaci´ on del problema 31
+ﬂexibilidad asignamos a cada concepto un rango de valores que son asignados
+aleatoriamente, as´ ı por ejemplo todos los alumnos con motivaci´ on baja no
+tienen en su variable motivaci´ on el mismo valor. Este par´ ametro distribuci´ on
+establece c´ omo se van a distribuir los valores del rango. Para ello el usuario
+puede elegir entre tres opciones:
+• Distribuci´ on uniforme : El rango se distribuye de manera equitativa [V´ ease
+en Cuadro 4.2].
+Tipo Valor
+baja 1 a 10
+media 11 a 20
+alta 21 a 30
+Cuadro 4.2: Distribuci´ on uniforme
+• Distribuci´ on extremos mayores : El rango se distribuye de manera que
+rangos de los extremos (baja y alta) son mayores. Esto signiﬁca que puede
+haber alumnos con motivaci´ on baja o alta y que la diferencia del valor
+de su motivaci´ on sea notoria. Sin embargo, los alumnos con motivaci´ on
+media tendr´ an entre ellos valores m´ as cercanos [V´ ease en Cuadro 4.3].
+Tipo Valor
+baja 1 a 11
+media 12 a 19
+alta 20 a 30
+Cuadro 4.3: Distribuci´ on extremos mayores
+• Distribuci´ on extremos menores : El rango se distribuye de manera que
+rangos de los extremos (baja y alta) son menores. Es lo contrario al an-
+terior. Esto signiﬁca que puede haber alumnos con motivaci´ on media y
+que la diferencia del valor de su motivaci´ on sea signiﬁcativa. Sin embargo,
+los alumnos con motivaci´ on baja o alta tendr´ an entre ellos valores m´ as
+cercanos [V´ ease en Cuadro 4.4].
+
+--- PAGE 48 ---
+32 4. Estudio del sistema
+Tipo Valor
+baja 1 a 7
+media 8 a 23
+alta 24 a 30
+Cuadro 4.4: Distribuci´ on extremos menores
+Motivaci´ on, este par´ ametro esta subdividido en tres par´ ametros : motivaci´ on
+baja, motivaci´ on media y motivaci´ on alta. Cada uno de estos tres par´ ametros
+representan el porcentaje de alumnos que tienen una determinada motivaci´ on.
+El valor ser´ a un n´ umero entero, entre 0 y 100. La suma de los tres par´ ametros
+debe de ser 100 ya que todos los alumnos deben tener asignada una motivaci´ on.
+Finalmente el alumno tendr´ a una motivaci´ on cuyo valor depender´ a de si es alta,
+baja o media y de la distribuci´ on elegida por el usuario.
+Diﬁcultad de las actividades, cada actividad tendr´ a asignada una diﬁcultad
+que podr´ a ser baja, media o alta. Esta variable tendr´ a un valor que depender´ a
+de si es alta, baja o media y de la distribuci´ on elegida por el usuario.
+Duraci´ on, este par´ ametro puede tener 3 valores diferentes: duraci´ on mensual,
+duraci´ on cuatrimestral o duraci´ on anual. Correspondiente con el tiempo que
+el usuario desea simular.
+Tasa de ´ exito, esta variable es la que determina la capacidad de un alumno
+de realizar las actividades. Viene determinada por una tabla en un archivo
+Excel. Este archivo lo cargar´ a el usuario en la aplicaci´ on. Se ha elegido un
+archivo Excel para que el usuario pueda conﬁgurar los valores de ´ exito para
+los alumnos, seg´ un sean sus intereses.
+El alumno, dependiendo de su motivaci´ on y de la diﬁcultad de de la tarea que
+est´ e realizando, recibir´ a una probabilidad de ´ exito que ser´ a la que determinar´ a
+si realiza la actividad con ´ exito o no.
+Como se puede observar en el Cuadro 4.5, se ha dado mayor peso a la motiva-
+ci´ on del alumno, ya que seg´ un la experiencia obtenida como estudiante pienso
+que un alumno motivado est´ a m´ as capacitado para realizar actividades con
+independencia de su diﬁcultad.
+El usuario de la aplicaci´ on puede modiﬁcar la columna probabilidad de ´ exito
+para asignar los valores que crea oportunos.
+
+--- PAGE 49 ---
+4.2. Formulaci´ on del problema 33
+Motivaci´ onDiﬁcultad de la actividad Probabilidad de ´ exito
+Alta Baja 100 %
+Alta Media 90 %
+Alta Alta 80 %
+Media Baja 70 %
+Media Media 55 %
+Media Alta 40 %
+Baja Baja 30 %
+Baja Media 20 %
+Baja Alta 10 %
+Cuadro 4.5: Tabla de tasa de ´ exito
+4.2.3. F´ ormulas
+A continuaci´ on, mostramos las f´ ormulas utilizadas para el funcionamiento del modelo
+de simulaci´ on:
+Tiempo empleado en realizar una actividad
+Dif icultadActividad
+M otivacinAlumno ×α,α ≡ n´ umero aleatorio del rango [0,1)
+4.2.4. Datos de salida
+El modelo de simulaci´ on genera los siguientes resultados:
+Gr´ aﬁca de abandonos
+Esta gr´ aﬁca, es un histograma, que contiene el n´ umero de alumnos que han aban-
+donado la estrategia en cada actividad.
+Gr´ aﬁca de tiempos
+Esta gr´ aﬁca, es un histograma, que contiene el tiempo medio empleado por los
+alumnos en realizar cada actividad.
+
+--- PAGE 50 ---
+34 4. Estudio del sistema
+Gr´ aﬁca de premios
+Esta gr´ aﬁco de sectores, contiene la cantidad de puntos, badges, puntos de ﬁrst-time
+y puntos de experiencia que han conseguido los alumnos al terminar la estrategia.
+Gr´ aﬁca de niveles
+Esta gr´ aﬁco de sectores, contiene la cantidad de alumnos que han terminado la
+estrategia en cada nivel. Hay 10 niveles diferentes.
+Por ´ ultimo tambi´ en se indica el n´ umero de alumnos que han completado la estrategia
+con ´ exito.
+4.3. An´ alisis y validaci´ on del modelo
+Tras el modelado del problema, se ha realizado una bater´ ıa de ejecuciones del modelo.
+Esto ha permitido realizar un an´ alisis para determinar si el modelo generado es
+v´ alido.
+La validez del modelo se ha evaluado comprobando que ´ este se comporta de la
+manera esperada dependiendo de los par´ ametros introducidos por el usuario.
+4.3.1. An´ alisis
+A continuaci´ on, se describen las distintas simulaciones realizadas para la validaci´ on
+del modelo. Los datos descritos en las gr´ aﬁcas son datos promedios resultantes de
+realizar 10 simulaciones de cada tipo.
+Escenario A
+Datos:
+Poblaci´ on : 50 alumnos
+Alumnos con motivaci´ on baja : 10 %
+Alumnos con motivaci´ on media : 10 %
+Alumnos con motivaci´ on alta : 80 %
+Diﬁcultad Actividad 1 : baja
+Diﬁcultad Actividad 2 : media
+Diﬁcultad Actividad 3 : alta
+Resultados:
+
+--- PAGE 51 ---
+4.3. An´ alisis y validaci´ on del modelo 35
+Figura 4.2: Resultados Simulaci´ on A
+De las resultados mostrados en las gr´ aﬁcas [V´ ease en Figura 4.2], se puede extraer
+las siguientes conclusiones:
+El tiempo empleado en cada actividad est´ a directamente relacionado con la
+diﬁcultad de esta.
+El alto porcentaje de alumnos con motivaci´ on alta ha provocado que un gran
+n´ umero de alumnos completen la estrategia con ´ exito.
+Los abandonos producidos en cada actividad est´ an relacionados con la diﬁcul-
+tad de las actividades, aunque se puede observar que los resultados han sido
+mas equitativos que en la gr´ aﬁca de tiempos.
+Escenario B
+Datos:
+Poblaci´ on : 50 alumnos
+Alumnos con motivaci´ on baja : 10 %
+Alumnos con motivaci´ on media : 80 %
+Alumnos con motivaci´ on alta : 10 %
+Diﬁcultad Actividad 1 : baja
+Diﬁcultad Actividad 2 : media
+Diﬁcultad Actividad 3 : alta
+
+--- PAGE 52 ---
+36 4. Estudio del sistema
+Resultados:
+Figura 4.3: Resultados Simulaci´ on B
+De las resultados mostrados en las gr´ aﬁcas [V´ ease en Figura 4.3], se puede extraer
+las siguientes conclusiones:
+El tiempo empleado en cada actividad sigue estando directamente relacionado
+con la diﬁcultad de cada una.
+El bajo porcentaje de alumnos con motivaci´ on alta ha provocado que un gran
+n´ umero de alumnos no completen la estrategia con ´ exito.
+Los abandonos producidos en cada actividad est´ an muy parejos, adem´ as son
+mucho mas altos que en la ejecuci´ on anterior. De esto se puede deducir como
+conclusi´ on que los abandonos est´ an muy relacionados con la motivaci´ on de los
+alumnos aparte de estarlo con la diﬁcultad de las actividades.
+Escenario C
+Datos:
+Poblaci´ on : 50 alumnos
+Alumnos con motivaci´ on baja : 80 %
+Alumnos con motivaci´ on media : 10 %
+
+--- PAGE 53 ---
+4.3. An´ alisis y validaci´ on del modelo 37
+Alumnos con motivaci´ on alta : 10 %
+Diﬁcultad Actividad 1 : baja
+Diﬁcultad Actividad 2 : media
+Diﬁcultad Actividad 3 : alta
+Resultados:
+Figura 4.4: Resultados Simulaci´ on C
+De las resultados mostrados en las gr´ aﬁcas [V´ ease en Figura 4.4], se puede extraer
+las siguientes conclusiones:
+El tiempo empleado en cada actividad sigue estando directamente relacionado
+con la diﬁcultad de cada una.
+El alto porcentaje de alumnos con motivaci´ on baja ha provocado que un gran
+n´ umero de alumnos no completen la estrategia con ´ exito, y adem´ as abandonen
+la estrategia en la primera actividad.
+La motivaci´ on de los alumnos tiene m´ as peso que la diﬁcultad de las activida-
+des a la hora de su resoluci´ on o no.
+Conclusiones
+Despu´ es de observar los resultados del experimento, se valida que se cumple el com-
+portamiento esperado de los alumnos. Para ello, el modelo de simulaci´ on cumple los
+siguientes requisitos:
+
+--- PAGE 54 ---
+38 4. Estudio del sistema
+El tiempo empleado en realizar las actividades depende directamente de la
+diﬁcultad de ´ estas. Este comportamiento era uno de los objetivos principales
+ya que se acerca bastante a la vida real.
+Los abandonos se gu´ ıan por la tasa de ´ exito [V´ ease en Cuadro 4.5]. La idea es
+que un alumno realizase con ´ exito o no una actividad dependiendo de la tasa
+o porcentaje de ´ exito que reciba. Este porcentaje viene asignado en el Cuadro
+4.5 y ser´ a el que el usuario crea conveniente.
+El ´ exito de un alumno depende de su motivaci´ on y de la diﬁcultad de la acti-
+vidad a realizar, aqu´ ı destacamos que se ha dado m´ as peso o importancia a la
+motivaci´ on del alumno que a la diﬁcultad de las actividades, ya que en el mun-
+do real la motivaci´ on tiene m´ as fuerza que las diﬁcultades que nos podamos
+encontrar.
+
+--- PAGE 55 ---
+Cap´ ıtulo 5
+An´ alisis del Sistema
+En este cap´ ıtulo, se describir´ an todas las actividades de an´ alisis realizadas durante
+todas las iteraciones del proyecto, an´ alisis del sistema, los requisitos de informaci´ on,
+funcionales y no funcionales, el cat´ alogo de actores, los diagramas de casos de uso,
+la especiﬁcaci´ on de cada caso de uso, diagramas de secuencia y reglas de negocio.
+Tambi´ en se hablar´ a sobre el estudio de alternativas tecnol´ ogicas.
+5.1. Requisitos de informaci´ on
+A continuaci´ on, en los Cuadros 5.1, 5.2, 5.3, 5.4, 5.5, 5.6 y 5.7 se describen los
+requisitos de informaci´ on.
+IRQ-001 PremioWS
+Descripci´ on Representa los premios que se compartir´ an
+en SmartWeb
+Atributos
+Nombre Tipo Descripci´ on
+nombre Texto Nombre del premio
+valor Num´ erico Valor del premio
+descripci´ on Texto Descripci´ on del premio
+Cuadro 5.1: Requisitos de Informaci´ on: IRQ-001
+39
+
+--- PAGE 56 ---
+40 5. An´ alisis del Sistema
+IRQ-002 Premio
+Descripci´ on Representa los premios asignados a las acti-
+vidades de la estrategia.
+Atributos
+Nombre Tipo Descripci´ on
+id Texto Identiﬁcador del premio
+valor Texto Valor del Premio
+criterio Texto Criterio para asignar el premio.
+Cuadro 5.2: Requisitos de Informaci´ on: IRQ-002
+IRQ-003 Criterio
+Descripci´ on Representa una toma de decisi´ on mediante
+un criterio
+Atributos
+Nombre Tipo Descripci´ on
+criterioID Texto Identiﬁcador del criterio
+criterioValue Texto Valor para este criterio
+targetActivityId Texto Actividad destino
+Cuadro 5.3: Requisitos de Informaci´ on: IRQ-003
+
+--- PAGE 57 ---
+5.1. Requisitos de informaci´ on 41
+IRQ-004 Coordenada
+Descripci´ on Representa una coordenada
+Atributos
+Nombre Tipo Descripci´ on
+x Texto Valor para coordenada x
+y Texto Valor para coordenada y
+Cuadro 5.4: Requisitos de Informaci´ on: IRQ-004
+IRQ-005 Actividad
+Descripci´ on Representa una actividad de la estrategia
+Atributos
+Nombre Tipo Descripci´ on
+activityTypeId Texto Id de la actividad
+activityTitle Texto Nombre de la actividad
+hijo Texto Id de la actividad hija de esta
+diﬁcultad Num´ erico diﬁcultad de la actividad
+criterios Lista Criterios asignados a esta actividad
+premios Lista Premios asignados a esta actividad
+x Texto Valor para coordenada x
+y Texto Valor para coordenada y
+Cuadro 5.5: Requisitos de Informaci´ on: IRQ-005
+
+--- PAGE 58 ---
+42 5. An´ alisis del Sistema
+IRQ-006 Estudiante
+Descripci´ on Representa a un estudiante del curso
+Atributos
+Nombre Tipo Descripci´ on
+id Texto Identiﬁcador del estudiante en BD
+nif Texto NIF del estudiante
+username Texto Nombre de usuario de Moodle
+badges Num´ erico N´ umero de medallas
+ﬁrst Num´ erico N´ umero de puntos First-Time
+points Num´ erico N´ umero de puntos
+xp Num´ erico N´ umero de puntos de Experiencia
+level Num´ erico Nivel del alumno
+Cuadro 5.6: Requisitos de Informaci´ on: IRQ-006
+
+--- PAGE 59 ---
+5.2. Requisitos funcionales 43
+IRQ-007 Estrategia
+Descripci´ on Estrategia de gamiﬁcaci´ on.
+Atributos
+Nombre Tipo Descripci´ on
+strategyId Cadena Identiﬁcador de la estrategia
+userId Cadena Usuario que cre´ o la estrategia
+strategyTitle Cadena Nombre de la estrategia
+courseId Cadena Identiﬁcador del curso
+nAlumnos Cadena N´ umero de alumnos para la simulaci´ on
+motivacionBaja Num´ erico Porcentaje de alumnos con la motivaci´ on ba-
+ja
+motivacionMedia Num´ erico Porcentaje de alumnos con la motivaci´ on me-
+dia
+motivacionAlta Num´ erico Porcentaje de alumnos con la motivaci´ on alta
+distribucion Num´ erico Indica que tipo de distribuci´ on tiene la simu-
+laci´ on
+duracion Cadena Duraci´ on de la simulaci´ on
+rutaExcel Cadena Ruta del Excel con la tasa de ´ exito
+actividades Lista Actividades de la estrategia
+Cuadro 5.7: Requisitos de Informaci´ on: IRQ-007
+5.2. Requisitos funcionales
+En este apartado se deﬁnen los requisitos funcionales, que describen las distintas
+funcionalidades que el sistema ser´ a capaz de realizar. V´ ease en Cuadros 5.8, 5.9,
+5.10, 5.11, 5.12 y 5.13.
+
+--- PAGE 60 ---
+44 5. An´ alisis del Sistema
+C´ odigo FRQ-001
+Nombre Abrir Estrategias
+Descripci´ on El usuario podr´ a acceder a las estrategias almacenadas en
+un archivo XML.
+Iteraci´ on Iteraci´ on 1
+Trazabilidad SUBOBJ-002, SUBOBJ-003, SUBOBJ-004
+Cuadro 5.8: Requisitos Funcionales: FRQ-001
+C´ odigo FRQ-002
+Nombre Cerrar Estrategias
+Descripci´ on El usuario podr´ a cerrar las estrategias de gamiﬁcaci´ on
+abiertas con anterioridad.
+Iteraci´ on Iteraci´ on 1
+Trazabilidad -
+Cuadro 5.9: Requisitos Funcionales: FRQ-002
+C´ odigo FRQ-003
+Nombre Generar Archivo de Simulaci´ on
+Descripci´ on El usuario podr´ a generar un archivo de simulaci´ on.
+Iteraci´ on Iteraci´ on 2
+Trazabilidad SUBOBJ-002
+Cuadro 5.10: Requisitos Funcionales: FRQ-003
+
+--- PAGE 61 ---
+5.2. Requisitos funcionales 45
+C´ odigo FRQ-004
+Nombre Abrir archivo de simulaci´ on en Anylogic
+Descripci´ on El usuario podr´ a abrir el archivo generado en Anylogic de
+manera autom´ atica desde la aplicaci´ on.
+Iteraci´ on Iteraci´ on 2
+Trazabilidad SUBOBJ-002
+Cuadro 5.11: Requisitos Funcionales: FRQ-004
+C´ odigo FRQ-005
+Nombre Aplicar Estrategia a Moodle
+Descripci´ on El usuario podr´ a aplicar las estrategias de gamiﬁcaci´ on en
+Moodle.
+Iteraci´ on Iteraci´ on 3
+Trazabilidad SUBOBJ-003
+Cuadro 5.12: Requisitos Funcionales: FRQ-005
+C´ odigo FRQ-006
+Nombre Compartir resultados en la red social SmartWeb
+Descripci´ on El usuario podr´ a compartir los resultados obtenidos de apli-
+car la estrategia de gamiﬁcaci´ on en base de datos.
+Iteraci´ on Iteraci´ on 3
+Trazabilidad SUBOBJ-003, SUBOBJ-004
+Cuadro 5.13: Requisitos Funcionales: FRQ-006
+
+--- PAGE 62 ---
+46 5. An´ alisis del Sistema
+5.2.1. Cat´ alogo de Actores
+A continuaci´ on, se especiﬁca el cat´ alogo de actores de la aplicaci´ on. En este caso,
+s´ olo hay un tipo de actor que ser´ a cualquier usuario de la aplicaci´ on [Cuadro 5.14].
+C´ odigo ACT-001
+Nombre Usuarios
+Descripci´ on Todos los usuarios de la aplicaci´ on.
+Cuadro 5.14: Cat´ alogo de Actores: ACT-001
+5.2.2. Diagramas de Casos de Uso
+En la Figura 5.1 se describe el diagrama de casos de usos.
+Figura 5.1: Diagrama Casos de Uso
+5.2.3. Especiﬁcaci´ on de Casos de Uso
+A continuaci´ on, en los Cuadros 5.15, 5.16, 5.17, 5.18, 5.19 y 5.20 se especiﬁcar´ an los
+diferentes casos de uso del sistema.
+
+--- PAGE 63 ---
+5.2. Requisitos funcionales 47
+C´ odigo CU-001
+Nombre Abrir Estrategias
+Dependencia FRQ-001
+Descripci´ on El usuario abrir´ a el archivo XML que contiene las distintas
+estrategias.
+Precondici´ on -
+Postcondici´ onSe muestran las distintas estrategias.
+Secuencia Normal
+Paso Acci´ on
+1 El usuario pulsa el bot´ on Open.
+2 La aplicaci´ on muestra una pantalla para que el usuario se-
+leccione el archivo a abrir.
+3 El usuario selecciona el archivo.
+4 la aplicaci´ on abre el ﬁchero y lee el contenido con las es-
+trategias almacenadas.
+5 La aplicaci´ on muestra en la secci´ on Strategies las distintas
+estrategias cargadas.
+Excepciones
+Paso Acci´ on
+3 El usuario selecciona un archivo no compatible con la apli-
+caci´ on.
+4 La aplicaci´ on muestra un mensaje de error y termina el
+caso de uso.
+Cuadro 5.15: Casos de Uso: CU-001
+
+--- PAGE 64 ---
+48 5. An´ alisis del Sistema
+C´ odigo CU-002
+Nombre Cerrar Estrategias
+Dependencia FRQ-002
+Descripci´ on El usuario podr´ a cerrar las estrategias cargadas en la apli-
+caci´ on.
+Precondici´ on Se ha realizado CU-001.
+Postcondici´ onLa secci´ on Strategies aparece vac´ ıa.
+Secuencia Normal
+Paso Acci´ on
+1 El usuario pulsa el bot´ on Close.
+2 La aplicaci´ on muestra una ventana de conﬁrmaci´ on.
+3 El usuario conﬁrma la acci´ on.
+4 La aplicaci´ on cierra las estrategias que estaban abiertas.
+Excepciones
+Paso Acci´ on
+3 El usuario cancela la acci´ on y termina el caso de uso.
+Cuadro 5.16: Casos de Uso: CU-002
+
+--- PAGE 65 ---
+5.2. Requisitos funcionales 49
+C´ odigo CU-003
+Nombre Generar archivo de simulaci´ on
+Dependencia FRQ-003
+Descripci´ on El usuario generar´ a un archivo de simulaci´ on ejecutable en
+Anylogic.
+Precondici´ on Se ha realizado CU-001.
+Postcondici´ onSe genera el archivo y se vac´ ıa el formulario.
+Secuencia Normal
+Paso Acci´ on
+1 El usuario selecciona una estrategia.
+2 El usuario pulsa el bot´ on Simulation.
+3 La aplicaci´ on muestra una pantalla con un formulario.
+4 El usuario rellena el formulario y pulsa el bot´ on Generate.
+5 La aplicaci´ on muestra una pantalla para que el usuario elija
+d´ onde guardar el nuevo archivo.
+6 El usuario selecciona d´ onde guardar y guarda.
+7 Se guarda el archivo generado.
+8 La aplicaci´ on muestra un mensaje de que la acci´ on se ha
+realizado correctamente.
+Excepciones
+Paso Acci´ on
+8 La aplicaci´ on muestra un mensaje de error porque el archi-
+vo no se ha generado correctamente.
+Cuadro 5.17: Casos de Uso: CU-003
+
+--- PAGE 66 ---
+50 5. An´ alisis del Sistema
+C´ odigo CU-004
+Nombre Abrir archivo de simulaci´ on en Anylogic
+Dependencia FRQ-004
+Descripci´ on El usuario abre el archivo generado por la aplicaci´ on en
+Anylogic.
+Precondici´ on Se ha realizado CU-003.
+Postcondici´ onSe abre el archivo generado en Anylogic.
+Secuencia Normal
+Paso Acci´ on
+1 El usuario pulsa el bot´ on Run Anylogic.
+2 Se abre Anylogic con el modelo de simulaci´ on generado
+para la estrategia seleccionada por el usuario.
+Excepciones
+Paso Acci´ on
+2 La aplicaci´ on muestra un mensaje de error porque no se ha
+podido abrir Anylogic.
+Cuadro 5.18: Casos de Uso: CU-004
+
+--- PAGE 67 ---
+5.2. Requisitos funcionales 51
+C´ odigo CU-005
+Nombre Aplicar estrategia a Moodle
+Dependencia FRQ-005
+Descripci´ on El usuario aplica a Moodle la estrategia seleccionada.
+Precondici´ on Se ha realizado CU-001.
+Postcondici´ onSe muestran los resultados.
+Secuencia Normal
+Paso Acci´ on
+1 El usuario selecciona una estrategia.
+2 El usuario pulsa el bot´ on Moodle
+3 La aplicaci´ on muestra la pantalla correspondiente a esta
+opci´ on.
+4 El usuario pulsa el bot´ on Apply to Moodle
+5 La aplicaci´ on consulta la base de datos de Moodle para
+obtener los datos necesarios para aplicar la estrategia.
+6 La aplicaci´ on muestra los resultados obtenidos.
+Excepciones
+Paso Acci´ on
+6 La aplicaci´ on muestra un mensaje de error porque ha ha-
+bido alg´ un problema para conectar con Moodle y termina
+el caso de uso.
+Cuadro 5.19: Casos de Uso: CU-005
+
+--- PAGE 68 ---
+52 5. An´ alisis del Sistema
+C´ odigo CU-006
+Nombre Compartir resultados en la red social SmartWeb
+Dependencia FRQ-006
+Descripci´ on El usuario comparte en la red social SmartWeb los resul-
+tados de aplicar la estrategia a Moodle.
+Precondici´ on Se he realizado CU-004.
+Postcondici´ onSe guardan los datos.
+Secuencia Normal
+Paso Acci´ on
+1 El usuario pulsa el bot´ on Share
+2 La aplicaci´ on mediante servicios web se comunica con
+SmartWeb para compartir los resultados.
+3 La aplicaci´ on muestra un mensaje de que la operaci´ on se
+ha realizado con ´ exito.
+Excepciones
+Paso Acci´ on
+3 La aplicaci´ on muestra un mensaje de error porque no se ha
+podido realizar la operaci´ on y termina el caso de uso.
+Cuadro 5.20: Casos de Uso: CU-006
+
+--- PAGE 69 ---
+5.2. Requisitos funcionales 53
+5.2.4. Diagramas de Secuencia
+En esta secci´ on se muestran los diagramas de secuencia de los casos de uso de
+la aplicaci´ on: Abrir estrategias [V´ ease en Figura 5.2], cerrar estrategias [V´ ease en
+Figura 5.3], generar archivo de simulaci´ on [V´ ease en Figura 5.5], ejecutar simulaci´ on
+en Anylogic [V´ ease en Figura 5.4], aplicar estrategia a Moodle [V´ ease en Figura 5.6]
+y Compartir los resultados en SmartWeb [V´ ease en Figura 5.7].
+Figura 5.2: Diagrama de Secuencia CU-001
+Figura 5.3: Diagrama de Secuencia CU-002
+Figura 5.4: Diagrama de Secuencia CU-004
+
+--- PAGE 70 ---
+54 5. An´ alisis del Sistema
+Figura 5.5: Diagrama de Secuencia CU-003
+
+--- PAGE 71 ---
+5.2. Requisitos funcionales 55
+Figura 5.6: Diagrama de Secuencia CU-005
+
+--- PAGE 72 ---
+56 5. An´ alisis del Sistema
+Figura 5.7: Diagrama de Secuencia CU-006
+
+--- PAGE 73 ---
+5.3. Requisitos no funcionales 57
+5.3. Requisitos no funcionales
+A continuaci´ on, en los Cuadros 5.21, 5.22, 5.23, 5.24, 5.25 y 5.27 se describen los
+requisitos no funcionales.
+C´ odigo NRQ-001
+Nombre Entorno
+Descripci´ on La aplicaci´ on debe funcionar en el sistema operativo Win-
+dows y Mac OS.
+Cuadro 5.21: Requisitos no Funcionales: NRQ-001
+C´ odigo NRQ-002
+Nombre Idioma
+Descripci´ on El contenido de la aplicaci´ on debe estar en ingl´ es.
+Cuadro 5.22: Requisitos no Funcionales: NRQ-002
+C´ odigo NRQ-003
+Nombre Usabilidad
+Descripci´ on Facilidad de aprendizaje y de uso.
+Cuadro 5.23: Requisitos no Funcionales: NRQ-003
+C´ odigo NRQ-004
+Nombre Compatibilidad
+Descripci´ on El archivo de simulaci´ on generado debe ser ejecutable en
+la aplicaci´ on Anylogic.
+Cuadro 5.24: Requisitos no Funcionales: NRQ-004
+
+--- PAGE 74 ---
+58 5. An´ alisis del Sistema
+C´ odigo NRQ-005
+Nombre Rendimiento
+Descripci´ on A aplicaci´ on debe tener unos tiempos de respuesta lo m´ as
+bajo posibles.
+Cuadro 5.25: Requisitos no Funcionales: NRQ-005
+C´ odigo NRQ-006
+Nombre Mantenibilidad
+Descripci´ on La aplicaci´ on debe ofrecer facilidad de mantenimiento, y
+facilidad de actualizaci´ on hacia versiones m´ as modernas.
+Cuadro 5.26: Requisitos no Funcionales: NRQ-006
+5.4. Reglas de negocio
+Este apartado se describir´ an las restricciones y reglas de negocio de la aplicaci´ on.
+Algunas de las restricciones que se describen a continuaci´ on se deben a limitacio-
+nes de algunos de los sistemas en uso, otras son simples reglas establecidas por el
+desarrollador relacionadas con la l´ ogica del sistema.
+Una estrategia no puede contener mas de 24 actividades, esta restricci´ on se
+debe a una limitaci´ on de Anylogic. Al ejecutar el archivo de simulaci´ on en
+Anylogic se abre una pantalla con un espacio determinado, en esta pantalla
+solo cabe un determinado n´ umero de componentes. La cantidad elegida es
+la justa para que la interfaz no resulte sobrecargada y provoque problemas de
+solapamientos de componentes. Esta restricci´ on es controlada por la aplicaci´ on.
+El n´ umero de alumnos que participar´ an en la simulaci´ on es introducido por
+el usuario. Deber´ a ser un n´ umero entero mayor que 0. Esta restricci´ on es
+controlada por la aplicaci´ on.
+Los porcentajes de alumnos con las distintas motivaciones son introducidos
+por el usuario. Deber´ an ser n´ umeros enteros entre 0 y 100. Esta restricci´ on es
+controlada por la aplicaci´ on.
+La suma de los tres porcentajes debe ser 100. Esta restricci´ on es controlada
+por la aplicaci´ on.
+En la pantalla de simulaci´ on es obligatorio rellenar todos los campos para
+poder generar el archivo correspondiente. Esta restricci´ on es controlada por la
+
+--- PAGE 75 ---
+5.5. Estudio de alternativas tecnol´ ogicas 59
+aplicaci´ on.
+Es necesario tener instalado el programa Anylogic en su versi´ on PLE, para
+poder ejecutar el archivo de simulaci´ on.
+SmartWeb debe estar activo y disponible en el servidor.
+5.5. Estudio de alternativas tecnol´ ogicas
+En este apartado de describir´ an las distintas alternativas tecnol´ ogicas para el desa-
+rrollo de esta aplicaci´ on.
+Lenguaje de Programaci´ on
+Dada la diﬁcultad de la parte de simulaci´ on, se decidi´ o utilizar un lenguaje de pro-
+gramaci´ on conocido por parte del desarrollador, esto permitir´ ıa un gran ahorro de
+tiempo. El lenguaje elegido fue Java. Con este lenguaje se eligi´ o entre dos librer´ ıas
+diferentes:
+Java Swing, un framework MVC para desarrollar interfaces gr´ aﬁcas para Java.
+Algunas de sus caracter´ ısticas son: independencia de plataforma, su extensibi-
+lidad, es muy personalizable.
+JavaFX, un framework MVC para desarrollar interfaces gr´ aﬁcas para Java.
+Las aplicaciones JavaFX pueden ser ejecutadas en una amplia variedad de
+dispositivos. Permite crear aplicaciones de escritorio, para m´ oviles, aplicaciones
+Web, consolas de videojuegos y reproductores Blu-ray entre otros. Una de sus
+principales caracter´ ısticas es la posibilidad de dar estilo a la interfaz con CSS.
+IDE
+Como IDE de desarrollo se estudi´ o el uso de Eclipse y Netbeans.
+Eclipse, es una plataforma de software compuesto por un conjunto de herra-
+mientas de programaci´ on de c´ odigo abierto multiplataforma para el desarrollo
+de aplicaciones. Una de sus principales caracter´ ısticas es que provee al progra-
+mador con frameworks muy potentes para el desarrollo de aplicaciones gr´ aﬁcas,
+deﬁnici´ on y manipulaci´ on de modelos de software, aplicaciones web, etc.
+NetBeans, es un entorno de desarrollo integrado libre, hecho principalmente
+para el lenguaje de programaci´ on Java. Existe adem´ as un n´ umero importante
+de m´ odulos para extenderlo. Soporta el desarrollo de todos los tipos de aplica-
+ci´ on Java (J2SE, web, EJB y aplicaciones m´ oviles). Entre sus caracter´ ısticas
+se encuentra un sistema de proyectos basado en Ant, control de versiones y
+refactoring.
+Conexi´ on con base de datos Moodle
+El SGBD de Moodle es MySQL, por lo que solo hab´ ıa una alternativa. Se ha utilizado
+el driver JDBC (Java Database Connectivity) para la conexi´ on con la base de datos.
+
+--- PAGE 76 ---
+60 5. An´ alisis del Sistema
+Conexi´ on con red social SmartWeb
+Esta aplicaci´ on solo es accesible mediante servicios web Rest, los datos se env´ ıan en
+formato JSON. Para ello se han utilizado librer´ ıas Jersey y Gson.
+5.6. Mapeo Requisitos-Iteraciones
+En el cuadro 5.27 se muestra el mapeo de los requisitos establecidos en cada iteraci´ on.
+Iteraci´ on Requisitos
+Iteraci´ on 0 NRQ-001, NRQ-002, NRQ-003, NRQ-004,
+NRQ-005 y NRQ-006
+Iteraci´ on 1 IRQ-002, IRQ-003, IRQ-005, IRQ-007, FRQ-
+001 y FRQ-002
+Iteraci´ on 2 IRQ-004, FRQ-003 y FRQ-004
+Iteraci´ on 3 IRQ-001, IRQ-006, FRQ-005 y FRQ-006
+Cuadro 5.27: Mapeo Requisitos-Iteraciones
+
+--- PAGE 77 ---
+Cap´ ıtulo 6
+Dise˜ no
+6.1. Arquitectura del Sistema
+A continuaci´ on, se describir´ a todas las tareas de dise˜ no realizadas durante todas las
+iteraciones, entre ellas se pueden destacar la arquitectura f´ ısica y l´ ogica del sistema
+desarrollado, as´ ı como el patr´ on de dise˜ no utilizado para el desarrollo.
+6.1.1. Arquitectura f´ ısica
+En este apartado, se detalla la arquitectura f´ ısica de la aplicaci´ on [Figura 6.1]. El
+sistema recibe de entrada un archivo XML que contiene una serie de estrategias
+de gamiﬁcaci´ on. Una vez que el sistema carga esta informaci´ on, se dispone de dos
+subsistemas diferentes:
+Simulaci´ on: Este subsistema se encarga de generar un archivo de simulaci´ on
+con extensi´ on .ALP, de la estrategia previamente seleccionada por el usuario,
+este archivo es ejecutable en el software de simulaci´ on Anylogic.
+Moodle: Este subsistema tiene una arquitectura Cliente-Servidor. La parte
+cliente es este subsistema de la propia aplicaci´ on. En la parte servidor dis-
+ponemos de dos servidores distintos. Por un lado, tenemos la instalaci´ on de
+Moodle, y por el otro tenemos la red social SmartWeb.
+La interacci´ on con Moodle se basa en lanzar consultas a su base de datos para
+obtener la informaci´ on necesaria. Estar consultas se realizan por medio de un
+driver JDBC .
+La interacci´ on con la red social SmartWeb se basa en compartir los logros
+obtenidos por los alumnos. La comunicaci´ on con SmartWeb se realiza por
+medio de servicios web REST, y la informaci´ on que se env´ ıa y se recibe tiene
+un formato JSON.
+61
+
+--- PAGE 78 ---
+62 6. Dise˜ no
+Figura 6.1: Arquitectura F´ ısica
+6.1.2. Arquitectura l´ ogica
+La arquitectura l´ ogica del sistema est´ a formada por cada uno de los artefactos soft-
+ware que la componen. La arquitectura l´ ogica se encuentra dividida en dos bloques,
+componentes desarrollados y componentes usados [Figura 6.2].
+Componentes Desarrollados
+M´ odulo Simulaci´ on:Este m´ odulo conforma toda la l´ ogica necesaria para
+la generaci´ on de archivo de simulaci´ on. Desde la lectura de los par´ ametros
+introducidos por el usuario, hasta la construcci´ on del archivo ALP.
+M´ odulo Moodle:Este m´ odulo contiene de la l´ ogica para el procesamiento
+de los datos recogidos de Moodle, as´ ı como el procesamiento de datos que
+posteriormente se publicar´ an en la red social SmartWeb.
+AnylogicUtils: Es una librer´ ıa desarrollada para la generaci´ on de los compo-
+nentes que conforman la simulaci´ on en Anylogic.
+DataMoodleUtils: Es una librer´ ıa desarrollada para las utilidades relacio-
+nadas con Moodle, desde la creaci´ on de la conexi´ on, hasta la creaci´ on de las
+consultas realizadas a base de datos.
+WSUtils: Esta librer´ ıa se ha desarrollado para que contenga todos los m´ eto-
+dos necesarios para la utilizaci´ on de los servicios web Rest, necesarios para la
+comunicaci´ on de la aplicaci´ on con la red social SmartWeb.
+Componentes Utilizados
+Anylogic: Software de simulaci´ on utilizado para simular el modelo generado
+por la aplicaci´ on.
+Moodle: Plataforma para el aprendizaje, utilizada por la Universidad de C´ a-
+
+--- PAGE 79 ---
+6.1. Arquitectura del Sistema 63
+diz y en la cual se quiere realizar un estudio para su gamiﬁcaci´ on.
+SmartWeb: Red social de ´ ambito docente, en la que se publicar´ an los logros
+obtenidos por los usuarios.
+Figura 6.2: Arquitectura L´ ogica
+6.1.3. Patr´ on de dise˜ no
+La arquitectura de dise˜ no especiﬁca la forma en que los artefactos software, inter-
+act´ uan entre s´ ı para lograr el comportamiento deseado en el sistema. La aplicaci´ on
+desarrollada se basa en el patr´ on de dise˜ no Modelo-Vista-Controlador [Figura 6.3].
+Este patr´ on se basa en la reutilizaci´ on de c´ odigo y la separaci´ on de la vista, la l´ ogica
+de negocio y el modelo. Estas caracter´ ısticas ofrecen calidad y claridad en el c´ odigo
+y facilitar el mantenimiento del sistema.
+
+--- PAGE 80 ---
+64 6. Dise˜ no
+Figura 6.3: Patr´ on de dise˜ no MVC
+Modelo, representa la informaci´ on de la aplicaci´ on. En nuestra aplicaci´ on no
+es necesaria la persistencia de datos por lo que, la comunicaci´ on con la base
+de datos se utiliza para la obtenci´ on de los datos necesarios para aplicar la
+estrategia a Moodle.
+Vista, representa la capa que est´ a en contacto con el usuario. En esta aplica-
+ci´ on la interfaz se ha creado con componentes de la librer´ ıa JavaFx, y el estilo
+mediante CSS.
+Controlador, recibe, interpreta y da respuesta a los eventos enviados tanto
+por el usuario como por la propia aplicaci´ on. Debe interactuar con el modelo
+y con la vista. En esta aplicaci´ on el controlador contendr´ a c´ odigo Java
+6.2. Modelo de dominio
+Para el funcionamiento de sistema no se requiere la persistencia de datos, por lo que
+no hay un modelo de datos que dise˜ nar. Se ha usado el modelo de datos de Moodle,
+necesario para aplicar las estrategias de gamiﬁcaci´ on, aunque debido a su tama˜ no y
+n´ umero de tablas no se puede mostrar su esquema de base de datos. En el Cap´ ıtulo
+7 se describir´ a con mas detalle. A continuaci´ on, se describir´ a el modelo de dominio
+del sistema [Figura 6.4], que representa cada una de las entidades utilizadas para el
+funcionamiento de la aplicaci´ on.
+Estrategia, entidad que representa a una estrategia de gamiﬁcaci´ on. Una
+estrategia contiene una o muchas actividades.
+Actividad, entidad que representa a una actividad de las que forman una
+estrategia. Una actividad puede tener asignado cero o varios premios, como
+puede tener cero o varios criterios asociados a ella.
+Premio, entidad que representa a un premio asociado a una actividad.
+
+--- PAGE 81 ---
+6.3. Dise˜ no de la interfaz de usuario 65
+Estudiante, entidad que representa a un estudiante.
+PremioWS, entidad que representa a un premio que ser´ a publicado en la red
+social SmartWeb.
+Criterio, entidad que representa a un criterio para la evaluaci´ on de una acti-
+vidad.
+Coordenada, entidad que representa una coordenada en un plano (X,Y).
+Estas coordenadas son necesarias para colocar en una determinada posici´ on
+cada componente de Anylogic.
+Figura 6.4: Modelo de dominio
+6.3. Dise˜ no de la interfaz de usuario
+La interfaz de usuario hace referencia al medio que permite a un usuario comunicar-
+se con la m´ aquina. Para esta aplicaci´ on se han dise˜ nado dos interfaces de usuario.
+La primera interfaz es la de la propia aplicaci´ on, una interfaz bastante sencilla, cla-
+ra e intuitiva para el usuario. La segunda interfaz es para el archivo de simulaci´ on
+ejecutable en Anylogic. Anylogic no ofrece una gran ﬂexibilidad para el dise˜ no, sin
+embargo, se ha intentado crear una interfaz sencilla y lo m´ as atractiva posible para
+el usuario.
+Interfaz Strategy Simulator
+En la Figura 6.5 se puede observar la navegabilidad que tiene la interfaz de usuario
+de nuestra aplicaci´ on.
+
+--- PAGE 82 ---
+66 6. Dise˜ no
+Figura 6.5: Navegaci´ on de la aplicaci´ on
+Pantalla principal, es la pantalla inicial de la aplicaci´ on. Desde ella se puede
+acceder a cualquiera de las dos funcionalidades. Tambi´ en cuenta con el panel de
+mandos general de la aplicaci´ on desde el cual se puede cargar estrategias en la
+aplicaci´ on, borrar las estrategias cargadas, acceder aun di´ alogo con informaci´ on
+sobre la aplicaci´ on y salir de ´ esta [V´ ease en Figura 6.6].
+Pantalla Anylogic, en esta pantalla se encuentra el formulario para que el
+usuario introduzca los par´ ametros para generar la simulaci´ on. Tambi´ en es po-
+sible abrir el archivo generado en la aplicaci´ on Anylogic. Adem´ as contiene el
+panel general de la aplicaci´ on descrito en el apartado de pantalla principal
+[V´ ease en Figura 6.7].
+Pantalla Moodle, esta nos permite aplicar la estrategia a Moodle, y obtener
+unas gr´ aﬁcas con los datos obtenidos. Tambi´ en nos da la posibilidad de com-
+partir estos datos en la red social SmartWeb. Adem´ as contiene el panel general
+de la aplicaci´ on descrito en el apartado de pantalla principal [V´ ease en Figura
+6.8].
+Figura 6.6: Pantalla Principal
+
+--- PAGE 83 ---
+6.3. Dise˜ no de la interfaz de usuario 67
+Figura 6.7: Pantalla de Simulaci´ on
+Figura 6.8: Pantalla de Moodle
+Interfaz en Anylogic
+En la Figura 6.9 se puede observar la navegabilidad que tiene la interfaz de Anylogic.
+
+--- PAGE 84 ---
+68 6. Dise˜ no
+Figura 6.9: Navegaci´ on del archivo ejecutable
+Pantalla Principal, en esta pantalla se encuentra el formulario con los par´ a-
+metros introducidos por el usuario en la aplicaci´ on, en esta pantalla es posible
+modiﬁcar estos par´ ametros sin necesidad de tener que generar el archivo de
+nuevo. Tambi´ en contiene el bot´ on RUN que arranca la simulaci´ on [V´ ease en
+Figura 6.10].
+Pantalla 1, esta pantalla contiene dos histogramas con resultados de la simula-
+ci´ on. El primer histograma muestra el n´ umero de alumnos que han abandonado
+cada actividad de la estrategia. El segundo indica el tiempo medio empleado
+por los alumnos en la realizaci´ on de cada actividad [V´ ease en Figura 6.11].
+Pantalla 2, esta pantalla contiene dos gr´ aﬁcos de sectores con resultados de la
+simulaci´ on. El primero muestra el n´ umero premios conseguidos por los alumnos
+del curso, estos logros se encuentran clasiﬁcados por tipo de premio. El segundo
+indica el n´ umero de alumnos que han acabado la estrategia en cada nivel.
+Por ´ ultimo tambi´ en muestra el numero de alumnos que han completado la
+estrategia al completo [V´ ease en Figura 6.12].
+Figura 6.10: Pantalla Principal Anylogic
+
+--- PAGE 85 ---
+6.3. Dise˜ no de la interfaz de usuario 69
+Figura 6.11: Pantalla de resultados 1
+Figura 6.12: Pantalla de resultados 2
+
+--- PAGE 86 ---
+70 6. Dise˜ no
+6.4. Mapeo Dise˜ no-Iteraciones
+En el cuadro 6.1 se muestra el mapeo de los componentes dise˜ nados en cada iteraci´ on.
+Iteraci´ on Dise˜ no
+Iteraci´ on 0 Primer dise˜ no del modelo de simulaci´ on y ar-
+quitectura de la aplicaci´ on.
+Iteraci´ on 1 Primer dise˜ no de la interfaz de usuario.
+Iteraci´ on 2 Dise˜ no ﬁnal de la interfaz general de la apli-
+caci´ on y dise˜ no ﬁnal de la pantalla de simu-
+laci´ on.
+Iteraci´ on 3 Dise˜ no ﬁnal de la pantalla de Moodle.
+Cuadro 6.1: Mapeo Dise˜ no-Iteraciones
+
+--- PAGE 87 ---
+Cap´ ıtulo 7
+Desarrollo del Sistema
+En este cap´ ıtulo se describen las distintas herramientas y tecnolog´ ıas utilizadas du-
+rante el desarrollo de este proyecto. Tambi´ en se describen todos los componentes
+implementados durante todas las iteraciones del desarrollo del proyecto.
+7.1. Entorno de desarrollo
+Como entorno de desarrollo se ha utilizado Eclipse, se ha elegido esta herramienta
+por ser bastante conocida por el desarrollador, lo que ha implicado no tener que
+dedicar un tiempo adicional en el aprendizaje de una herramienta de desarrollo.
+Eclipse
+Eclipse es un entorno de desarrollo integrado de c´ odigo abierto multiplataforma para
+hacer lo que el proyecto llama “Aplicaciones de Cliente Enriquecido”, opuesto a las
+aplicaciones de“Clienteliviano”basadas en navegadores. Esta plataforma se ha usado
+para crear entornos de desarrollo integrados (IDE), como el IDE de Java, llamado
+Java Development Toolkit (JDT) y el compilador (ECJ) que se entrega como parte
+de Eclipse y que son usados tambi´ en para desarrollar el mismo Eclipse.
+Fue creado originalmente por IBM como el sucesor de VisualAge. Actualmente, es
+desarrollado por la Fundaci´ on Eclipse, una organizaci´ on independiente sin ´ animo de
+lucro que fomenta una comunidad de c´ odigo abierto y un conjunto de productos
+complementarios. Se liber´ o originalmente bajo la Common Public License, pero des-
+pu´ es fue re-licenciado bajo la Eclipse Public License; sin embargo, la Free Software
+Foundation ha determinado que ambas licencias, a´ un siendo software libre, son in-
+compatibles con la Licencia p´ ublica general de GNU (GNU GPL). El IDE de Eclipse
+emplea m´ odulos para proporcionar toda su funcionalidad al frente de la plataforma
+de cliente enriquecido, a diferencia de los entornos monol´ ıticos, donde todas las fun-
+cionalidades est´ an incluidas, tanto si les son ´ utiles al usuario como si no. Con este
+sistema de m´ odulos, el usuario tiene un entorno ligero, personalizado seg´ un sus ne-
+cesidades. Con estos m´ odulos, podemos extender la funcionalidad de Eclipse a otros
+71
+
+--- PAGE 88 ---
+72 7. Desarrollo del Sistema
+lenguajes de programaci´ on.
+7.1.1. L´ ogica de negocio
+En la implementaci´ on de la l´ ogica de negocio se han utilizado las siguientes tecnolo-
+g´ ıas:
+JAVA
+Java es un lenguaje de programaci´ on orientado a objetos que fue dise˜ nado espec´ ıﬁ-
+camente para tener tan pocas dependencias de implementaci´ on como fuera posible.
+Su intenci´ on es permitir que los desarrolladores de aplicaciones escriban el programa
+una vez y lo ejecuten en cualquier dispositivo, lo que quiere decir que el c´ odigo que
+es ejecutado en una plataforma no tiene que ser recompilado para ejecutarse en otra.
+Java es, a partir de 2012, uno de los lenguajes de programaci´ on m´ as populares en
+uso, particularmente para aplicaciones web cliente-servidor.
+Para esta aplicaci´ on en concreto se ha utilizado la biblioteca JavaFx que hace que el
+desarrollo de aplicaciones de escritorio complejas y con gran dinamismo, usabilidad,
+etc. sea relativamente sencillo.
+Se ha elegido este lenguaje de programaci´ on porque es conocido por el desarrolla-
+dor de la aplicaci´ on y por tener un gran uso para el desarrollo de aplicaciones de
+escritorio.
+XML
+XML, siglas en ingl´ es de eXtensible Markup Language, es un meta-lenguaje que
+permite deﬁnir lenguajes de marcas desarrollado por el World Wide Web Consortium
+(W3C) utilizado para almacenar datos en forma legible. Proviene del lenguaje SGML
+y permite deﬁnir la gram´ atica de lenguajes espec´ ıﬁcos para estructurar documentos
+grandes. A diferencia de otros lenguajes, XML da soporte a bases de datos, siendo
+´ util cuando varias aplicaciones deben comunicarse entre s´ ı o integrar informaci´ on.
+XML no ha nacido s´ olo para su aplicaci´ on para Internet, sino que se propone como
+un est´ andar para el intercambio de informaci´ on estructurada entre diferentes plata-
+formas. Se puede usar en bases de datos, editores de texto, hojas de c´ alculo y casi
+cualquier cosa imaginable.
+Esta tecnolog´ ıa se ha utilizado para almacenar las estrategias de gamiﬁcaci´ on. Esto
+permite una gran ﬂexibilidad a la hora de construir y almacenar las estrategias, cosa
+que, por ejemplo, en bases de datos relacionales no se tiene. A continuaci´ on, se puede
+observar la estructura del XML.
+
+--- PAGE 89 ---
+7.1. Entorno de desarrollo 73
+<s t r a t e g i e s>
+<strategy >
+<strategyId >1</strategyId >
+<s t r a t e g y T i t l e>TFG DEMO</s t r a t e g y T i t l e>
+<strategyUserId >Daniel </strategyUserId >
+<o r i g i n a l U s e r I d>Daniel Guerrero </o r i g i n a l U s e r I d>
+<courseId >4</courseId >
+<a c t i v i t i e s>
+<a c t i v i t y>
+<a c t i v i t y I d>2004</ a c t i v i t y I d>
+<activityTypeId >2</activityTypeId >
+<a c t i v i t y T i t l e>Practica T3 </a c t i v i t y T i t l e>
+<t a r g e t A c t i v i t y I D/>
+<d e c i s s i o n>
+<c r i t e r i o s>
+<c r i t e r i o>
+<c r i t e r i o I D>333</ c r i t e r i o I D>
+<v a l u e C r i t e r i o>7</v a l u e C r i t e r i o>
+<t a r g e t A c t i v i t y I D/>
+</ c r i t e r i o>
+</d e c i s s i o n>
+<rewards >
+<reward >
+<v a l u e C r i t e r i o>10</ v a l u e C r i t e r i o>
+<rewardID >5</rewardID >
+</reward >
+</rewards >
+</a c t i v i t y>
+</ a c t i v i t i e s>
+</strategy >
+</ s t r a t e g i e s>
+En este ejemplo se puede observar la estructura que tendr´ ıa una estrategia de ejem-
+plo. La estrategia tiene los siguientes atributos:
+strategyId, es el identiﬁcador de la estrategia.
+strategyTitle, nombre de la estrategia.
+strategyUserId, usuario de la estrategia.
+originalUserId, usuario que dise˜ n´ o la estrategia.
+courseId, es el identiﬁcador del curso de Moodle, al que se aplica la estrategia.
+activities, conjunto de actividades que componen la estrategia.
+Cada actividad tiene los siguientes atributos:
+activityId, es el identiﬁcador de la actividad.
+
+--- PAGE 90 ---
+74 7. Desarrollo del Sistema
+activityTypeId, identiﬁcador del tipo de actividad. Una actividad puede ser de
+varios tipos como pueden ser: Recurso, Tarea, Cuestionario, etc.
+activityTitle, nombre de la actividad.
+targetActivityID, actividad que le sigue en la estrategia. Si este campo est´ a
+vac´ ıo signiﬁca que es la ultima actividad de la estrategia o que hay alguna
+toma de decisi´ on.
+decission, indica si dependiendo del resultado de la actividad hay una toma de
+decisi´ on.
+rewards, premios o recompensas asignadas a esta actividad.
+Una decisi´ on se compone de criterios. Estos criterios sirven para evaluar el resultado
+de la actividad y realizar una toma de decisi´ on:
+criterioID, es el identiﬁcador del criterio.
+valueCriterio, es el valor que tiene que tener el resultado de la actividad para
+cumplir este criterio.
+targetActivityID, actividad que le sigue en la estrategia si cumple este criterio.
+Una actividad puede tener un criterio que apunte a ella misma, esto quiere
+decir que, si cumple el criterio tiene que repetir la actividad. Si este campo
+est´ a vac´ ıo signiﬁca que es la ultima actividad de la estrategia.
+Una recompensa contiene los siguientes atributos:
+rewardID, es el tipo de recompensa. V´ ease en Cap´ ıtulo 4
+valueCriterio, es el valor de la recompensa.
+7.1.2. Capa de persistencia
+MySQL
+MySQL es un sistema de gesti´ on de base de datos relacional. MySQL AB desarrolla
+este sistema como software libre en un esquema de licencia dual, siendo GNU GPL
+excepto para aquellas empresas que quieran incorporarlo en productos privativos. Es
+probablemente el m´ as popular en su g´ enero, usado por sitios web como Google, Face-
+book, Twitter y YouTube. Es la opci´ on escogida para interactuar con la plataforma
+Moodle.
+Esta tecnolog´ ıa es la que ofrece Moodle como SGBD, por ello, su uso. Debido al
+tama˜ no de la base de datos de Moodle no se puede explicar todos los componentes
+usado por ello vamos explicar uno de los ejemplos que se usa en este proyecto.
+A continuaci´ on, se muestra un ejemplo del uso del modelo de datos de Moodle:
+Por cada alumno del curso se va comprobando si ha realizado cada una de las
+actividades de la estrategia. Para ello se realiza una consulta de base de datos por
+
+--- PAGE 91 ---
+7.1. Entorno de desarrollo 75
+cada actividad. En Moodle cada tipo de actividad se almacena en una tabla diferente,
+es decir, hay que hacer consultas diferentes. A continuaci´ on, se describir´ a un ejemplo
+de como se eval´ ua si un alumno ha superado o no la entrega de una tarea.
+Para evaluar una tarea debemos comprobar que su nota supera el criterio, por lo
+que debemos consultar en base de datos la nota que tiene asociada.
+Las tareas se almacenan en la tabla mdl
+assign y la nota asociada a cada tarea se
+almacenan en la tabla mdl assign grades. Estas tablas tienen el siguiente esquema
+[Figura 7.1].
+Figura 7.1: Esquema Tablas: mdl assign y mdl assign grades
+Como se puede observar la tabla contiene mucha informaci´ on. Para el caso de las
+tareas solo utilizaremos los siguientes atributos:
+Tabla mdl
+assign
+id, identiﬁcador de la tarea.
+course, identiﬁcador del curso al que pertenece la tarea.
+Tabla mdl assign grades
+grade, nota de la tarea.
+assignment, identiﬁcador de la tarea evaluada.
+userid, identiﬁcador del usuario al que se eval´ ua.
+Para comprobar la nota del alumno realizamos la siguiente consulta:
+
+--- PAGE 92 ---
+76 7. Desarrollo del Sistema
+SELECT mdl_assign_grades.grade
+FROM mdl_assign_grades, mdl_assign
+WHERE mdl_assign.id = mdl_assign_grades.assignment
+AND mdl_assign.course = CURSO
+AND mdl_assign_grades.userid = USERID
+AND mdl_assign.id = TAREAID
+Donde CURSO es el identiﬁcador del curso que vamos a consultar, USERID es el
+identiﬁcador del alumnos que vamos a consultar y TAREAID es el identiﬁcador de
+la tarea que vamos a comprobar.
+Esta consulta nos devuelve la nota que este usuario tiene asociada a esta tarea. Si no
+devuelve nada signiﬁca que esta tarea no ha sido evaluada, por lo que signiﬁcar´ ıa que
+no ha superado la actividad. En el caso de que devuelva alg´ un valor se comprueba
+si es mayor o igual al criterio para superar la actividad, establecido por el dise˜ nador
+de la estrategia de gamiﬁcaci´ on. En el caso que este criterio est´ e vac´ ıo, se establece
+por defecto que una tarea es superada si su nota es mayor o igual a 5.
+Servicios Web REST
+REST es un estilo de arquitectura software para sistemas hipermedia distribuidos
+como la World Wide Web. El t´ ermino se origin´ o en el a˜ no 2000, en una tesis doctoral
+sobre la web escrita por Roy Fielding, uno de los principales autores de la especiﬁca-
+ci´ on del protocolo HTTP y ha pasado a ser ampliamente utilizado por la comunidad
+de desarrollo.
+Esta tecnolog´ ıa es la que usa SmartWeb para la persistencia de datos, por ello, su
+uso.
+Principales caracter´ ısticas:
+Un protocolo cliente/servidor sin estado: cada mensaje HTTP contiene toda
+la informaci´ on necesaria para comprender la petici´ on. Como resultado, ni el
+cliente ni el servidor necesitan recordar ning´ un estado de las comunicaciones
+entre mensajes.
+Un conjunto de operaciones bien deﬁnidas que se aplican a todos los recursos
+de informaci´ on: HTTP en s´ ı deﬁne un conjunto peque˜ no de operaciones, las
+m´ as importantes son POST, GET, PUT y DELETE. Con frecuencia, estas
+operaciones se equiparan a las operaciones CRUD en bases de datos (crear,
+leer, actualizar, borrar) que se requieren para la persistencia de datos.
+Una sintaxis universal para identiﬁcar los recursos. En un sistema REST, cada
+recurso es direccionable ´ unicamente a trav´ es de su URI.
+El uso de hipermedios, tanto para la informaci´ on de la aplicaci´ on como para
+las transiciones de estado de la aplicaci´ on: la representaci´ on de este estado en
+un sistema REST son t´ ıpicamente HTML o XML. Como resultado de esto, es
+posible navegar de un recurso REST a muchos otros, simplemente siguiendo
+enlaces sin requerir el uso de registros u otra infraestructura adicional.
+
+--- PAGE 93 ---
+7.2. C´ odigo fuente 77
+JSON
+JSON, acr´ onimo de JavaScript Object Notation, es un formato de texto ligero para
+el intercambio de datos. JSON es un subconjunto de la notaci´ on literal de objetos
+de JavaScript aunque hoy, debido a su amplia adopci´ on como alternativa a XML, se
+considera un formato de lenguaje independiente.
+Una de las supuestas ventajas de JSON sobre XML como formato de intercambio
+de datos es que es mucho m´ as sencillo escribir un analizador sint´ actico (parser) de
+JSON.
+Esta tecnolog´ ıa es la que usa SmartWeb para el intercambio de datos.
+7.1.3. Interfaz de usuario
+CSS
+CSS son las siglas de Cascading Style Sheets, u hojas de estilo en cascada en caste-
+llano. Se trata de un lenguaje de hojas de estilo usado para describir la presentaci´ on
+sem´ antica (el aspecto y formato) de un documento escrito en lenguaje de marcas.
+Complementa al documento HTML dando forma al contenido.
+FXML
+FXML es un lenguaje basado en XML y utilizado para deﬁnir interfaces en JavaFX.
+Aunque java JavaFX permite crear interfaces mediante su c´ odigo, al usar FXML es
+mucho mas sencillo adaptar las ventanas y paneles a los diferentes tama˜ nos necesa-
+rios. Es ideal para dise˜ nar cualquier interfaz de usuario ya que es compatible con la
+clase Scene de JavaFX.
+JavaFX Scene Builder
+Con la aplicaci´ on JavaFX Scene Builder podemos construir la interfaz gr´ aﬁca de una
+aplicaci´ on de escritorio Java de forma m´ as sencilla. JavaFX Scene Builder genera
+archivos descriptores FXML que podemos cargar en la aplicaci´ on evitando la tediosa
+y no sencilla tarea de construir la interfaz gr´ aﬁca mediante c´ odigo.
+7.2. C´ odigo fuente
+En esta secci´ on se describe la organizaci´ on del c´ odigo fuente, describiendo la utilidad
+de los diferentes ﬁcheros y su distribuci´ on en paquetes o directorios.
+tfg.myproject
+Este paquete contiene la clase principal de la aplicaci´ on:
+MainApp.java: Clase que contiene la l´ ogica principal de la aplicaci´ on.
+tfg.myproject.model
+
+--- PAGE 94 ---
+78 7. Desarrollo del Sistema
+Este paquete contiene las clases que representan los objetos utilizados en la aplica-
+ci´ on. Tambi´ en se utiliza como modelo para el tratamiento de datos.
+Actividad.java: Esta clase representa a las distintas actividades que compo-
+nen la estrategia de gamiﬁcaci´ on.
+Coordenada.java: Esta clase representa una coordenada (X,Y).
+Criterio.java: Esta clase representa el criterio que se va a seguir para conceder
+una recompensa a un alumno.
+Estrategia.java: Esta clase representa la estrategia de gamiﬁcaci´ on que usar´ a
+la aplicaci´ on.
+Estudiante.java: Esta clase representa a los estudiantes de Moodle cuya in-
+formaci´ on se va a usar.
+Premio.java: Esta clase representa las recompensas que recibir´ an los estu-
+diantes al realizar las actividades.
+PremioWS.java: Esta clase representa los premios que se van a compartir en
+la red social SmartWeb.
+tfg.myproject.view:
+Este paquete contiene los archivos que componen la interfaz de usuario, as´ ı como las
+clases controladoras.
+StrategyOverviewController.java: Clase controladora principal de la apli-
+caci´ on. Tambi´ en se encarga de la navegaci´ on entre pantallas.
+MenuBarController.java: Clase controladora del panel de control com´ un a
+toda la aplicaci´ on.
+AboutController.java: Clase controladora del di´ alogo de informaci´ on sobre
+la aplicaci´ on.
+ErrorController.java: Clase controladora del di´ alogo de error.
+InfoController.java: Clase controladora del di´ alogo de informaci´ on.
+StrategyOverview.fxml: Interfaz principal de la aplicaci´ on. Se compone de
+la pantalla principal, la pantalla de simulaci´ on y la pantalla de Moodle.
+RootLayout.fxml: Interfaz del panel de control com´ un a toda la aplicaci´ on.
+InfoDialog.fxml: Interfaz del di´ alogo de informaci´ on.
+ErrorDialog.fxml: Interfaz del di´ alogo de error.
+AboutView.fxml: Interfaz del di´ alogo que contiene informaci´ on sobre la apli-
+caci´ on.
+tfg.myproject.util
+Este paquete contiene clases con distintas utilidades para conseguir el funcionamiento
+
+--- PAGE 95 ---
+7.3. Otras herramientas 79
+de las distintas funcionalidades de la aplicaci´ on.
+AnylogicUtils.java: Esta clase contiene la l´ ogica para construir un archivo
+ALP.
+AgentUtils.java: Esta clase contiene la l´ ogica para construir la parte agente
+del archivo ALP.
+SimulationUtils.java: Esta clase contiene la l´ ogica para construir la parte
+simulation del archivo ALP.
+MainUtils.java: Esta clase contiene la l´ ogica para construir la parte main del
+archivo ALP.
+Data.java: Esta clase contiene la l´ ogica necesaria para establecer la conexi´ on
+con la base de datos de Moodle.
+DataMoodleUtils.java: Esta clase contiene la l´ ogica necesaria para realizar
+las consultas a la base de datos de Moodle.
+Conﬁg.java: Esta clase contiene la l´ ogica para leer del archivo db.properties
+la conﬁguraci´ on de la conexi´ on a base de datos mediante JDBC.
+WSUtils.java: Esta clase contiene la l´ ogica necesaria para realizar las llama-
+das a los servicios REST.
+7.3. Otras herramientas
+7.3.1. Subversion
+Subversion es un sistema de control de versiones, dise˜ nado para reemplazar a CVS.
+Es un software libre con licencia Apache/BSD. Tambi´ en se le conoce por svn, ya que
+este es el nombre que usa en la l´ ınea de ´ ordenes. Una de las principales diferencias
+entre Subversion y CVS es que en el primero todo el proyecto est´ a bajo el mismo
+n´ umero de revisi´ on; mientras que en el segundo cada archivo tiene un n´ umero de
+revisi´ on independiente.
+El hecho de que se pueda acceder al repositorio a trav´ es de la red permite que varias
+personas trabajen sobre el mismo repositorio. Esto fomenta la colaboraci´ on, y la
+calidad no se resiente, ya que si alg´ un cambio es incorrecto, siempre se puede volver
+a una versi´ on anterior a dicho cambio. El uso de esta herramienta ha aportado a
+este proyecto las siguientes ventajas:
+Se ha podido mantener un historial de los archivos y directorios [Figura 7.2].
+Ha permitido la creaci´ on de ramas, muy ´ util para que nuevos desarrollos no
+afecten de manera negativa a otros ya realizados y probados.
+Gracias a que registra los cambios por subidas al repositorio, y no por cambios
+en cada archivo, ha permitido recuperar del repositorio si ha sido necesario
+
+--- PAGE 96 ---
+80 7. Desarrollo del Sistema
+copias de seguridad de funcionalidades completas.
+Figura 7.2: Estructura del proyecto bajo control de versiones
+7.3.2. Assembla
+Assembla es una empresa que provee herramientas de colaboraci´ on y de seguimiento
+de errores y tareas basadas en la nube para organizar y administrar proyectos de
+c´ odigo abierto y comerciales para el desarrollo de software. Actualmente, Assembla
+tiene m´ as de 500.000 usuarios en m´ as de 100 pa´ ıses. Esta herramienta se ha utilizado
+como repositorio para esta aplicaci´ on.
+7.3.3. Trello
+Trello es un software de administraci´ on de proyectos con interfaz web, para organizar
+tareas de manera colaborativa [Figura 7.3].
+Surge en 2010 como un proyecto de la compa˜ n´ ıa Fog Creek Software. En 2011 sale
+la primera versi´ on como una aplicaci´ on web y cliente para iPhone. En 2012 se lanza
+la versi´ on para android. Para 2014 se crea Trello Inc. separ´ andose de Fog.
+Empleando el sistema kanban, para el registro de actividades con tarjetas virtuales
+organiza tareas, permite agregar listas, adjuntar archivos, etiquetar eventos, agregar
+
+--- PAGE 97 ---
+7.3. Otras herramientas 81
+comentarios y compartir tableros.
+Figura 7.3: Herramienta Trello
+7.3.4. MAMP
+El acr´ onimo MAMP se reﬁere al conjunto de programas software com´ unmente usados
+para desarrollar sitios web din´ amicos sobre sistemas operativos Apple Macintosh,
+MAC OS X [Figura 7.4].
+Mac OS X: Sistema operativo.
+Apache: Servidor Web.
+MySQL: Sistema Gestor de Bases de Datos.
+PHP, Perl ´ o Python, lenguajes de programaci´ on usados para la creaci´ on de
+sitios web.
+Este software se ha utilizado para la instalaci´ on local de la plataforma Moodle.
+
+--- PAGE 98 ---
+82 7. Desarrollo del Sistema
+Figura 7.4: MAMP
+7.3.5. Cacoo
+Cacoo es una herramienta 2.0 de dibujo y dise˜ no en l´ ınea amigable que permite
+crear una gran variedad de diagramas como mapas de sitios, wireframes, diagramas
+de UML y de red, con la particularidad de poder hacerlos de forma colaborativa con
+otros usuarios en tiempo real y cuenta con un chat para poder hablar y comunicarse
+con los usuarios durante estos trabajos colaborativos [Figura 7.5].
+Para utilizarlo, como es habitual, se puede registrar de forma gratuita usando las
+cuentas de Twitter, Facebook o Google, as´ ı como realizar un registro normal con
+email y contrase˜ na. Existe tambi´ en una versi´ on de pago, que aumenta las prestacio-
+nes de la aplicaci´ on.
+
+--- PAGE 99 ---
+7.3. Otras herramientas 83
+Figura 7.5: Herramienta Cacoo
+7.3.6. SoapUI
+SoapUI es una herramienta, desarrollada en Java, para la realizaci´ on de pruebas a
+aplicaciones con arquitectura orientada a servicios SOA o REST. Soporta m´ ultiples
+protocolos como SOAP, REST, HTTP, JMS, AMF y JDBC. Posee una versi´ on de
+C´ odigo abierto y otra versi´ on de pago realizada por la compa˜ n´ ıa SmartBear.
+7.3.7. L ATEX
+LATEX es un sistema de composici´ on de textos, orientado a la creaci´ on de libros
+y documentos cient´ ıﬁcos. Est´ a formado por un gran conjunto de marcos de TEX,
+escrito por Leslie Lamport en 1984, con la intenci´ on de facilitar el lenguaje de com-
+posici´ on tipogr´ aﬁca, TEX, creado por Donald Knuth. Cuenta con la ventaja a˜ nadida
+de que se puede aumentar sus capacidades usando comandos propios de TEX, des-
+critos en The TeXbook. Esto hace de LATEX una herramienta pr´ actica y ´ util, ya
+que a su facilidad de uso se le une toda la potencia de TEX.
+
+--- PAGE 100 ---
+84 7. Desarrollo del Sistema
+7.4. Mapeo Implementaci´ on-Iteraciones
+En el cuadro 7.1 se muestra el mapeo de los componentes desarrollados en cada
+iteraci´ on.
+Iteraci´ on Clases Implementadas
+Iteraci´ on 0 Se desarrollo el modelo de simulaci´ on base.
+Iteraci´ on 1 Actividad.java, Coordenada.java, Cri-
+terio.java, Estrategia.java, Premio.java,
+PremioWS.java, MainApp.java
+Iteraci´ on 2 StrategyOverviewController.java, Menu-
+BarController.java, StrategyOverview.fxml,
+RootLayout.fxml, InfoDialog.fxml, Anylo-
+gicUtils.java, AgentUtils.java, SimulationU-
+tils.java, MainUtils.java
+Iteraci´ on 3 AboutController.java, ErrorController.java,
+InfoController.java, StrategyOverview.fxml,
+ErrorDialog.fxml, AboutView.fxml, Data-
+MoodleUtils.java, Conﬁg.java, WSUtils.java
+Cuadro 7.1: Mapeo Implementaci´ on-Iteraciones
+
+--- PAGE 101 ---
+Cap´ ıtulo 8
+Pruebas
+En este cap´ ıtulo se presenta el plan de pruebas del sistema, incluyendo los diferentes
+tipos de pruebas que se han llevado a cabo.
+8.1. Estrategia
+Todas las pruebas que se han realizado han sido de tipo manual ya que debido las ca-
+racter´ ısticas del proyecto realizar una automatizaci´ on de pruebas hubiese implicado
+un aumento considerable del coste temporal.
+Se han realizado pruebas no funcionales, pruebas unitarias y, pruebas de aceptaci´ on,
+donde los mismos clientes han evaluado los resultados. Para las pruebas de regresi´ on
+fue necesario detectar las funciones dependientes de otras. De forma que cuando se
+modiﬁcase alguna que tuviese algo que ver con otra, se volv´ ıan a realizar las pruebas
+de la segunda.
+8.1.1. Descripci´ on del entorno de pruebas
+Las pruebas se han realizado en dos entornos diferentes, para as´ ı probar la compa-
+tibilidad del sistema en distintos sistemas operativos. A continuaci´ on, se describen
+las especiﬁcaciones t´ ecnicas de los equipos utilizados para las pruebas.
+MacBook Pro
+• Sistema Operativo: OS X El Capitan
+• Procesador: 2,7 GHz Intel Core i5
+• Memoria: 8 GB 1867 MHz DDR3
+• Almacenamiento: 256 GB
+Port´ atil Dell Vostro 3558
+85
+
+--- PAGE 102 ---
+86 8. Pruebas
+• Sistema Operativo: Windows 7 64 bits
+• Procesador: 2,20 GHz Intel Core i5-5200
+• Memoria: 16 GB
+• Almacenamiento: 500 GB.
+Software adicional
+• Anylogic versi´ on PLE para Windows 7
+• Anylogic versi´ on PLE para Mac OS
+• Instalaci´ on en servidor local de plataforma Moodle versi´ on 3.0 con PHP
+5.4.4 y MySQL 5.5.31
+8.2. Pruebas no funcionales
+En este apartado se describen las pruebas realizadas para validar el cumplimiento
+de los requisitos no funcionales.
+A continuaci´ on, en los Cuadros 8.1, 8.2, 8.3, 8.4, 8.5 y 8.6, se describen las distintas
+pruebas no funcionales que se han realizado.
+C´ odigo PNF-001
+Nombre Prueba de entorno
+Descripci´ on Se comprueba que la aplicaci´ on funciona co-
+rrectamente en sistemas Windows y en siste-
+mas MAC OS.
+Cuadro 8.1: Pruebas no funcionales: PNF-001
+C´ odigo PNF-002
+Nombre Idioma
+Descripci´ on Se comprueba que el idioma de la aplicaci´ on
+esta es el ingl´ es.
+Cuadro 8.2: Pruebas no funcionales: PNF-002
+
+--- PAGE 103 ---
+8.2. Pruebas no funcionales 87
+C´ odigo PNF-003
+Nombre Usabilidad
+Descripci´ on Se ha probado con personas sin conocimien-
+tos inform´ aticos, teniendo resultados favora-
+bles.
+Cuadro 8.3: Pruebas no funcionales: PNF-003
+C´ odigo PNF-004
+Nombre Compatibilidad
+Descripci´ on Se comprueba que la aplicaci´ on es compatible
+con el software externo Anylogic.
+Cuadro 8.4: Pruebas no funcionales: PNF-004
+C´ odigo PNF-005
+Nombre Rendimiento
+Descripci´ on Se ha realizado mediciones de las tareas m´ as
+cr´ ıticas de la aplicaci´ on, como son la gene-
+raci´ on de ALP, las consultas a Moodle y los
+servicios Rest.
+Cuadro 8.5: Pruebas no funcionales: PNF-005
+C´ odigo PNF-006
+Nombre Mantenibilidad
+Descripci´ on Se ha desarrollado un sistema en el que ca-
+da funcionalidad est´ a en un m´ odulo diferen-
+te. Lo que favorece la capacidad de manteni-
+miento.
+Cuadro 8.6: Pruebas no funcionales: PNF-006
+
+--- PAGE 104 ---
+88 8. Pruebas
+8.3. Pruebas funcionales
+En este apartado se describen los distintos tipos de pruebas funcionales realizados
+para la validaci´ on del sistema. Estas pruebas se han enfocado de manera que el
+sistema cumpla con todos los requisitos funcionales establecidos en el an´ alisis del
+sistema.
+8.3.1. Pruebas unitarias
+Se han descompuesto las distintas funcionalidades del sistema, en funcionalidades
+mas peque˜ nas de las cuales se han realizado las distintas pruebas unitarias. Esto ha
+permitido un gran control de la aplicaci´ on ante los errores que han ido surgiendo,
+permitiendo una r´ apida localizaci´ on y resoluci´ on.
+A continuaci´ on, en los Cuadros 8.7, 8.8, 8.9, 8.10, 8.11, 8.12, 8.13 y 8.14, se describen
+las distintas pruebas unitarias que se han realizado.
+C´ odigo PU-001
+Nombre Comportamiento del modelo de simulaci´ on
+Descripci´ on Se comprueba que el modelo de simulaci´ on
+base creado en Anylogic se comporta de la
+manera esperada, dependiendo de los par´ a-
+metros introducidos.
+Cuadro 8.7: Pruebas Unitarias: PU-001
+C´ odigo PU-002
+Nombre Lectura de las estrategias
+Descripci´ on Se comprueba que la aplicaci´ on lee el archivo
+XML que contiene las estrategias de manera
+correcta.
+Cuadro 8.8: Pruebas Unitarias: PU-002
+
+--- PAGE 105 ---
+8.3. Pruebas funcionales 89
+C´ odigo PU-003
+Nombre Validaci´ on del formulario de la pantalla de
+simulaci´ on
+Descripci´ on Se comprueba que el formulario valida per-
+fectamente los datos permitidos y los no per-
+mitidos.
+Cuadro 8.9: Pruebas Unitarias: PU-003
+C´ odigo PU-004
+Nombre Lectura del formulario
+Descripci´ on Se comprueba que la aplicaci´ on recibe y tra-
+ta de manera correcta los datos introducidos
+por el usuario en el formulario de la pantalla
+de simulaci´ on.
+Cuadro 8.10: Pruebas Unitarias: PU-004
+C´ odigo PU-005
+Nombre Escritura de archivo ALP
+Descripci´ on Se comprueba que la aplicaci´ on realiza la es-
+critura del archivo ALP de manera correcta.
+Cuadro 8.11: Pruebas Unitarias: PU-005
+C´ odigo PU-006
+Nombre Comunicaci´ on con base de datos de Moodle
+Descripci´ on Se comprueba que la aplicaci´ on realiza una
+conexi´ on correcta con la base de datos de
+Moodle, as´ ı como las consultas necesarias.
+Cuadro 8.12: Pruebas Unitarias: PU-006
+
+--- PAGE 106 ---
+90 8. Pruebas
+C´ odigo PU-007
+Nombre Tratamiento de datos de Moodle
+Descripci´ on Se comprueba que la aplicaci´ on interpreta los
+datos obtenidos de Moodle de manera correc-
+ta, para la comprobaci´ on de resoluci´ on de ta-
+reas y asignaciones de recompensas.
+Cuadro 8.13: Pruebas Unitarias: PU-007
+C´ odigo PU-008
+Nombre Funcionamiento de servicios web
+Descripci´ on Se comprueba que la aplicaci´ on realiza de
+manera correcta la conexi´ on con SmartWeb
+por medio de servicios web REST.
+Cuadro 8.14: Pruebas Unitarias: PU-008
+8.3.2. Pruebas de integraci´ on
+Se han realizado pruebas de integraci´ on para comprobar el correcto funcionamiento
+de los m´ odulos al unir las distintas funcionalidades, probadas previamente por sepa-
+rado. Se han realizado 2 pruebas de integraci´ on, una para el m´ odulo de simulaci´ on,
+y otra para el m´ odulo de Moodle. A continuaci´ on, se describen en los Cuadros 8.15
+y 8.16.
+C´ odigo PI-001
+Nombre Funcionamiento del m´ odulo de simulaci´ on
+Descripci´ on Se comprueba que la aplicaci´ on realiza la fun-
+cionalidad de generar el archivo de simula-
+ci´ on y su posterior ejecuci´ on en la aplicaci´ on
+Anylogic.
+Comentarios Esta prueba engloba las siguientes pruebas
+unitarias: PU-001, PU-002, PU-003, PU-004
+y PU-005
+Cuadro 8.15: Pruebas Integraci´ on: PI-001
+
+--- PAGE 107 ---
+8.4. Resultado de las pruebas 91
+C´ odigo PI-002
+Nombre Funcionamiento del m´ odulo de simulaci´ on
+Descripci´ on Se comprueba que la aplicaci´ on realiza la fun-
+cionalidad de aplicar las estrategias a Moodle
+y la posterior publicaci´ on de los resultados en
+la red social SmartWeb.
+Comentarios Esta prueba engloba las siguientes pruebas
+unitarias: PU-006, PU-007 y PU-008
+Cuadro 8.16: Pruebas Integraci´ on: PI-002
+8.3.3. Pruebas de implantaci´ on
+Una vez que la aplicaci´ on ha sido ﬁnalizada, se ha realizado la instalaci´ on de la apli-
+caci´ on en equipos cuyo entorno podr´ ıa ser el real para la explotaci´ on de la aplicaci´ on.
+Estas pruebas se han realizado en un equipo con sistema operativo Windows y en
+un equipo con sistema operativo Mac OS. Para ello se ha realizado una prueba de
+sistema en cada entorno [Cuadro 8.17].
+C´ odigo PS-001
+Nombre Funcionamiento del sistema
+Descripci´ on Se comprueba que la aplicaci´ on funciona en
+su totalidad de manera correcta en el entorno
+instalado.
+Cuadro 8.17: Pruebas Sistema: PI-002
+8.4. Resultado de las pruebas
+Como es normal, durante la realizaci´ on del plan de pruebas se han encontrado errores.
+Una vez detectado el error se ha realizado un an´ alisis de este y su posterior correcci´ on.
+Una vez corregido el error se han realizado pruebas de regresi´ on para comprobar que
+la correcci´ on de este no ha afectado a funcionalidades que funcionaban ya de manera
+correcta.
+´Estas pruebas de regresi´ on son las pruebas descritas en el apartado anterior.
+A continuaci´ on en la [Figura 8.1] se describe la cantidad de errores encontrados por
+cada prueba unitaria. En ´ el se puede observar que la tarea cr´ ıtica de este proyecto ha
+
+--- PAGE 108 ---
+92 8. Pruebas
+sido la generaci´ on de archivo ALP, pues es la que mas errores ha reportado durante
+las pruebas.
+Figura 8.1: Errores encontrados en Pruebas Unitarias
+8.5. Mapeo Pruebas-Iteraciones
+En el cuadro 8.18 se muestra el mapeo de las pruebas realizadas en cada iteraci´ on.
+Iteraci´ on Pruebas
+Iteraci´ on 0 PU-001
+Iteraci´ on 1 PU-002
+Iteraci´ on 2 PU-003, PU-004, PU-005 y PI-001
+Iteraci´ on 3 PU-006, PU-007, PU-008, PI-002, PS-001,
+PNF-001, PNF-002, PNF-003, PNF-004,
+PNF-005 y PNF-006
+Cuadro 8.18: Mapeo Pruebas-Iteraciones
+
+--- PAGE 109 ---
+Cap´ ıtulo 9
+Manuales de usuario
+9.1. Descarga e Instalaci´ on de Anylogic
+Para descargar Anylogic accedemos a http://www.anylogic.com/downloads.
+Figura 9.1: Descargar Anylogic
+Es un requisito imprescindible descargar la versi´ on PLE. Descargaremos la versi´ on
+para Windows o para Mac dependiendo del sistema operativo de nuestro equipo
+[Figura 9.1].
+Antes de iniciar la descarga se abre una pantalla con un formulario, que tendremos
+que rellenar. Una vez completado el formulario podremos iniciar la descarga.
+9.1.1. Instalaci´ on en Windows
+Una vez descargado el archivo, que tendr´ a extensi´ on .exe, haremos doble click sobre
+´ el para abrirlo.
+93
+
+--- PAGE 110 ---
+94 9. Manuales de usuario
+Figura 9.2: Instalaci´ on Anylogic en Windows
+Aceptamos los acuerdos de licencia [Figura 9.2].
+Figura 9.3: Instalaci´ on de Anylogic en Windows
+Por ´ ultimo pulsamos el bot´ onInstall [Figura 9.3] y se proceder´ a a instalarse. Una
+vez terminada la instalaci´ on ya tenemos el programa disponible en nuestro equipo.
+9.1.2. Instalaci´ on de Anylogic en Mac
+Una vez descargado el archivo, que tendr´ a extensi´ on .dmg, haremos doble click sobre
+´ el para abrirlo. Se nos abrir´ a la siguiente pantalla.
+
+--- PAGE 111 ---
+9.1. Descarga e Instalaci´ on de Anylogic 95
+Figura 9.4: Instalaci´ on de Anylogic en Mac
+Hacemos doble click sobre el icono de Anylogic [Figura 9.4]. Se nos abrir´ a el siguiente
+dialogo.
+Figura 9.5: Instalaci´ on de Anylogic en Mac
+Pulsamos sobre el bot´ onContinuar [Figura 9.5].
+
+--- PAGE 112 ---
+96 9. Manuales de usuario
+Figura 9.6: Instalaci´ on de Anylogic en Mac
+Pulsamos sobre el bot´ onContinuar, y se abrir´ a un dialogo. Pulsamos el bot´ onAcepto
+[Figura 9.6].
+Figura 9.7: Instalaci´ on de Anylogic en Mac
+Por ´ ultimo pulsamos el bot´ onInstalar [Figura 9.7] y se proceder´ a a instalarse. Una
+vez terminada la instalaci´ on ya tenemos el programa disponible en nuestro equipo.
+9.2. Manual de uso de Strategy Simulator
+Esta aplicaci´ on no requiere de instalaci´ on por lo que solo tenemos que abrir el archivo
+ejecutable. Si por defecto, se abre con alg´ un programa que tengamos instalado en
+el equipo, haremos click sobre ´ el con el bot´ on derecho, le damos a abrir con y
+seleccionamos la opci´ onJava(TM) Platform SE binary
+Generar archivo de simulaci´ on
+
+--- PAGE 113 ---
+9.2. Manual de uso de Strategy Simulator 97
+Al abrir la aplicaci´ on se muestra la pantalla principal. Para empezar a usarla lo
+primero que debemos hacer es cargar el archivo XML que contiene las estrategias de
+gamiﬁcaci´ on. Para ello pulsaremos sobre el bot´ onOpen, que abrir´ a un dialogo para
+que seleccionemos el archivo XML [Figura 9.8].
+Figura 9.8: Uso de Strategy Simulator
+Una vez cargadas las estrategias accedemos a la pantalla de simulaci´ on, para ello
+pulsamos el bot´ onSimulation [Figura 9.9].
+Figura 9.9: Uso de Strategy Simulator
+Una vez en esta pantalla tendremos que seleccionar la estrategia con la que queremos
+realizar la simulaci´ on. Una vez seleccionada rellenaremos TODOS los campos del
+formulario, en el caso de no rellenar alg´ un campo la aplicaci´ on nos lo indicar´ ıa con
+un mensaje de error. Al pulsar en el bot´ on Browser, se abrir´ a un dialogo para que
+seleccionemos el Excel que contiene la tasa de ´ exito. Una vez que tenemos todos los
+
+--- PAGE 114 ---
+98 9. Manuales de usuario
+campos completados procedemos a generar el archivo de simulaci´ on pulsando sobre
+el bot´ onGenerate [Figura 9.10].
+Figura 9.10: Uso de Strategy Simulator
+Al pulsar sobre el bot´ onGenerate se abre un dialogo para que el usuario seleccione
+d´ onde quiere guardar el archivo. Una vez hecho esto se procede a generar el archivo.
+Tanto si la acci´ on se ha realizado con ´ exito, como si no, la aplicaci´ on lo indicar´ a
+mediante un mensaje por pantalla.
+Una vez que tenemos el archivo de simulaci´ on generado pulsamos sobre el bot´ onRun
+Anylogic [Figura 9.11].
+Figura 9.11: Uso de Strategy Simulator
+Al pulsar este bot´ on se abre el archivo de simulaci´ on generado en la aplicaci´ on Any-
+logic. Si estamos utilizando la aplicaci´ on en MAC OS, debido a un bug de Anylogic,
+tendremos que abrir el archivo de manera manual [Figura 9.12].
+
+--- PAGE 115 ---
+9.2. Manual de uso de Strategy Simulator 99
+Figura 9.12: Uso de Strategy Simulator
+Una vez con el archivo abierto en Anylogic procedemos a ejecutarlo pulsando el
+bot´ onRun [Figura 9.13].
+Figura 9.13: Uso de Strategy Simulator
+Una vez ejecutado, se abre la pantalla principal de la simulaci´ on. En ella volvemos
+a tener el formulario que ten´ ıamos en Strategy Simulator [Figura 9.10]. Este formu-
+lario, est´ a destinado a que si el usuario decide cambiar alguno de los par´ ametros
+introducidos no tenga que volver a generar el archivo de simulaci´ on. Para empezar
+la simulaci´ on pulsamos el bot´ onRun [Figura 9.14].
+Figura 9.14: Uso de Strategy Simulator
+Una vez realizada la simulaci´ on tenemos dos pantallas con los resultados obtenidos.
+
+--- PAGE 116 ---
+100 9. Manuales de usuario
+En la primera tenemos dos gr´ aﬁcas, una nos muestra los abandonos producidos en
+cada actividad, y otra el tiempo promedio que se ha empleado en realizar cada
+actividad. Para navegar a la otra pantalla pulsamos el bot´ onPage 2 [Figura 9.15].
+Figura 9.15: Uso de Strategy Simulator
+En la segunda tenemos dos gr´ aﬁcas, una nos muestra las recompensas obtenidas
+por los alumnos del curso, y otra una clasiﬁcaci´ on del n´ umero de alumnos que han
+conseguido llegar a cada nivel. Tambi´ en muestra el n´ umero de alumnos que han
+completado la estrategia con ´ exito. Para navegar a la pantalla anterior pulsamos el
+bot´ onPage 1 [Figura 9.16].
+Figura 9.16: Uso de Strategy Simulator
+Aplicar estrategia a Moodle
+Una vez que tenemos las estrategias cargadas en la aplicaci´ on, accedemos a la pan-
+talla de Moodle pulsando el bot´ onMoodle [Figura 9.17].
+
+--- PAGE 117 ---
+9.2. Manual de uso de Strategy Simulator 101
+Figura 9.17: Uso de Strategy Simulator
+Una vez que estamos en esta pantalla, seleccionamos la estrategia que queremos
+aplicar y pulsamos el bot´ onApply to Moodle [Figura 9.18].
+Figura 9.18: Uso de Strategy Simulator
+Una vez que aplicamos la estrategia a Moodle, aparecer´ an dos gr´ aﬁcas con los re-
+sultados obtenidos. Una nos muestra las recompensas obtenidas por los alumnos del
+curso, y otra una clasiﬁcaci´ on del n´ umero de alumnos que han conseguido llegar
+a cada nivel. Por ´ ultimo para publicar estos resultados en la red social SmartWeb
+pulsamos el bot´ onShare [Figura 9.19].
+
+--- PAGE 118 ---
+102 9. Manuales de usuario
+Figura 9.19: Uso de Strategy Simulator
+
+--- PAGE 119 ---
+Cap´ ıtulo 10
+Conclusiones
+10.1. Objetivos alcanzados
+Tras la ﬁnalizaci´ on de este proyecto puedo decir que se ha alcanzado el principal
+objetivo que tenia esta aplicaci´ on.
+Se ha conseguido ofrecer al usuario una herramienta capaz de simular el compor-
+tamiento de un grupo de alumnos en un curso de Moodle ante una estrategia de
+gamiﬁcaci´ on. Adem´ as de estos resultados de realizar la simulaci´ on se le ofrece la
+posibilidad de aplicar la estrategia a un curso real de Moodle y poder ver resultados,
+hacer comparativas y un an´ alisis.
+Al ﬁnal es el objetivo global de esta aplicaci´ on que el usuario pueda realizar un
+an´ alisis a partir de unos resultados ﬁables para posteriormente pueda realizar una
+toma una decisi´ on.
+10.2. Lecciones aprendidas
+A nivel personal, la lecci´ on mas valiosa de este proyecto ha sido la conﬁanza obtenida
+para realizar un proyecto al completo, pasando por cada una de las fases del ciclo
+de vida del software.
+Durante la carrera no he tenido la oportunidad de afrontar un proyecto de estas
+caracter´ ısticas, por los que desconoc´ ıa la cantidad de diﬁcultades que van surgiendo
+durante el desarrollo.
+Otra de las lecciones aprendidas en este proyecto es la importancia de una buena
+planiﬁcaci´ on, en mi caso al no trabajar de manera regular en este proyecto ha sido
+de vital importancia tener en todo momento un control de las tareas. Utilizar la
+herramienta Trello ha sido muy importante ya que me ha ayudado mucho a planiﬁcar
+estas tareas y a conocer el estado en el que se encuentran despu´ es de pasar un tiempo
+sin poder trabajar en el proyecto.
+103
+
+--- PAGE 120 ---
+104 10. Conclusiones
+Para abordar todo el tema de la simulaci´ on, ha sido fundamental una investigaci´ on y
+estudio previo sobre el tema. Al principio pensaba estar perdiendo el tiempo ya que
+sientes la sensaci´ on de no avanzar en el proyecto, pero despu´ es todo este periodo de
+aprendizaje me ha ayudado en tener claro muchos conceptos que despu´ es he usado
+en la pr´ actica.
+Tras la ﬁnalizaci´ on de este proyecto me he dado cuenta de mi capacidad para afrontar
+y solucionar problemas. Al inicio de este trabajo ten´ ıa serias dudas sobre si podr´ ıa
+alcanzar los objetivos marcados, pero a medida que empiezas te vas dando cuenta
+que tienes recursos suﬁcientes para salir adelante y ﬁnalmente lo consigues.
+Quiz´ a compaginar este proyecto con la actividad laboral aparte de retrasar el desa-
+rrollo del proyecto, me ha ayudado a la hora de tomar decisiones relacionadas con
+el desarrollo, el uso de herramientas, la organizaci´ on del trabajo y a alcanzar cierta
+madurez en los conocimientos adquiridos durante la carrera.
+10.3. Trabajos futuros
+En esta secci´ on, se presentan algunas mejoras que pueden ser incluidas en futuras
+versiones del software.
+Una de las mejoras a estudiar para versiones futuras es la lectura de las es-
+trategias de gamiﬁcaci´ on. Actualmente estas estrategias est´ an almacenadas en
+un archivo con formato XML, puede ser una buena idea que en un futuro es-
+tas estrategias est´ en almacenadas en una base de datos, para ello habr´ ıa que
+modiﬁcar la forma de cargar las estrategias en la aplicaci´ on.
+En la pantalla de Moodle, al aplicar una estrategia se muestran los resultados
+en dos gr´ aﬁcas. Estas gr´ aﬁcas muestran los resultados obtenidos de manera
+muy gen´ erica. Una mejora para el usuario ser´ ıa a˜ nadir otras gr´ aﬁcas que pu-
+diesen mostrar mas detalle de estos resultados, un ejemplo ser´ ıa tener una
+visualizaci´ on de qu´ e recompensas ha conseguido cada alumno.
+Otros de los aspectos en los que se puede trabajar en un futuro es en la mejora
+del modelo de simulaci´ on. Actualmente, los alumnos tienen un comportamiento
+individual, es decir, se comportan de acuerdo a unas reglas ﬁjas. Una mejora
+del modelo ser´ ıa que los alumnos pudiesen interactuar entre ellos y que su
+comportamiento pudiese variar durante la simulaci´ on.
+
+--- PAGE 121 ---
+Bibliograf´ ıa
+[1] Anylogic [acceso online: 22/09/2016]: http://www.anylogic.com/
+[2] Ayuda de Anylogic [acceso online: 10/05/2016]: http://help.anylogic.com/
+index.jsp?topic=/com.xj.anylogic.help/html/presentation/Slider.
+html
+[3] Bloc de Anylogic [acceso online: 15/12/2015]: https://xavierpuig.
+wordpress.com/page/3/
+[4] Website Runthemodel [acceso online: 05/05/2015]: http://www.runthemodel.
+com/
+[5] Website de Ac´ amica [acceso online: 10/05/2015]:https://www.acamica.com/
+[6] Grigoriev, I. (2015). Anylogic 7 in three days.
+[7] Moodle Database Schema [acceso online: 10/08/2016]: https://docs.moodle.
+org/dev/Database_schema_introduction
+[8] Moodle ER Diagram [acceso online: 10/08/2016]: http://www.examulator.
+com/er/
+[9] Moodle [acceso online: 10/06/2016]: https://download.moodle.org/macosx/
+[10] Moodle data manipulation API [acceso online: 10/08/2016]: https:
+//docs.moodle.org/dev/Data_manipulation_API
+[11] Moodle access API [acceso online: 10/08/2016]: https://docs.moodle.org/
+dev/Access_API
+[12] Google material design [acceso online: 05/02/2016]: https://material.
+105
+
+--- PAGE 122 ---
+106 BIBLIOGRAF ´IA
+google.com/style/color.html#color-color-schemes
+[13] Herramienta Trello [acceso online: 27/09/2016]: https://trello.com
+[14] Navegaci´ on y di´ alogos en JavaFx [acceso online: 10/02/2016]: http://www.
+betacoders.org/aprender-javafx-parte-3-navegacion-y-dialogos/
+[15] API JavaFx [acceso online: 20/08/2016]: https://docs.oracle.com/javafx/
+2/api/
+[16] Recursos de JavaFx [acceso online: 19/11/2015]: http://javainutil.
+blogspot.com.es/2013/02/javafx-abrir-y-guardar-archivos.html
+[17] Componentes Interfaz JavaFx [acceso online: 06/08/2016]: http:
+//download.oracle.com/otndocs/products/javafx/2/samples/Ensemble/
+index.html#SAMPLES
+[18] Tutorial JavaFx [acceso online: 18/09/2016]: http://code.makery.ch/
+library/javafx-8-tutorial/es/
+[19] Bloc Mkyong [acceso online: 05/08/2016]: http://www.mkyong.com/
+tutorials/jax-rs-tutorials/
+[20] RESTful Java client with Jersey [acceso online:
+05/08/2016]: http://www.mkyong.com/webservices/jax-rs/
+restful-java-client-with-jersey-client/
+[21] Recurso de JDBC [acceso online: 25/07/2016]: http://www.
+hermosaprogramacion.com/2014/07/mysql-java-conectar-como/
+[22] Tabla salarial empresas TIC [acceso online: 24/09/2016]: http://www.
+ccoo-servicios.es/archivos/actualizaciontablas\%20XVIconvcol.pdf

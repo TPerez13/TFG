@@ -11,8 +11,8 @@ import {
 } from '../notifications/settings';
 
 const ML_PER_GLASS = 250;
-const DEFAULT_GOAL_VALUE = 8;
-const DEFAULT_GOAL_UNIT = 'vasos';
+const DEFAULT_GOAL_VALUE = 2000;
+const DEFAULT_GOAL_UNIT = 'ml';
 
 type HydrationGoal = {
   value: number;
@@ -71,7 +71,7 @@ const normalizeGoal = (preferences: unknown): HydrationGoal => {
       }
     }
   }
-  return { value: DEFAULT_GOAL_VALUE, unit: 'vasos' };
+  return { value: DEFAULT_GOAL_VALUE, unit: 'ml' };
 };
 
 const toMlFromGoal = (goal: HydrationGoal) => {
@@ -100,10 +100,10 @@ const formatEntryLabel = (entry: HabitEntry) => {
 };
 
 const initialData: HydrationTodayData = {
-  goal: { value: DEFAULT_GOAL_VALUE, unit: 'vasos' },
+  goal: { value: DEFAULT_GOAL_VALUE, unit: 'ml' },
   totalMl: 0,
   totalVasos: 0,
-  remainingMl: DEFAULT_GOAL_VALUE * ML_PER_GLASS,
+  remainingMl: DEFAULT_GOAL_VALUE,
   progress: 0,
   history: [],
   recentAmountsMl: [],

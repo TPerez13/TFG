@@ -8,6 +8,7 @@ import {
   dateToLocalKey,
   formatClock,
   formatEntryValue,
+  normalizeEntryValueForGoal,
   lastNDays,
   resolveHabitGoals,
   weekdayShortLabel,
@@ -172,7 +173,8 @@ export function useHabitTrend(habitKeyOrTypeId: HabitKey | number, days = 7): Us
       if (Number.isNaN(parsed.getTime())) return;
       const key = dateToLocalKey(parsed);
       const current = totalByDay.get(key) ?? 0;
-      totalByDay.set(key, current + (Number(entry.valor) || 0));
+      const normalizedValue = normalizeEntryValueForGoal(habitKey, entry, reference.goalUnit);
+      totalByDay.set(key, current + normalizedValue);
     });
 
     const daily = dayList.map((day) => {

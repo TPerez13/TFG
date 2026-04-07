@@ -42,11 +42,15 @@ Comandos útiles:
 npm run db:up
 npm run db:down
 npm run db:reset
+npm run db:sync-schema
+npm run db:seed
 npm run db:logs
 ```
 
 - `db:up`: levanta PostgreSQL y pgAdmin en Docker.
 - `db:reset`: borra volúmenes y vuelve a ejecutar `database/init.sql` (útil para volver a sembrar datos).
+- `db:sync-schema`: reaplica `database/init.sql` sobre la base ya existente sin borrar el volumen. Útil cuando añadiste tablas/columnas con `IF NOT EXISTS` o `ALTER TABLE ... ADD COLUMN IF NOT EXISTS`.
+- `db:seed`: compila el monorepo y carga 5 usuarios demo con hábitos, preferencias y logros diferentes.
 
 Configuración actual de PostgreSQL en `docker-compose.yml`:
 - Host: `localhost`
@@ -74,6 +78,11 @@ Si no ves tablas en `public`:
 1. Ejecuta `npm run db:up`.
 2. Si la BD ya existía y no cargó el script inicial, ejecuta `npm run db:reset`.
 3. En pgAdmin refresca `Schemas > public > Tables`.
+
+Si cambias `database/init.sql` y quieres reflejarlo en el contenedor:
+1. Para cambios compatibles e idempotentes, ejecuta `npm run db:sync-schema`.
+2. Si cambiaste algo destructivo o quieres recrear todo desde cero, ejecuta `npm run db:reset`.
+3. Si además quieres recargar usuarios demo, ejecuta `npm run db:seed`.
 
 Si `http://localhost:5050` no abre (connection refused):
 1. Verifica que Docker Desktop esté iniciado.

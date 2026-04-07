@@ -6,8 +6,9 @@
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
+    "seed": "node dist/scripts/seedDemoData.js",
     "start": "node dist/server.js",
-    "test:build": "tsc -p tsconfig.test.json",
+    "test:build": "node -e \"require('fs').rmSync('dist-test', { recursive: true, force: true })\" && tsc -p tsconfig.test.json",
     "test:unit": "npm run test:build && node --require ./dist-test/tests/setup/env.js --test ./dist-test/tests/unit",
     "test:integration": "npm run test:build && node --require ./dist-test/tests/setup/env.js --test ./dist-test/tests/integration",
     "test": "npm run test:build && node --require ./dist-test/tests/setup/env.js --test ./dist-test/tests/unit ./dist-test/tests/integration"

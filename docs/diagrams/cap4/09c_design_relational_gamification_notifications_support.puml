@@ -49,9 +49,14 @@ package "Gamificación" #F4EEFF {
     entity "logro" as logro {
       * id_logro : SERIAL <<PK>>
       --
+      codigo : TEXT <<UQ>>
       * nombre : TEXT <<UQ>>
+      descripcion : TEXT
       criterio : JSONB
+      icono : TEXT
       * puntos : INT
+      * dificultad : INT
+      * prioridad_compartir : INT
     }
 
     entity "usuario_logro" as usuario_logro {

@@ -176,6 +176,22 @@ CREATE TABLE IF NOT EXISTS logro (
   puntos       INT  NOT NULL DEFAULT 0
 );
 
+ALTER TABLE logro
+  ADD COLUMN IF NOT EXISTS codigo TEXT;
+
+ALTER TABLE logro
+  ADD COLUMN IF NOT EXISTS icono TEXT;
+
+ALTER TABLE logro
+  ADD COLUMN IF NOT EXISTS dificultad INT NOT NULL DEFAULT 0;
+
+ALTER TABLE logro
+  ADD COLUMN IF NOT EXISTS prioridad_compartir INT NOT NULL DEFAULT 0;
+
+CREATE UNIQUE INDEX IF NOT EXISTS uq_logro_codigo
+  ON logro (codigo)
+  WHERE codigo IS NOT NULL;
+
 -- =========================
 -- TABLA: USUARIO_LOGRO
 -- =========================

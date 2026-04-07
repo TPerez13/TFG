@@ -1,9 +1,12 @@
 import type { HabitEntry } from '../../types/models';
+import { durationToMinutes as exerciseDurationToMinutes } from '../exercise/utils';
 import {
   getHabitByKey,
   type HabitDefinition,
   type HabitKey,
 } from '../habits/habitRegistry';
+import { durationToMinutes as meditationDurationToMinutes } from '../meditation/utils';
+import { hoursFromEntry } from '../sleep/utils';
 
 const CORE_HABITS: HabitKey[] = ['agua', 'comidas', 'ejercicio', 'sueno', 'meditacion'];
 
@@ -16,6 +19,7 @@ const DEFAULT_GOALS: Record<HabitKey, { value: number; unit: string }> = {
 };
 
 const WEEKDAY_LABELS = ['D', 'L', 'M', 'X', 'J', 'V', 'S'] as const;
+const ML_PER_GLASS = 250;
 
 export type HabitGoalConfig = {
   habitKey: HabitKey;
@@ -38,6 +42,42 @@ export type AggregatedHabitDay = HabitGoalConfig & {
 };
 
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
+const normalizeUnit = (unit?: string | null) => `${unit ?? ''}`.trim().toLowerCase();
+const formatCompactNumber = (value: number) => {
+  const rounded = Math.round(value * 10) / 10;
+  return Number.isInteger(rounded) ? `${rounded}` : rounded.toFixed(1);
+};
+
+const toHydrationMl = (entry: HabitEntry) => {
+  const value = Number(entry.valor) || 0;
+  if (!value) return 0;
+
+  const unit = normalizeUnit(entry.unidad);
+  if (unit === 'ml') return value;
+  if (unit === 'l' || unit === 'litro' || unit === 'litros') return value * 1000;
+  if (unit === 'vaso' || unit === 'vasos') return value * ML_PER_GLASS;
+  if (value > 30) return value;
+  return value * ML_PER_GLASS;
+};
+
+const toHydrationGoalUnit = (ml: number, goalUnit?: string | null) => {
+  const unit = normalizeUnit(goalUnit);
+  if (unit === 'l' || unit === 'litro' || unit === 'litros') return ml / 1000;
+  if (unit.includes('vaso')) return ml / ML_PER_GLASS;
+  return ml;
+};
+
+const toDurationGoalUnit = (minutes: number, goalUnit?: string | null) => {
+  const unit = normalizeUnit(goalUnit);
+  if (unit === 'h' || unit === 'hr' || unit === 'hora' || unit === 'horas') return minutes / 60;
+  return minutes;
+};
+
+const toSleepGoalUnit = (hours: number, goalUnit?: string | null) => {
+  const unit = normalizeUnit(goalUnit);
+  if (unit === 'min' || unit === 'mins' || unit === 'minuto' || unit === 'minutos') return hours * 60;
+  return hours;
+};
 
 export const dateToLocalKey = (value: Date) => {
   const year = value.getFullYear();
@@ -116,16 +156,19 @@ const toSleepLabelFromMinutes = (minutesValue: number) => {
 };
 
 export const formatHabitValue = (habitKey: HabitKey, total: number, unit?: string | null) => {
-  const normalizedUnit = `${unit ?? ''}`.toLowerCase();
+  const normalizedUnit = normalizeUnit(unit);
   const safeTotal = Number.isFinite(total) ? total : 0;
 
   if (habitKey === 'agua') {
-    if (normalizedUnit.includes('vaso')) return `${Math.round(safeTotal)} vasos`;
-    if (normalizedUnit === 'l' || normalizedUnit.includes('litro')) return `${safeTotal.toFixed(1)} l`;
+    if (normalizedUnit.includes('vaso')) return `${formatCompactNumber(safeTotal)} vasos`;
+    if (normalizedUnit === 'l' || normalizedUnit.includes('litro')) return `${formatCompactNumber(safeTotal)} l`;
     return `${Math.round(safeTotal)} ml`;
   }
 
   if (habitKey === 'ejercicio' || habitKey === 'meditacion') {
+    if (normalizedUnit === 'h' || normalizedUnit === 'hr' || normalizedUnit === 'hora' || normalizedUnit === 'horas') {
+      return `${formatCompactNumber(safeTotal)} h`;
+    }
     return `${Math.round(safeTotal)} min`;
   }
 
@@ -143,6 +186,30 @@ export const formatHabitValue = (habitKey: HabitKey, total: number, unit?: strin
 
 export const formatEntryValue = (habitKey: HabitKey, entry: HabitEntry) =>
   formatHabitValue(habitKey, Number(entry.valor) || 0, entry.unidad);
+
+export const normalizeEntryValueForGoal = (
+  habitKey: HabitKey,
+  entry: HabitEntry,
+  goalUnit?: string | null,
+) => {
+  if (habitKey === 'agua') {
+    return toHydrationGoalUnit(toHydrationMl(entry), goalUnit);
+  }
+
+  if (habitKey === 'ejercicio') {
+    return toDurationGoalUnit(exerciseDurationToMinutes(entry), goalUnit);
+  }
+
+  if (habitKey === 'meditacion') {
+    return toDurationGoalUnit(meditationDurationToMinutes(entry), goalUnit);
+  }
+
+  if (habitKey === 'sueno') {
+    return toSleepGoalUnit(hoursFromEntry(entry), goalUnit);
+  }
+
+  return Number(entry.valor) || 0;
+};
 
 const asRecord = (value: unknown): Record<string, unknown> | null =>
   value && typeof value === 'object' && !Array.isArray(value)
@@ -236,7 +303,8 @@ export const aggregateByHabitAndDay = (
       const current = byHabit.get(habit.habitKey);
       if (!current) return;
 
-      const nextTotal = current.total + (Number(entry.valor) || 0);
+      const normalizedValue = normalizeEntryValueForGoal(habit.habitKey, entry, habit.goalUnit);
+      const nextTotal = current.total + normalizedValue;
       const existingTime = current.latestAt ? new Date(current.latestAt).getTime() : 0;
       const currentTime = new Date(entry.f_registro).getTime();
       const latestAt = currentTime > existingTime ? entry.f_registro : current.latestAt;

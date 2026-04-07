@@ -1,5 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
+import {
+  buildAchievementShareContent,
+  selectTopUnlockedAchievement,
+} from '@muchasvidas/shared';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
   ActivityIndicator,
@@ -16,6 +20,7 @@ import { InsightCard } from '../components/progress/InsightCard';
 import { MonthPager } from '../components/progress/MonthPager';
 import { StatCard } from '../components/progress/StatCard';
 import { WeeklyBars } from '../components/progress/WeeklyBars';
+import { useAchievements } from '../features/achievements/useAchievements';
 import { useMonthlyProgress } from '../features/progress/useMonthlyProgress';
 import type { ProgressStackParamList } from '../navigation/types';
 import { baseStyles } from '../theme/components';
@@ -60,6 +65,12 @@ const getStreakCaption = (streakDays: number, isEmpty: boolean) => {
 export default function MonthlyProgressScreen({ navigation }: MonthlyProgressScreenProps) {
   const [selectedMonth, setSelectedMonth] = useState(() => shiftMonth(new Date(), 0));
   const { data, loading, error, reload, firstAvailableMonth } = useMonthlyProgress(selectedMonth);
+  const {
+    achievements,
+    loading: achievementsLoading,
+    error: achievementsError,
+    reload: reloadAchievements,
+  } = useAchievements(selectedMonth);
   const disableNext = isCurrentMonth(selectedMonth);
   const disablePrev =
     firstAvailableMonth !== null ? compareMonths(selectedMonth, firstAvailableMonth) <= 0 : false;
@@ -74,18 +85,28 @@ export default function MonthlyProgressScreen({ navigation }: MonthlyProgressScr
     }
   }, [firstAvailableMonth, selectedMonth]);
 
-  const shareMessage = useMemo(
+  const featuredAchievement = useMemo(
+    () => selectTopUnlockedAchievement(achievements, selectedMonth),
+    [achievements, selectedMonth],
+  );
+  const shareContent = useMemo(
     () =>
-      `Logro mensual - ${data.monthLabel}\nRacha del mes: ${data.streakDays} días\nPromedio mensual: ${data.monthlyAvg}%\nHábitos completados: ${data.habitsCompleted}\n${data.achievementTitle}`,
-    [data.achievementTitle, data.habitsCompleted, data.monthLabel, data.monthlyAvg, data.streakDays],
+      featuredAchievement
+        ? buildAchievementShareContent(featuredAchievement, {
+            monthLabel: data.monthLabel,
+            contextTitle: 'Logro del mes',
+          })
+        : null,
+    [data.monthLabel, featuredAchievement],
   );
 
   const handleShare = async () => {
+    if (!shareContent) {
+      return;
+    }
+
     try {
-      await Share.share({
-        title: 'Logro del mes',
-        message: shareMessage,
-      });
+      await Share.share(shareContent);
     } catch {
       // No-op: si el usuario cierra el modal, no necesitamos feedback.
     }
@@ -96,6 +117,7 @@ export default function MonthlyProgressScreen({ navigation }: MonthlyProgressScr
       setSelectedMonth((current) => shiftMonth(current, -1));
     }
   };
+
   const handleNextMonth = () => {
     if (!disableNext) {
       setSelectedMonth((current) => shiftMonth(current, 1));
@@ -144,6 +166,7 @@ export default function MonthlyProgressScreen({ navigation }: MonthlyProgressScr
               accessibilityLabel="Reintentar"
               onPress={() => {
                 void reload();
+                void reloadAchievements();
               }}
               style={({ pressed }) => [styles.retryButton, pressed ? styles.pressed : null]}
             >
@@ -204,7 +227,29 @@ export default function MonthlyProgressScreen({ navigation }: MonthlyProgressScr
               isEmpty={data.isEmpty}
             />
 
-            {!data.isEmpty ? <AchievementCard title={data.achievementTitle} onShare={handleShare} /> : null}
+            {!data.isEmpty && achievementsError && !achievementsLoading ? (
+              <View style={styles.errorCard}>
+                <Text style={styles.errorTitle}>No se pudo cargar el logro destacado</Text>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="Reintentar logro destacado"
+                  onPress={() => {
+                    void reloadAchievements();
+                  }}
+                  style={({ pressed }) => [styles.retryButton, pressed ? styles.pressed : null]}
+                >
+                  <Text style={styles.retryText}>Reintentar</Text>
+                </Pressable>
+              </View>
+            ) : null}
+
+            {!data.isEmpty && !achievementsError && featuredAchievement ? (
+              <AchievementCard
+                iconName={featuredAchievement.icon}
+                title={featuredAchievement.title}
+                onShare={handleShare}
+              />
+            ) : null}
           </>
         ) : null}
       </ScrollView>
