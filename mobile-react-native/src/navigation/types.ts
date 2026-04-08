@@ -9,7 +9,6 @@ export type HistoryFilterKey = 'todos' | HabitKey;
 export type AuthStackParamList = {
   Login: undefined;
   ForgotPassword: undefined;
-  Register?: undefined;
 };
 
 export type HomeStackParamList = {

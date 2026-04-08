@@ -24,7 +24,7 @@ export interface CreateUserInput {
   preferencias: Record<string, unknown> | null;
 }
 
-export interface UpdateUserProfileInput {
+interface UpdateUserProfileInput {
   correo?: string;
   nombre?: string;
 }

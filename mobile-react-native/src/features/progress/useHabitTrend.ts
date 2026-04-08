@@ -29,7 +29,7 @@ type RecentTrendItem = {
   entry: HabitEntry;
 };
 
-export type HabitTrendData = {
+type HabitTrendData = {
   habitKey: HabitKey;
   habitTitle: string;
   icon: string;

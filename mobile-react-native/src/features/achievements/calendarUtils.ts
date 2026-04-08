@@ -1,6 +1,6 @@
 export type WeekStartsOn = 0 | 1;
 
-export type CalendarCell = {
+type CalendarCell = {
   date: Date;
   isoDate: string;
   dayNumber: number;
@@ -32,9 +32,6 @@ export const addMonths = (value: Date, months: number) =>
 
 export const addDays = (value: Date, days: number) =>
   new Date(value.getFullYear(), value.getMonth(), value.getDate() + days, 12, 0, 0, 0);
-
-export const getMonthKey = (value: Date) =>
-  `${value.getFullYear()}-${`${value.getMonth() + 1}`.padStart(2, '0')}`;
 
 export const formatMonthLabel = (value: Date) =>
   capitalize(

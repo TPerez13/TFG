@@ -16,7 +16,7 @@ export type NutritionEntry = {
   grasasG: number | null;
 };
 
-export type NutritionSummary = {
+type NutritionSummary = {
   kcal: number;
   proteinaG: number;
   carbohidratosG: number;

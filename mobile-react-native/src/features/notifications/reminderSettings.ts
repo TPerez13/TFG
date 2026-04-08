@@ -6,7 +6,7 @@ type SaveHabitReminderOptions = {
   requestPermissions?: boolean;
 };
 
-export type SaveHabitReminderResult = {
+type SaveHabitReminderResult = {
   permissionState: NotificationPermissionState | null;
   shouldBeScheduled: boolean;
 };

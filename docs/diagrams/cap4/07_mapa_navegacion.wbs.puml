@@ -1,5 +1,6 @@
 @startwbs
-' CAP4 - 07 Mapa de Navegación
+' CAP4 - 07 Mapa de navegación
+' Basado en RootNavigator, AppTabs y los stacks actuales de mobile-react-native
 
 skinparam backgroundColor #F8FAFC
 skinparam shadowing false
@@ -8,37 +9,50 @@ skinparam defaultFontName Segoe UI
 skinparam defaultFontSize 13
 skinparam ArrowColor #5B7083
 skinparam ArrowThickness 1
-title Capítulo 4 - Mapa de navegación
+
+title Capítulo 4 - Mapa de navegación de la aplicación móvil
 
 * Aplicación móvil
-** Acceso
-*** Inicio de sesión
-*** Registro
-*** Recuperación de contraseña
+** Navegación raíz
+*** Usuario no autenticado
+**** Inicio de sesión y registro
+**** Recuperar contraseña
+*** Usuario autenticado
+**** Tabs principales
+***** Inicio
+****** Panel diario
+******* Acceso a logros
+******* Accesos rápidos a hábitos
+***** Hábitos
+****** Catálogo de hábitos
+****** Detalle de hábito
+****** Metas del hábito
+****** Nutrición
+******* Registro rápido de comida
+******* Registro manual de comida
+****** Hidratación
+******* Registrar agua
+****** Ejercicio
+******* Registrar ejercicio
+****** Sueño
+******* Registrar sueño
+****** Meditación
+******* Registrar meditación
+***** Progreso
+****** Resumen mensual
+****** Historial
+****** Detalle diario
+****** Historial por hábito
+****** Detalle de hábito
+***** Perfil
+****** Perfil de usuario
+****** Editar perfil
+****** Logros
+****** Ajustes de notificación
+****** Privacidad
+****** Ayuda y soporte
+****** Sobre la aplicación
+****** Política de privacidad
+****** Términos de uso
 
-** Navegación principal
-*** Inicio
-**** Panel diario
-
-*** Hábitos
-**** Vista general de hábitos
-**** Nutrición
-**** Hidratación
-**** Ejercicio
-**** Sueño
-**** Meditación
-
-*** Progreso
-**** Progreso mensual
-**** Historial
-**** Detalle diario
-**** Detalle por hábito
-
-*** Perfil
-**** Perfil de usuario
-**** Logros
-**** Configuración de notificaciones
-**** Privacidad
-**** Soporte
-**** Información legal
 @endwbs

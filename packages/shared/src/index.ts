@@ -143,7 +143,7 @@ export type UserDataExport = {
 };
 
 export type SupportTicketType = "consulta" | "bug";
-export type SupportTicketStatus = "abierto" | "cerrado";
+type SupportTicketStatus = "abierto" | "cerrado";
 
 export type SupportFaqItem = {
   id: string;

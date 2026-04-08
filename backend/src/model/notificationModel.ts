@@ -2,7 +2,7 @@ import { pool } from "../db";
 
 export type NotificationType = "REMINDER" | "ACHIEVEMENT" | "CHALLENGE" | "SYSTEM";
 
-export interface NotificationRecord {
+interface NotificationRecord {
   id_notificacion: number;
   id_usuario: number;
   titulo: string;
@@ -19,7 +19,7 @@ export interface NotificationRecord {
   updated_at: string | Date;
 }
 
-export type ListNotificationsInput = {
+type ListNotificationsInput = {
   userId: number;
   limit: number;
   cursor?: string;
@@ -159,7 +159,7 @@ export async function getNotificationById(
   return result.rowCount ? result.rows[0] : null;
 }
 
-export type CreateNotificationInput = {
+type CreateNotificationInput = {
   userId: number;
   title: string;
   body: string;

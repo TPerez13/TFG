@@ -33,7 +33,7 @@ export const serializeMeditationNotes = (payload: MeditationNotesPayload): strin
   return Object.keys(jsonPayload).length > 0 ? JSON.stringify(jsonPayload) : null;
 };
 
-export const parseMeditationNotes = (notes: string | null) => {
+const parseMeditationNotes = (notes: string | null) => {
   if (!notes || !notes.trim()) {
     return {
       type: 'otro' as MeditationSessionType,

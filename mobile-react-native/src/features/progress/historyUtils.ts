@@ -21,7 +21,7 @@ const DEFAULT_GOALS: Record<HabitKey, { value: number; unit: string }> = {
 const WEEKDAY_LABELS = ['D', 'L', 'M', 'X', 'J', 'V', 'S'] as const;
 const ML_PER_GLASS = 250;
 
-export type HabitGoalConfig = {
+type HabitGoalConfig = {
   habitKey: HabitKey;
   typeId: number;
   title: string;
@@ -32,7 +32,7 @@ export type HabitGoalConfig = {
   goalUnit: string;
 };
 
-export type AggregatedHabitDay = HabitGoalConfig & {
+type AggregatedHabitDay = HabitGoalConfig & {
   total: number;
   latestAt: string | null;
   achieved: boolean;
@@ -256,7 +256,7 @@ export const resolveHabitGoals = (preferences: unknown): HabitGoalConfig[] => {
   }).filter((item) => item.typeId > 0);
 };
 
-export const groupEntriesByDay = (entries: HabitEntry[]) => {
+const groupEntriesByDay = (entries: HabitEntry[]) => {
   const grouped = new Map<string, HabitEntry[]>();
   entries.forEach((entry) => {
     const parsedDate = new Date(entry.f_registro);

@@ -2,8 +2,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 import type {
   HabitNotificationKey,
-  HabitReminderDebugInfo,
-  HabitReminderSnapshot,
   NotificationSettings,
 } from './types';
 import { DEFAULT_NOTIFICATION_SETTINGS } from './settings';
@@ -316,87 +314,6 @@ const scheduleHabitNotificationInternal = async (
   return identifier;
 };
 
-export const getNextHabitScheduleDate = (
-  habitKey: HabitNotificationKey,
-  habitConfig: NotificationHabitSettings,
-  globalConfig: NotificationGlobalSettings,
-  now = new Date()
-): Date => {
-  const initial = buildInitialCandidate(now, habitKey, habitConfig, globalConfig);
-  const adjusted = applyQuietHoursPolicyInternal(initial, globalConfig);
-  if (adjusted > now) return adjusted;
-  adjusted.setDate(adjusted.getDate() + 1);
-  return applyQuietHoursPolicyInternal(adjusted, globalConfig);
-};
-
-export const applyQuietHoursPolicy = (
-  date: Date,
-  globalConfig: NotificationGlobalSettings
-): Date => applyQuietHoursPolicyInternal(new Date(date), globalConfig);
-
-export async function getHabitReminderDebugInfo(
-  habitKey: HabitNotificationKey,
-  snapshot: HabitReminderSnapshot
-): Promise<HabitReminderDebugInfo> {
-  const now = new Date();
-  const permissionState = await getNotificationPermissionState();
-  const globalConfig: NotificationGlobalSettings = {
-    enabled: snapshot.globalEnabled,
-    summaryTime: DEFAULT_NOTIFICATION_SETTINGS.global.summaryTime,
-    quietHoursEnabled: snapshot.quietHoursEnabled,
-    quietFrom: snapshot.quietFrom,
-    quietTo: snapshot.quietTo,
-  };
-  const habitConfig: NotificationHabitSettings = {
-    enabled: snapshot.habitEnabled,
-    time: snapshot.time,
-    lastCompletedDate: snapshot.lastCompletedDate,
-  };
-
-  const initial = buildInitialCandidate(now, habitKey, habitConfig, globalConfig);
-  const adjusted = applyQuietHoursPolicyInternal(initial, globalConfig);
-  const blockedByQuietHours = adjusted.getTime() !== initial.getTime();
-  const blockedByGlobal = !snapshot.globalEnabled;
-  const blockedByPermissions = permissionState !== 'granted';
-  const completedToday = wasCompletedToday(snapshot.lastCompletedDate, now);
-
-  const scheduledMeta = (await readScheduledMetaByHabit())[habitKey];
-  if (scheduledMeta?.scheduledAt) {
-    return {
-      permissionState,
-      nextScheduledAt: scheduledMeta.scheduledAt,
-      nextScheduledSource: 'scheduled',
-      completedToday,
-      blockedByGlobal,
-      blockedByQuietHours,
-      blockedByPermissions,
-    };
-  }
-
-  if (blockedByGlobal || !snapshot.habitEnabled || blockedByPermissions) {
-    return {
-      permissionState,
-      nextScheduledAt: null,
-      nextScheduledSource: 'none',
-      completedToday,
-      blockedByGlobal,
-      blockedByQuietHours,
-      blockedByPermissions,
-    };
-  }
-
-  const nextCalculatedDate = getNextHabitScheduleDate(habitKey, habitConfig, globalConfig, now);
-  return {
-    permissionState,
-    nextScheduledAt: nextCalculatedDate.toISOString(),
-    nextScheduledSource: 'calculated',
-    completedToday,
-    blockedByGlobal,
-    blockedByQuietHours,
-    blockedByPermissions,
-  };
-}
-
 export function configureNotificationRuntime() {
   if (runtimeConfigured) return;
   runtimeConfigured = true;
@@ -411,7 +328,7 @@ export function configureNotificationRuntime() {
   });
 }
 
-export async function requestNotificationPermissions(): Promise<boolean> {
+const requestNotificationPermissions = async (): Promise<boolean> => {
   configureNotificationRuntime();
   if (await hasNotificationPermission()) {
     return true;
@@ -419,40 +336,9 @@ export async function requestNotificationPermissions(): Promise<boolean> {
 
   const requested = await requestPermissionsAsync();
   return requested.granted;
-}
+};
 
-export async function sendHabitTestNotification(habitKey: HabitNotificationKey): Promise<boolean> {
-  configureNotificationRuntime();
-  const hasPermission = await requestNotificationPermissions();
-  if (!hasPermission) {
-    return false;
-  }
-
-  await ensureAndroidChannel();
-
-  const content = HABIT_CONTENT[habitKey];
-  const trigger: NotificationTriggerInput =
-    Platform.OS === 'android'
-      ? { channelId: ANDROID_CHANNEL_ID }
-      : null;
-
-  await scheduleNotificationAsync({
-    content: {
-      title: `Prueba: ${content.title}`,
-      body: 'Si ves este aviso, las notificaciones locales funcionan en este dispositivo.',
-      sound: 'default',
-      data: {
-        source: `${MANAGED_SOURCE}_test`,
-        habitKey,
-      },
-    },
-    trigger,
-  });
-
-  return true;
-}
-
-export async function cancelHabitNotification(habitKey: HabitNotificationKey): Promise<void> {
+const cancelHabitNotification = async (habitKey: HabitNotificationKey): Promise<void> => {
   const stored = await readScheduledByHabit();
   const knownId = stored[habitKey];
   if (knownId) {
@@ -476,7 +362,7 @@ export async function cancelHabitNotification(habitKey: HabitNotificationKey): P
   for (const request of duplicates) {
     await cancelScheduledNotificationAsync(request.identifier);
   }
-}
+};
 
 export async function cancelAllHabitNotifications(): Promise<void> {
   const stored = await readScheduledByHabit();
@@ -497,23 +383,6 @@ export async function cancelAllHabitNotifications(): Promise<void> {
 
   await writeScheduledByHabit({});
   await writeScheduledMetaByHabit({});
-}
-
-export async function scheduleHabitNotification(
-  habitKey: HabitNotificationKey,
-  habitConfig: NotificationHabitSettings,
-  globalConfig: NotificationGlobalSettings
-): Promise<string | null> {
-  return scheduleHabitNotificationInternal(habitKey, habitConfig, globalConfig);
-}
-
-export async function rescheduleHabitNotification(
-  habitKey: HabitNotificationKey,
-  habitConfig: NotificationHabitSettings,
-  globalConfig: NotificationGlobalSettings
-): Promise<string | null> {
-  await cancelHabitNotification(habitKey);
-  return scheduleHabitNotificationInternal(habitKey, habitConfig, globalConfig, { skipCancel: true });
 }
 
 export async function syncAllHabitNotifications(

@@ -1,6 +1,6 @@
 import { pool } from "../db";
 
-export type ConsumePasswordResetTokenResult =
+type ConsumePasswordResetTokenResult =
   | "consumed"
   | "expired"
   | "already_used"

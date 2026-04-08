@@ -41,7 +41,7 @@ export const serializeExerciseNotes = (payload: ExerciseNotesPayload): string | 
   return hasKeys ? JSON.stringify(jsonPayload) : null;
 };
 
-export const parseExerciseNotes = (notes: string | null) => {
+const parseExerciseNotes = (notes: string | null) => {
   if (!notes || !notes.trim()) {
     return {
       activityType: 'otro' as ExerciseActivityType,

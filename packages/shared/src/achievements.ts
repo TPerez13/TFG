@@ -588,7 +588,7 @@ const isSameMonth = (value: string | null, month: Date): boolean => {
   );
 };
 
-export const getAchievementDefinition = (
+const getAchievementDefinition = (
   achievementId: AchievementId
 ): AchievementDefinition => {
   const definition = ACHIEVEMENT_DEFINITION_MAP.get(achievementId);
@@ -600,7 +600,7 @@ export const getAchievementDefinition = (
   return definition;
 };
 
-export const compareAchievementsBySharePriority = (
+const compareAchievementsBySharePriority = (
   left: Pick<AchievementItem, "difficulty" | "sharePriority" | "title" | "unlockedAt">,
   right: Pick<AchievementItem, "difficulty" | "sharePriority" | "title" | "unlockedAt">
 ): number => {

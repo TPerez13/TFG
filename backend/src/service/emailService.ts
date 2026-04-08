@@ -15,7 +15,7 @@ type PasswordResetEmailInput = {
   to: string;
 };
 
-export type PasswordResetEmailResult =
+type PasswordResetEmailResult =
   | { ok: true }
   | {
       ok: false;
@@ -67,7 +67,7 @@ const buildPasswordResetHtml = ({
 const usesResendOnboardingSender = (): boolean =>
   config.mail.provider === "resend" && config.mail.from.toLowerCase() === "onboarding@resend.dev";
 
-export function isPasswordResetEmailConfigured(): boolean {
+function isPasswordResetEmailConfigured(): boolean {
   const mailConfig = config.mail;
   if (mailConfig.provider === "disabled") {
     return false;

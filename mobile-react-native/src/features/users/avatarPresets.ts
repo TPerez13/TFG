@@ -1,4 +1,4 @@
-export type AvatarPreset = {
+type AvatarPreset = {
   id: string;
   label: string;
   icon: string;
@@ -7,7 +7,7 @@ export type AvatarPreset = {
   iconColor: string;
 };
 
-export const DEFAULT_AVATAR_ID = 'sprout';
+const DEFAULT_AVATAR_ID = 'sprout';
 
 export const avatarPresets: AvatarPreset[] = [
   {

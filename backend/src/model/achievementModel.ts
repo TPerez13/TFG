@@ -8,7 +8,7 @@ type UnlockedAchievementRow = {
   puntos: number;
 };
 
-export type UnlockedAchievementRecord = {
+type UnlockedAchievementRecord = {
   achievementId: AchievementId;
   unlockedAt: string | Date;
   points: number;

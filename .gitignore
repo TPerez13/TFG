@@ -5,10 +5,20 @@ node_modules/
 dist/
 backend/dist/
 packages/shared/dist/
+backend/dist-test/
+mobile-react-native/dist-test/
+mobile-react-native/dist-export/
+out/
+tmp/
+figuras/
+android/
 
 # Environment files
 .env
 backend/.env
+
+# Local Expo state
+.expo/
 
 # Documentation and image files
 *.md

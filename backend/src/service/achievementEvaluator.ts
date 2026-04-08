@@ -11,7 +11,7 @@ type AchievementGoal = {
   goalValue: number;
 };
 
-export type AchievementEvaluation = {
+type AchievementEvaluation = {
   id: AchievementId;
   unlockedAt: string | null;
   progress: AchievementProgress;

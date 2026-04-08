@@ -11,8 +11,6 @@ export const setAuthToken = (token?: string | null) => {
   authToken = token ?? null;
 };
 
-export const getAuthToken = () => authToken;
-
 export const apiFetch = (path: string, options: RequestInit = {}) => {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',

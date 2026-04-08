@@ -20,20 +20,6 @@ const sampleBodies: Record<NotificationType, string[]> = {
   ],
 };
 
-export async function createNotificationForUser(
-  userId: number,
-  type: NotificationType,
-  title: string,
-  body?: string
-) {
-  return createNotification({
-    userId,
-    type,
-    title,
-    body: body ?? sampleBodies[type][0],
-  });
-}
-
 export async function seedNotificationsForUser(userId: number) {
   const types: NotificationType[] = ["REMINDER", "ACHIEVEMENT", "CHALLENGE", "SYSTEM"];
   const tasks = Array.from({ length: 12 }).map((_, idx) => {

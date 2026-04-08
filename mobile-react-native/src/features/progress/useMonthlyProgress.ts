@@ -11,7 +11,7 @@ type CoreHabitGoal = {
   unit: string;
 };
 
-export type MonthlyProgressData = {
+type MonthlyProgressData = {
   monthLabel: string;
   streakDays: number;
   habitsCompleted: number;

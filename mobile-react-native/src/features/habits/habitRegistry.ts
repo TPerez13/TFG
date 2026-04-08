@@ -2,12 +2,12 @@ import { colors } from '../../theme/tokens';
 
 export type HabitKey = 'agua' | 'ejercicio' | 'sueno' | 'comidas' | 'meditacion';
 
-export type HabitGoal = {
+type HabitGoal = {
   value: number;
   unit: string;
 };
 
-export type HabitQuickAdd = {
+type HabitQuickAdd = {
   enabled: boolean;
   value: number;
   unit: string;

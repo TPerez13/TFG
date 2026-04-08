@@ -16,7 +16,7 @@ export interface NutritionEntryRecord {
   grasas_g: number | null;
 }
 
-export interface NutritionSummaryRecord {
+interface NutritionSummaryRecord {
   comidas_registradas: number;
   kcal_total: number;
   proteina_total_g: number;
@@ -24,7 +24,7 @@ export interface NutritionSummaryRecord {
   grasas_total_g: number;
 }
 
-export interface FoodTemplateRecord {
+interface FoodTemplateRecord {
   id_alimento: number | null;
   nombre: string;
   kcal: number;
@@ -34,7 +34,7 @@ export interface FoodTemplateRecord {
   veces?: number;
 }
 
-export interface CreateNutritionEntryInput {
+interface CreateNutritionEntryInput {
   tipoComida: MealType;
   alimentoId?: number | null;
   nombre?: string;

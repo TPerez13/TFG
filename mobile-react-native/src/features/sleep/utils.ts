@@ -26,7 +26,7 @@ export const serializeSleepNotes = (payload: SleepNotesPayload): string | null =
   return Object.keys(jsonPayload).length > 0 ? JSON.stringify(jsonPayload) : null;
 };
 
-export const parseSleepNotes = (notes: string | null) => {
+const parseSleepNotes = (notes: string | null) => {
   if (!notes || !notes.trim()) {
     return {
       quality: undefined,
