@@ -1,5 +1,5 @@
-@startuml
-' CAP4 - 03b Secuencia CU-002 Recuperar contraseña
+﻿@startuml
+' CAP4 - 03b Secuencia CU-010 Recuperar contrasena
 
 skinparam backgroundColor #F8FAFC
 skinparam shadowing false
@@ -29,25 +29,31 @@ participant "Servicio de correo" as Mail
 Usuario -> App : Pulsa "¿Olvidaste tu contraseña?"
 App --> Usuario : Solicita correo de la cuenta
 Usuario -> App : Introduce correo
-App -> API : POST /password/forgot
-API -> DB : Buscar usuario por correo
-DB --> API : Usuario / sin coincidencia
+App -> API : POST /api/password/forgot
+API -> API : Verificar configuración de correo
 
-alt Correo existente
-    API -> API : Generar código temporal y caducidad
-    API -> DB : Guardar token de recuperación
-    API -> Mail : Enviar correo con código
-    Mail --> API : Confirmación / intento de entrega
-    API --> App : Mensaje genérico de recuperación
-    App --> Usuario : Indica revisar el correo
-else Correo no existente
-    API --> App : Mensaje genérico de recuperación
-    App --> Usuario : Indica revisar el correo
+alt Servicio de correo disponible
+    API -> DB : Buscar usuario por correo
+    DB --> API : Usuario / sin coincidencia
+    alt Correo existente
+        API -> API : Generar código temporal y caducidad
+        API -> DB : Guardar token de recuperación
+        API -> Mail : Enviar correo con código
+        Mail --> API : Confirmación / intento de entrega
+        API --> App : Mensaje genérico de recuperación
+        App --> Usuario : Indica revisar el correo
+    else Correo no existente
+        API --> App : Mensaje genérico de recuperación
+        App --> Usuario : Indica revisar el correo
+    end
+else Servicio de correo no disponible
+    API --> App : Error de servicio (503)
+    App --> Usuario : Mostrar incidencia
 end
 
 == Restablecimiento ==
 Usuario -> App : Introduce correo, código y nueva contraseña
-App -> API : POST /password/reset
+App -> API : POST /api/password/reset
 API -> DB : Buscar usuario por correo
 DB --> API : Datos del usuario
 API -> DB : Validar token, caducidad y consumo único
@@ -58,15 +64,9 @@ alt Código válido
     DB --> API : Confirmación
     API --> App : Contraseña restablecida
     App --> Usuario : Acceso recuperado
-else Código inválido o expirado
+else Código inválido, expirado o ya usado
     API --> App : Error de validación
     App --> Usuario : Mostrar error
 end
-
-note right of API
-En desarrollo, el backend puede devolver
-el código temporal en la respuesta para
-facilitar pruebas locales.
-end note
 
 @enduml

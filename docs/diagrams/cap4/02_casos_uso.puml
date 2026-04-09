@@ -37,6 +37,7 @@ rectangle "TrackHabit Loop " {
   usecase "Consultar historial" as UC_HISTORY
   usecase "Ver progreso mensual" as UC_PROGRESS
   usecase "Compartir progreso mensual" as UC_SHARE_PROGRESS
+  usecase "Consultar logros e indicadores de constancia" as UC_ACHIEVEMENTS
 
   usecase "Crear ticket de soporte" as UC_SUPPORT
   usecase "Exportar datos" as UC_EXPORT
@@ -55,11 +56,12 @@ A_USER --> UC_NUTRITION_ENTRY
 A_USER --> UC_HISTORY
 A_USER --> UC_PROGRESS
 A_USER --> UC_SHARE_PROGRESS
+A_USER --> UC_ACHIEVEMENTS
 A_USER --> UC_SUPPORT
 A_USER --> UC_EXPORT
 A_USER --> UC_DELETE
 
 A_NOTIFY --> UC_ALERTS
 
-UC_SHARE_PROGRESS .> UC_PROGRESS : <<include>>
+UC_SHARE_PROGRESS .> UC_PROGRESS : <<extend>>
 @enduml

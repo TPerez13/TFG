@@ -35,7 +35,7 @@ package "Shell y sesión" as mo_shell_box #EAF2FF {
 
 package "Navegación" as mo_nav_box #EAF7EA {
   component "RootNavigator" as mo_root
-  component "AuthStack" as mo_auth_stack
+  component "AuthStack\nLogin / ForgotPassword" as mo_auth_stack
   component "AppTabs" as mo_tabs
 
   mo_root -[hidden]right-> mo_auth_stack
@@ -43,13 +43,17 @@ package "Navegación" as mo_nav_box #EAF7EA {
 }
 
 package "Módulos funcionales" as mo_features #F4EEFF {
+  component "Inicio /\nPanel diario" as mo_home
   component "Hábitos /\nNutrición" as mo_habits
-  component "Progreso /\nLogros" as mo_progress
+  component "Progreso /\nHistórico" as mo_progress
+  component "Logros /\nConstancia" as mo_achievements
   component "Perfil / Ajustes /\nSoporte" as mo_profile
   component "Notificaciones" as mo_notifications
 
+  mo_home -[hidden]right-> mo_habits
   mo_habits -[hidden]right-> mo_progress
-  mo_progress -[hidden]right-> mo_profile
+  mo_progress -[hidden]right-> mo_achievements
+  mo_achievements -[hidden]right-> mo_profile
   mo_profile -[hidden]right-> mo_notifications
 }
 
@@ -66,6 +70,16 @@ package "Infraestructura cliente" as mo_infra_box #FFF5E8 {
   mo_local_notif -[hidden]right-> mo_backend
 }
 
+note right of mo_features
+Vista sintética por capas.
+Inicio / Panel diario se muestra
+como módulo propio dentro del flujo
+principal autenticado. Logros se
+representa como módulo funcional
+transversal consumido desde Inicio,
+Progreso y Perfil.
+end note
+
 mo_app --> mo_auth_provider
 mo_auth_provider --> mo_nav_container
 mo_nav_container --> mo_root
@@ -73,16 +87,23 @@ mo_nav_container --> mo_root
 mo_root --> mo_auth_stack
 mo_root --> mo_tabs
 
+mo_tabs --> mo_home
 mo_tabs --> mo_habits
 mo_tabs --> mo_progress
 mo_tabs --> mo_profile
-mo_tabs --> mo_notifications
+
+mo_home ..> mo_achievements : teaser
+mo_progress ..> mo_achievements : indicadores
+mo_profile --> mo_achievements : acceso dedicado
+mo_profile --> mo_notifications : acceso a ajustes
 
 mo_auth_provider --> mo_storage
 mo_auth_stack --> mo_api
 
+mo_home --> mo_api
 mo_habits --> mo_api
 mo_progress --> mo_api
+mo_achievements --> mo_api
 mo_profile --> mo_api
 mo_notifications --> mo_api
 

@@ -26,7 +26,7 @@ database "Base de datos" as DB
 
 alt Iniciar sesión
     Usuario -> App : Introduce correo y contraseña
-    App -> API : POST /auth/login
+    App -> API : POST /api/login
     API -> DB : Consultar usuario por correo
     DB --> API : Datos del usuario
     API -> API : Validar credenciales
@@ -39,7 +39,7 @@ alt Iniciar sesión
     end
 else Registrarse
     Usuario -> App : Introduce datos de registro
-    App -> API : POST /auth/register
+    App -> API : POST /api/register
     API -> DB : Comprobar correo existente
     DB --> API : Resultado
     alt Correo no registrado

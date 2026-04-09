@@ -25,6 +25,12 @@ title Capítulo 5 - Modelo relacional físico de TrackHabit Loop
 
 top to bottom direction
 
+legend right
+|= Estado |= Lectura |
+|<#FFFFFF> Operativo actual | Tablas usadas en los flujos principales |
+|<#EEF2F7> Evolución futura | Base disponible para ampliaciones futuras |
+endlegend
+
 package "Cuenta y acceso" #EAF2FF {
   together {
     entity "usuario" as usuario {
@@ -48,6 +54,12 @@ package "Cuenta y acceso" #EAF2FF {
     }
   }
 }
+
+note right of usuario
+El JSONB preferencias incluye la
+configuración operativa de avisos
+(preferencias.notificaciones).
+end note
 
 package "Hábitos y nutrición" #EAF7EA {
   together {
@@ -122,7 +134,7 @@ package "Gamificación" #F4EEFF {
       uq_usuario_logro : UNIQUE (id_usuario, id_logro)
     }
 
-    entity "reto" as reto {
+    entity "reto" as reto #EEF2F7 {
       * id_reto : SERIAL <<PK>>
       --
       * nombre : TEXT <<UQ>>
@@ -132,7 +144,7 @@ package "Gamificación" #F4EEFF {
       f_fin : TIMESTAMPTZ
     }
 
-    entity "usuario_reto" as usuario_reto {
+    entity "usuario_reto" as usuario_reto #EEF2F7 {
       * id_usuario_reto : SERIAL <<PK>>
       --
       * id_usuario : INT <<FK>>
@@ -145,18 +157,14 @@ package "Gamificación" #F4EEFF {
   }
 }
 
-package "Avisos, dispositivos y soporte" #FFF5E8 {
-  together {
-    entity "recordatorio" as recordatorio {
-      * id_recordatorio : SERIAL <<PK>>
-      --
-      * id_usuario : INT <<FK>>
-      * id_tipo_habito : INT <<FK>>
-      * programacion : JSONB
-      * activo : BOOLEAN
-      * f_creacion : TIMESTAMPTZ
-    }
+note bottom of reto
+Base relacional disponible para una futura
+funcionalidad de retos. No forma parte del
+flujo operativo principal actual.
+end note
 
+package "Avisos, soporte y evolución" #FFF5E8 {
+  together {
     entity "notificacion" as notificacion {
       * id_notificacion : SERIAL <<PK>>
       --
@@ -166,14 +174,16 @@ package "Avisos, dispositivos y soporte" #FFF5E8 {
       * tipo : TEXT <<CHECK>>
       * estado : TEXT <<CHECK>>
       * leida : BOOLEAN
+      f_leida : TIMESTAMPTZ
       f_programada : TIMESTAMPTZ
       f_envio : TIMESTAMPTZ
       metadatos : JSONB
       deep_link : TEXT
       * created_at : TIMESTAMPTZ
+      * updated_at : TIMESTAMPTZ
     }
 
-    entity "user_device" as user_device {
+    entity "user_device" as user_device #EEF2F7 {
       * id_user_device : SERIAL <<PK>>
       --
       * id_usuario : INT <<FK>>
@@ -197,6 +207,15 @@ package "Avisos, dispositivos y soporte" #FFF5E8 {
   }
 }
 
+note bottom of user_device
+Base reservada para una futura capa push.
+No participa en el MVP operativo actual.
+end note
+
+note bottom of notificacion
+Histórico operativo de eventos y avisos.
+end note
+
 usuario ||--o{ password_reset_token
 usuario ||--o{ registro_habito
 tipo_habito ||--o{ registro_habito
@@ -207,14 +226,12 @@ usuario ||--o{ usuario_logro
 logro ||--o{ usuario_logro
 usuario ||--o{ usuario_reto
 reto ||--o{ usuario_reto
-usuario ||--o{ recordatorio
-tipo_habito ||--o{ recordatorio
 usuario ||--o{ notificacion
 usuario ||--o{ user_device
 usuario ||--o{ ticket_soporte
 
 password_reset_token -[hidden]-> tipo_habito
 registro_comida -[hidden]-> logro
-usuario_reto -[hidden]-> recordatorio
+usuario_reto -[hidden]-> notificacion
 
 @enduml
