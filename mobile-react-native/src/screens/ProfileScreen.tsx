@@ -163,6 +163,13 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
           />
           <View style={styles.divider} />
           <SettingsRow
+            icon="flag"
+            title="Metas diarias"
+            subtitle="Define el objetivo de cada hábito"
+            onPress={() => navigation.navigate('HabitGoals')}
+          />
+          <View style={styles.divider} />
+          <SettingsRow
             icon="notifications"
             title="Notificaciones"
             subtitle="Gestiona avisos y recordatorios"

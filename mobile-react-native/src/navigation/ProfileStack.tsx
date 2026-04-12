@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import type { ProfileStackParamList } from './types';
 import ProfileScreen from '../screens/ProfileScreen';
 import EditProfileScreen from '../screens/EditProfileScreen';
+import HabitGoalsScreen from '../screens/HabitGoalsScreen';
 import FeedScreen from '../screens/FeedScreen';
 import NotificationSettingsScreen from '../screens/NotificationSettingsScreen';
 import PrivacyScreen from '../screens/PrivacyScreen';
@@ -19,6 +20,7 @@ export function ProfileStack() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Profile" component={ProfileScreen} />
       <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+      <Stack.Screen name="HabitGoals" component={HabitGoalsScreen} />
       <Stack.Screen name="AchievementsScreen" component={AchievementsScreen} />
       <Stack.Screen name="Feed" component={FeedScreen} />
       <Stack.Screen name="NotificationSettings" component={NotificationSettingsScreen} />
