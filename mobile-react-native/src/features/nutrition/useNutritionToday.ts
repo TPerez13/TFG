@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { fetchNutritionToday } from './api';
+import { loadNutritionTodayData } from './loaders';
 import type { MealType, NutritionTodayData } from './types';
 
 type UseNutritionTodayResult = {
@@ -15,16 +15,11 @@ export function useNutritionToday(date: string, tipoComida?: MealType): UseNutri
   const [error, setError] = useState<string | null>(null);
 
   const reload = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const payload = await fetchNutritionToday(date, tipoComida);
-      setData(payload);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'No se pudo cargar la alimentación.');
-    } finally {
-      setLoading(false);
-    }
+    setLoading(true);
+    const result = await loadNutritionTodayData(date, tipoComida);
+    setData(result.data);
+    setError(result.error);
+    setLoading(false);
   }, [date, tipoComida]);
 
   useEffect(() => {

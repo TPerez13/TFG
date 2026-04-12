@@ -15,7 +15,6 @@ const HABIT_KEYS: HabitNotificationKey[] = [
 ];
 
 const TIME_PATTERN = /^([01]\d|2[0-3]):([0-5]\d)$/;
-const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
 const DEFAULT_NOTIFICATION_SETTINGS: NotificationSettings = {
   global: {
@@ -26,11 +25,11 @@ const DEFAULT_NOTIFICATION_SETTINGS: NotificationSettings = {
     quietTo: "07:00",
   },
   habits: {
-    hidratacion: { enabled: true, time: "10:00", lastCompletedDate: null },
-    nutricion: { enabled: true, time: "13:00", lastCompletedDate: null },
-    ejercicio: { enabled: true, time: "20:00", lastCompletedDate: null },
-    sueno: { enabled: true, time: "22:00", lastCompletedDate: null },
-    meditacion: { enabled: true, time: "20:00", lastCompletedDate: null },
+    hidratacion: { enabled: true, time: "10:00" },
+    nutricion: { enabled: true, time: "13:00" },
+    ejercicio: { enabled: true, time: "20:00" },
+    sueno: { enabled: true, time: "22:00" },
+    meditacion: { enabled: true, time: "20:00" },
   },
 };
 
@@ -52,19 +51,6 @@ const parseTime = (value: unknown): string | undefined => {
   if (typeof value !== "string") return undefined;
   const trimmed = value.trim();
   return TIME_PATTERN.test(trimmed) ? trimmed : undefined;
-};
-
-const parseDateKey = (value: unknown): string | null | undefined => {
-  if (value === null) return null;
-  if (typeof value !== "string") return undefined;
-  return DATE_PATTERN.test(value) ? value : undefined;
-};
-
-const asDateKey = (isoDate?: string): string => {
-  if (!isoDate) return new Date().toISOString().slice(0, 10);
-  const parsed = new Date(isoDate);
-  if (Number.isNaN(parsed.getTime())) return new Date().toISOString().slice(0, 10);
-  return parsed.toISOString().slice(0, 10);
 };
 
 const cloneDefaults = (): NotificationSettings =>
@@ -93,15 +79,14 @@ const readLegacyHabitEnabled = (
 const assertTime = (value: unknown, fieldName: string): string => {
   const parsed = parseTime(value);
   if (!parsed) {
-    throw new AppError(`${fieldName} inválido. Usa formato HH:MM.`, 400);
+    throw new AppError(`${fieldName} invalido. Usa formato HH:MM.`, 400);
   }
   return parsed;
 };
 
 const normalizePatch = (value: unknown): NotificationSettingsPatch => {
   if (!isRecord(value)) return {};
-  const patch = value as NotificationSettingsPatch;
-  return patch;
+  return value as NotificationSettingsPatch;
 };
 
 export const getDefaultNotificationSettings = (): NotificationSettings => cloneDefaults();
@@ -183,11 +168,6 @@ export function normalizeNotificationSettingsFromPreferences(preferences: unknow
     if (resolvedTime) {
       habitDefaults.time = resolvedTime;
     }
-
-    const completedDate = parseDateKey(rawHabit.lastCompletedDate);
-    if (completedDate !== undefined) {
-      habitDefaults.lastCompletedDate = completedDate;
-    }
   }
 
   return normalized;
@@ -202,7 +182,7 @@ function applyPatch(
 
   if (patch.global !== undefined) {
     if (!isRecord(patch.global)) {
-      throw new AppError("global inválido.", 400);
+      throw new AppError("global invalido.", 400);
     }
     const globalPatch = patch.global as Record<string, unknown>;
     const enabled = parseBool(globalPatch.enabled);
@@ -230,7 +210,7 @@ function applyPatch(
 
   if (patch.habits !== undefined) {
     if (!isRecord(patch.habits)) {
-      throw new AppError("habits inválido.", 400);
+      throw new AppError("habits invalido.", 400);
     }
 
     for (const [habitKey, partial] of Object.entries(patch.habits)) {
@@ -238,7 +218,7 @@ function applyPatch(
         throw new AppError(`Habit no soportado: ${habitKey}.`, 400);
       }
       if (!isRecord(partial)) {
-        throw new AppError(`Configuración inválida para ${habitKey}.`, 400);
+        throw new AppError(`Configuracion invalida para ${habitKey}.`, 400);
       }
 
       const typedKey = habitKey as HabitNotificationKey;
@@ -249,17 +229,6 @@ function applyPatch(
 
       if (Object.prototype.hasOwnProperty.call(partial, "time")) {
         next.habits[typedKey].time = assertTime(partial.time, `habits.${typedKey}.time`);
-      }
-
-      if (Object.prototype.hasOwnProperty.call(partial, "lastCompletedDate")) {
-        const parsedDate = parseDateKey(partial.lastCompletedDate);
-        if (parsedDate === undefined) {
-          throw new AppError(
-            `habits.${typedKey}.lastCompletedDate inválido. Usa YYYY-MM-DD o null.`,
-            400
-          );
-        }
-        next.habits[typedKey].lastCompletedDate = parsedDate;
       }
     }
   }
@@ -291,18 +260,4 @@ export async function patchNotificationSettingsForUser(
   });
 
   return normalizeNotificationSettingsFromPreferences(updatedPreferences);
-}
-
-export async function markHabitRecordedToday(
-  userId: number,
-  habitKey: HabitNotificationKey,
-  dateTimeIso?: string
-): Promise<void> {
-  await patchNotificationSettingsForUser(userId, {
-    habits: {
-      [habitKey]: {
-        lastCompletedDate: asDateKey(dateTimeIso),
-      },
-    },
-  });
 }

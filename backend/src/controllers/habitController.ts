@@ -8,10 +8,6 @@ import {
 } from "../model/habitModel";
 import type { HabitEntryRecord } from "../model/habitModel";
 import type { AuthRequest } from "../middleware/auth";
-import {
-  markHabitRecordedToday,
-  resolveHabitKeyFromTypeId,
-} from "../service/notificationSettingsService";
 
 const toIsoString = (value: unknown): string => {
   if (value instanceof Date) {
@@ -166,11 +162,6 @@ export async function createEntry(req: Request, res: Response, next: NextFunctio
       notes,
       dateTimeIso: dateTime.toISOString(),
     });
-
-    const habitKey = resolveHabitKeyFromTypeId(typeId);
-    if (habitKey) {
-      await markHabitRecordedToday(userId, habitKey, toIsoString(created.f_registro));
-    }
 
     res.status(201).json({ entry: toHabitEntry(created) });
   } catch (error) {

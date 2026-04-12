@@ -2,7 +2,6 @@ import assert from "node:assert/strict";
 import { afterEach, beforeEach, describe, it, mock } from "node:test";
 import { createApp } from "../../src/app";
 import * as habitModel from "../../src/model/habitModel";
-import * as notificationSettingsService from "../../src/service/notificationSettingsService";
 import * as jwtUtils from "../../src/utils/jwt";
 import { requestJson, startTestServer } from "../helpers/http";
 
@@ -87,7 +86,6 @@ describe("habits routes integration", () => {
 
   it("POST /api/habits/entries creates an entry for the authenticated user", async () => {
     let createdInput: habitModel.CreateHabitEntryInput | undefined;
-    let notificationArgs: unknown[] = [];
 
     mock.method(jwtUtils, "verifyAccessToken", () => ({ sub: "9" }));
     mock.method(
@@ -105,13 +103,6 @@ describe("habits routes integration", () => {
         notas: input.notes ?? null,
       };
     });
-    mock.method(
-      notificationSettingsService,
-      "markHabitRecordedToday",
-      async (...args: unknown[]) => {
-        notificationArgs = args;
-      }
-    );
 
     const server = await startTestServer(createApp());
 
@@ -137,7 +128,6 @@ describe("habits routes integration", () => {
         notes: "manana",
         dateTimeIso: "2026-03-05T10:00:00.000Z",
       });
-      assert.deepEqual(notificationArgs, [9, "hidratacion", "2026-03-05T10:00:00.000Z"]);
       assert.equal(response.status, 201);
       assert.deepEqual(response.json, {
         entry: {

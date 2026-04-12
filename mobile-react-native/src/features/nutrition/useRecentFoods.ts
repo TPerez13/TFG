@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { fetchRecentFoods } from './api';
+import { loadRecentFoodsItems } from './loaders';
 import type { FoodTemplate } from './types';
 
 type UseRecentFoodsResult = {
@@ -15,16 +15,11 @@ export function useRecentFoods(limit = 10): UseRecentFoodsResult {
   const [error, setError] = useState<string | null>(null);
 
   const reload = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const payload = await fetchRecentFoods(limit);
-      setItems(payload);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'No se pudieron cargar los alimentos recientes.');
-    } finally {
-      setLoading(false);
-    }
+    setLoading(true);
+    const result = await loadRecentFoodsItems(limit);
+    setItems(result.items);
+    setError(result.error);
+    setLoading(false);
   }, [limit]);
 
   useEffect(() => {

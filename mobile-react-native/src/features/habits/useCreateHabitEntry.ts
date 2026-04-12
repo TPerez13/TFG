@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { createHabitEntry, type CreateHabitEntryPayload } from './entriesApi';
 import type { HabitEntry } from '../../types/models';
-import { syncLocalNotificationsWithServer } from '../notifications/api';
+import { syncLocalHabitReminders } from '../notifications/syncLocalReminders';
+import { createHabitEntry, type CreateHabitEntryPayload } from './entriesApi';
 
 type UseCreateHabitEntryResult = {
   creating: boolean;
@@ -15,11 +15,7 @@ export function useCreateHabitEntry(): UseCreateHabitEntryResult {
     setCreating(true);
     try {
       const entry = await createHabitEntry(payload);
-      try {
-        await syncLocalNotificationsWithServer({ requestPermissions: false });
-      } catch {
-        // La creación del registro no debe fallar por sincronización local.
-      }
+      await syncLocalHabitReminders();
       return entry;
     } finally {
       setCreating(false);

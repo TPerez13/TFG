@@ -1,44 +1,42 @@
 import assert from 'node:assert/strict';
-import { afterEach, describe, it, mock } from 'node:test';
-import * as entriesApi from '../../src/features/habits/entriesApi';
-import { useDeleteHabitEntry } from '../../src/features/habits/useDeleteHabitEntry';
-import { renderHook } from '../helpers/renderHook';
+import { describe, it } from 'node:test';
+import { deleteHabitEntryAndSyncReminders } from '../../src/features/habits/deleteHabitEntryAction';
 
-afterEach(() => {
-  mock.restoreAll();
-});
+describe('deleteHabitEntryAndSyncReminders', () => {
+  it('deletes the entry before syncing local reminders', async () => {
+    const calls: Array<[string, number?]> = [];
 
-describe('useDeleteHabitEntry', () => {
-  it('deletes the entry and resets the deleting flag afterwards', async () => {
-    let deletedId = -1;
-
-    mock.method(entriesApi, 'deleteHabitEntry', async (entryId: number) => {
-      deletedId = entryId;
+    await deleteHabitEntryAndSyncReminders(42, {
+      deleteHabitEntry: async (entryId: number) => {
+        calls.push(['delete', entryId]);
+      },
+      syncLocalHabitReminders: async () => {
+        calls.push(['sync']);
+      },
     });
 
-    const hook = await renderHook(() => useDeleteHabitEntry());
-
-    assert.equal(hook.current.deleting, false);
-
-    await hook.current.deleteEntry(42);
-    await hook.flush();
-
-    assert.equal(deletedId, 42);
-    assert.equal(hook.current.deleting, false);
-    await hook.unmount();
+    assert.deepEqual(calls, [
+      ['delete', 42],
+      ['sync'],
+    ]);
   });
 
-  it('restores the deleting flag when deletion fails', async () => {
-    mock.method(entriesApi, 'deleteHabitEntry', async () => {
-      throw new Error('No se pudo deshacer el registro.');
-    });
+  it('propagates delete errors without syncing reminders afterwards', async () => {
+    const calls: Array<[string, number?]> = [];
 
-    const hook = await renderHook(() => useDeleteHabitEntry());
+    await assert.rejects(
+      deleteHabitEntryAndSyncReminders(42, {
+        deleteHabitEntry: async (entryId: number) => {
+          calls.push(['delete', entryId]);
+          throw new Error('No se pudo deshacer el registro.');
+        },
+        syncLocalHabitReminders: async () => {
+          calls.push(['sync']);
+        },
+      }),
+      /No se pudo deshacer el registro\./
+    );
 
-    await assert.rejects(hook.current.deleteEntry(42), /No se pudo deshacer el registro\./);
-    await hook.flush();
-
-    assert.equal(hook.current.deleting, false);
-    await hook.unmount();
+    assert.deepEqual(calls, [['delete', 42]]);
   });
 });

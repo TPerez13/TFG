@@ -1,10 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { shouldScheduleHabitReminder } from '@muchasvidas/shared';
 import { Platform } from 'react-native';
 import type {
   HabitNotificationKey,
   NotificationSettings,
 } from './types';
 import { DEFAULT_NOTIFICATION_SETTINGS } from './settings';
+import type { HabitReminderRuntimeState } from './runtimeState';
 import {
   AndroidImportance,
   cancelScheduledNotificationAsync,
@@ -83,18 +85,6 @@ const DEFAULT_HABIT_TIMES: Record<HabitNotificationKey, { hour: number; minute: 
 };
 
 const toMinutes = (hour: number, minute: number) => hour * 60 + minute;
-
-const localDateKey = (value: Date) => {
-  const year = value.getFullYear();
-  const month = `${value.getMonth() + 1}`.padStart(2, '0');
-  const day = `${value.getDate()}`.padStart(2, '0');
-  return `${year}-${month}-${day}`;
-};
-
-const wasCompletedToday = (lastCompletedDate: string | null | undefined, now: Date) => {
-  if (!lastCompletedDate) return false;
-  return lastCompletedDate === localDateKey(now) || lastCompletedDate === now.toISOString().slice(0, 10);
-};
 
 const isWithinQuietRange = (valueMin: number, quietFromMin: number, quietToMin: number) => {
   if (quietFromMin === quietToMin) return false;
@@ -232,7 +222,6 @@ const buildInitialCandidate = (
   now: Date,
   habitKey: HabitNotificationKey,
   habitConfig: NotificationHabitSettings,
-  _globalConfig: NotificationGlobalSettings
 ): Date => {
   const parsed = parseTime(habitConfig.time);
   const fallback = DEFAULT_HABIT_TIMES[habitKey];
@@ -241,8 +230,7 @@ const buildInitialCandidate = (
   const candidate = new Date(now);
   candidate.setHours(target.hour, target.minute, 0, 0);
 
-  const completedToday = wasCompletedToday(habitConfig.lastCompletedDate, now);
-  if (completedToday || candidate <= now) {
+  if (candidate <= now) {
     candidate.setDate(candidate.getDate() + 1);
   }
 
@@ -253,7 +241,7 @@ const scheduleHabitNotificationInternal = async (
   habitKey: HabitNotificationKey,
   habitConfig: NotificationHabitSettings,
   globalConfig: NotificationGlobalSettings,
-  options: { skipCancel?: boolean } = {}
+  options: { skipCancel?: boolean; runtimeState?: HabitReminderRuntimeState } = {}
 ): Promise<string | null> => {
   if (!options.skipCancel) {
     await cancelHabitNotification(habitKey);
@@ -263,10 +251,15 @@ const scheduleHabitNotificationInternal = async (
     return null;
   }
 
+  const goalEvaluation = options.runtimeState?.[habitKey]?.goalEvaluation;
+  if (!shouldScheduleHabitReminder({ notificationKey: habitKey, evaluation: goalEvaluation })) {
+    return null;
+  }
+
   await ensureAndroidChannel();
 
   const now = new Date();
-  let candidate = buildInitialCandidate(now, habitKey, habitConfig, globalConfig);
+  let candidate = buildInitialCandidate(now, habitKey, habitConfig);
   candidate = applyQuietHoursPolicyInternal(candidate, globalConfig);
 
   if (candidate <= now) {
@@ -387,7 +380,7 @@ export async function cancelAllHabitNotifications(): Promise<void> {
 
 export async function syncAllHabitNotifications(
   settings: NotificationSettings,
-  options: { requestPermissions?: boolean } = {}
+  options: { requestPermissions?: boolean; runtimeState?: HabitReminderRuntimeState } = {}
 ): Promise<void> {
   configureNotificationRuntime();
 
@@ -417,6 +410,9 @@ export async function syncAllHabitNotifications(
 
   for (const habitKey of enabledHabitKeys) {
     const habitConfig = settings.habits[habitKey];
-    await scheduleHabitNotificationInternal(habitKey, habitConfig, settings.global, { skipCancel: true });
+    await scheduleHabitNotificationInternal(habitKey, habitConfig, settings.global, {
+      skipCancel: true,
+      runtimeState: options.runtimeState,
+    });
   }
 }

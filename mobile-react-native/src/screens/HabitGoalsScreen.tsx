@@ -14,6 +14,7 @@ import {
   type HabitGoalValidationErrors,
 } from '../features/habits/goalPreferences';
 import { getHabitByKey, type HabitKey } from '../features/habits/habitRegistry';
+import { syncLocalHabitReminders } from '../features/notifications/syncLocalReminders';
 import { baseStyles } from '../theme/components';
 import { colors, fontSizes, spacing } from '../theme/tokens';
 
@@ -143,6 +144,7 @@ export default function HabitGoalsScreen({ navigation }: HabitGoalsScreenProps) 
       setGoalValues(nextValues);
       setInitialValues(nextValues);
       setFieldErrors({});
+      await syncLocalHabitReminders();
       setFeedback('Metas guardadas.');
     } catch (error) {
       setFeedback(error instanceof Error ? error.message : 'No se pudieron guardar las metas.');

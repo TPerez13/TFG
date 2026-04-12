@@ -1,55 +1,45 @@
 import assert from 'node:assert/strict';
-import { afterEach, describe, it, mock } from 'node:test';
-import * as nutritionApi from '../../src/features/nutrition/api';
-import { useFrequentFoods } from '../../src/features/nutrition/useFrequentFoods';
-import { useNutritionToday } from '../../src/features/nutrition/useNutritionToday';
-import { useRecentFoods } from '../../src/features/nutrition/useRecentFoods';
-import { renderHook } from '../helpers/renderHook';
+import { describe, it } from 'node:test';
+import {
+  loadFrequentFoodsItems,
+  loadNutritionTodayData,
+  loadRecentFoodsItems,
+} from '../../src/features/nutrition/loaders';
 
-afterEach(() => {
-  mock.restoreAll();
-});
-
-describe('nutrition hooks', () => {
+describe('nutrition loaders', () => {
   it('loads recent foods with the requested limit', async () => {
     let capturedLimit = 0;
 
-    mock.method(nutritionApi, 'fetchRecentFoods', async (limit = 10) => {
-      capturedLimit = limit;
-      return [{ alimentoId: 1, nombre: 'Avena', kcal: 120, proteinaG: 4, carbohidratosG: 20, grasasG: 2 }];
+    const result = await loadRecentFoodsItems(5, {
+      fetchRecentFoods: async (limit = 10) => {
+        capturedLimit = limit;
+        return [
+          { alimentoId: 1, nombre: 'Avena', kcal: 120, proteinaG: 4, carbohidratosG: 20, grasasG: 2 },
+        ];
+      },
     });
-
-    const hook = await renderHook(() => useRecentFoods(5));
-    await hook.flush();
 
     assert.equal(capturedLimit, 5);
-    assert.equal(hook.current.loading, false);
-    assert.equal(hook.current.error, null);
-    assert.equal(hook.current.items[0]?.nombre, 'Avena');
-    await hook.unmount();
+    assert.equal(result.error, null);
+    assert.equal(result.items[0]?.nombre, 'Avena');
   });
 
-  it('exposes errors from frequent foods loading', async () => {
-    mock.method(nutritionApi, 'fetchFrequentFoods', async () => {
-      throw new Error('No se pudieron cargar frecuentes.');
+  it('maps frequent foods load errors into the returned state', async () => {
+    const result = await loadFrequentFoodsItems(10, {
+      fetchFrequentFoods: async () => {
+        throw new Error('No se pudieron cargar frecuentes.');
+      },
     });
 
-    const hook = await renderHook(() => useFrequentFoods());
-    await hook.flush();
-
-    assert.equal(hook.current.loading, false);
-    assert.equal(hook.current.items.length, 0);
-    assert.equal(hook.current.error, 'No se pudieron cargar frecuentes.');
-    await hook.unmount();
+    assert.equal(result.items.length, 0);
+    assert.equal(result.error, 'No se pudieron cargar frecuentes.');
   });
 
   it('loads nutrition data for the selected date and meal type', async () => {
     let capturedArgs: unknown[] = [];
 
-    mock.method(
-      nutritionApi,
-      'fetchNutritionToday',
-      async (date: string, mealType?: 'DESAYUNO' | 'ALMUERZO' | 'CENA' | 'SNACK') => {
+    const result = await loadNutritionTodayData('2026-03-20', 'ALMUERZO', {
+      fetchNutritionToday: async (date, mealType) => {
         capturedArgs = [date, mealType];
         return {
           date,
@@ -73,19 +63,13 @@ describe('nutrition hooks', () => {
             quietTo: '07:00',
             habitEnabled: true,
             time: '13:00',
-            lastCompletedDate: null,
           },
         };
-      }
-    );
-
-    const hook = await renderHook(() => useNutritionToday('2026-03-20', 'ALMUERZO'));
-    await hook.flush();
+      },
+    });
 
     assert.deepEqual(capturedArgs, ['2026-03-20', 'ALMUERZO']);
-    assert.equal(hook.current.loading, false);
-    assert.equal(hook.current.data?.comidasRegistradas, 2);
-    assert.equal(hook.current.error, null);
-    await hook.unmount();
+    assert.equal(result.error, null);
+    assert.equal(result.data?.comidasRegistradas, 2);
   });
 });

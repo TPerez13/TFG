@@ -25,5 +25,4 @@ export type HabitReminderSnapshot = {
   quietTo: string;
   habitEnabled: boolean;
   time: string;
-  lastCompletedDate: string | null;
 };

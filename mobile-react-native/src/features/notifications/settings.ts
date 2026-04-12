@@ -9,7 +9,6 @@ const HABIT_KEYS: HabitNotificationKey[] = [
 ];
 
 const TIME_PATTERN = /^([01]\d|2[0-3]):([0-5]\d)$/;
-const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
 export const DEFAULT_NOTIFICATION_SETTINGS: NotificationSettings = {
   global: {
@@ -20,11 +19,11 @@ export const DEFAULT_NOTIFICATION_SETTINGS: NotificationSettings = {
     quietTo: '07:00',
   },
   habits: {
-    hidratacion: { enabled: true, time: '10:00', lastCompletedDate: null },
-    nutricion: { enabled: true, time: '13:00', lastCompletedDate: null },
-    ejercicio: { enabled: true, time: '20:00', lastCompletedDate: null },
-    sueno: { enabled: true, time: '22:00', lastCompletedDate: null },
-    meditacion: { enabled: true, time: '20:00', lastCompletedDate: null },
+    hidratacion: { enabled: true, time: '10:00' },
+    nutricion: { enabled: true, time: '13:00' },
+    ejercicio: { enabled: true, time: '20:00' },
+    sueno: { enabled: true, time: '22:00' },
+    meditacion: { enabled: true, time: '20:00' },
   },
 };
 
@@ -38,12 +37,6 @@ const parseTime = (value: unknown): string | undefined => {
   if (typeof value !== 'string') return undefined;
   const trimmed = value.trim();
   return TIME_PATTERN.test(trimmed) ? trimmed : undefined;
-};
-
-const parseDate = (value: unknown): string | null | undefined => {
-  if (value === null) return null;
-  if (typeof value !== 'string') return undefined;
-  return DATE_PATTERN.test(value) ? value : undefined;
 };
 
 const cloneDefaults = (): NotificationSettings =>
@@ -81,7 +74,6 @@ export const buildHabitReminderSnapshot = (
   quietTo: settings.global.quietTo,
   habitEnabled: settings.habits[habitKey].enabled,
   time: settings.habits[habitKey].time,
-  lastCompletedDate: settings.habits[habitKey].lastCompletedDate ?? null,
 });
 
 export const normalizeNotificationSettingsFromPreferences = (preferences: unknown): NotificationSettings => {
@@ -155,11 +147,6 @@ export const normalizeNotificationSettingsFromPreferences = (preferences: unknow
     const time = parseTime(rawHabit.time);
     if (time) {
       normalized.habits[key].time = time;
-    }
-
-    const lastCompletedDate = parseDate(rawHabit.lastCompletedDate);
-    if (lastCompletedDate !== undefined) {
-      normalized.habits[key].lastCompletedDate = lastCompletedDate;
     }
   }
 

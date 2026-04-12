@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { HabitEntry } from '../../types/models';
-import { fetchHabitEntries } from '../habits/entriesApi';
+import { loadHistoryRangeEntries } from './historyRangeLoader';
 
 type UseHistoryRangeResult = {
   entries: HabitEntry[];
@@ -21,19 +21,10 @@ export function useHistoryRange(
   const reload = useCallback(async () => {
     setLoading(true);
     setError(null);
-    try {
-      const items = await fetchHabitEntries({
-        from: fromISO,
-        to: toISO,
-        typeId,
-      });
-      setEntries(items);
-    } catch (loadError) {
-      setEntries([]);
-      setError(loadError instanceof Error ? loadError.message : 'No se pudo cargar el historial.');
-    } finally {
-      setLoading(false);
-    }
+    const result = await loadHistoryRangeEntries({ fromISO, toISO, typeId });
+    setEntries(result.entries);
+    setError(result.error);
+    setLoading(false);
   }, [fromISO, toISO, typeId]);
 
   useEffect(() => {
@@ -47,4 +38,3 @@ export function useHistoryRange(
     reload,
   };
 }
-

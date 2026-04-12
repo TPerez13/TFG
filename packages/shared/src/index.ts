@@ -107,7 +107,6 @@ export type NotificationGlobalSettings = {
 export type NotificationHabitSettings = {
   enabled: boolean;
   time: string;
-  lastCompletedDate?: string | null;
 };
 
 export type NotificationSettings = {
@@ -193,3 +192,5 @@ export type AppInfoResponse = {
 };
 
 export * from "./achievements";
+export * from "./dailyGoals";
+export * from "./reminderPolicies";

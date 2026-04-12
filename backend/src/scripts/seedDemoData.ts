@@ -110,8 +110,8 @@ const seedUsers: SeedUserDefinition[] = [
         ...getDefaultNotificationSettings(),
         habits: {
           ...getDefaultNotificationSettings().habits,
-          hidratacion: { enabled: true, time: "09:00", lastCompletedDate: null },
-          meditacion: { enabled: false, time: "20:30", lastCompletedDate: null },
+          hidratacion: { enabled: true, time: "09:00" },
+          meditacion: { enabled: false, time: "20:30" },
         },
       },
       quietHours: {
@@ -143,7 +143,7 @@ const seedUsers: SeedUserDefinition[] = [
         ...getDefaultNotificationSettings(),
         habits: {
           ...getDefaultNotificationSettings().habits,
-          ejercicio: { enabled: true, time: "19:15", lastCompletedDate: null },
+          ejercicio: { enabled: true, time: "19:15" },
         },
       },
       quietHours: {
@@ -181,8 +181,8 @@ const seedUsers: SeedUserDefinition[] = [
         },
         habits: {
           ...getDefaultNotificationSettings().habits,
-          sueno: { enabled: true, time: "21:45", lastCompletedDate: null },
-          meditacion: { enabled: true, time: "06:50", lastCompletedDate: null },
+          sueno: { enabled: true, time: "21:45" },
+          meditacion: { enabled: true, time: "06:50" },
         },
       },
       quietHours: {
@@ -218,10 +218,10 @@ const seedUsers: SeedUserDefinition[] = [
         },
         habits: {
           ...getDefaultNotificationSettings().habits,
-          hidratacion: { enabled: true, time: "09:00", lastCompletedDate: null },
-          nutricion: { enabled: true, time: "14:00", lastCompletedDate: null },
-          ejercicio: { enabled: true, time: "18:00", lastCompletedDate: null },
-          meditacion: { enabled: true, time: "20:00", lastCompletedDate: null },
+          hidratacion: { enabled: true, time: "09:00" },
+          nutricion: { enabled: true, time: "14:00" },
+          ejercicio: { enabled: true, time: "18:00" },
+          meditacion: { enabled: true, time: "20:00" },
         },
       },
       quietHours: {

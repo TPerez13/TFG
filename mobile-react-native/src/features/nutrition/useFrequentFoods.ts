@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { fetchFrequentFoods } from './api';
+import { loadFrequentFoodsItems } from './loaders';
 import type { FoodTemplate } from './types';
 
 type UseFrequentFoodsResult = {
@@ -15,16 +15,11 @@ export function useFrequentFoods(limit = 10): UseFrequentFoodsResult {
   const [error, setError] = useState<string | null>(null);
 
   const reload = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const payload = await fetchFrequentFoods(limit);
-      setItems(payload);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'No se pudieron cargar los alimentos frecuentes.');
-    } finally {
-      setLoading(false);
-    }
+    setLoading(true);
+    const result = await loadFrequentFoodsItems(limit);
+    setItems(result.items);
+    setError(result.error);
+    setLoading(false);
   }, [limit]);
 
   useEffect(() => {

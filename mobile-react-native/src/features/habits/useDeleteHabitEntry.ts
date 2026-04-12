@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { deleteHabitEntry } from './entriesApi';
+import { deleteHabitEntryAndSyncReminders } from './deleteHabitEntryAction';
 
 type UseDeleteHabitEntryResult = {
   deleting: boolean;
@@ -12,7 +12,7 @@ export function useDeleteHabitEntry(): UseDeleteHabitEntryResult {
   const deleteEntry = async (entryId: number) => {
     setDeleting(true);
     try {
-      await deleteHabitEntry(entryId);
+      await deleteHabitEntryAndSyncReminders(entryId);
     } finally {
       setDeleting(false);
     }

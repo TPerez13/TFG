@@ -3,7 +3,6 @@ import type { Request, Response } from "express";
 import { afterEach, beforeEach, describe, it, mock } from "node:test";
 import * as habitController from "../../src/controllers/habitController";
 import * as habitModel from "../../src/model/habitModel";
-import * as notificationSettingsService from "../../src/service/notificationSettingsService";
 import { assertIsAppError } from "../helpers/assertions";
 import { createMockResponse, createNextSpy } from "../helpers/express";
 
@@ -115,9 +114,8 @@ describe("habitController", () => {
     );
   });
 
-  it("creates an entry with normalized values and updates notification progress", async () => {
+  it("creates an entry with normalized values", async () => {
     let createdInput: habitModel.CreateHabitEntryInput | undefined;
-    let notificationArgs: unknown[] = [];
 
     mock.method(
       habitModel,
@@ -134,13 +132,6 @@ describe("habitController", () => {
         notas: input.notes ?? null,
       };
     });
-    mock.method(
-      notificationSettingsService,
-      "markHabitRecordedToday",
-      async (...args: unknown[]) => {
-        notificationArgs = args;
-      }
-    );
 
     const req = {
       userId: 5,
@@ -166,7 +157,6 @@ describe("habitController", () => {
       notes: "manana",
       dateTimeIso: "2026-03-02T08:30:00.000Z",
     });
-    assert.deepEqual(notificationArgs, [5, "hidratacion", "2026-03-02T08:30:00.000Z"]);
     assert.equal(res.statusCode, 201);
     assert.deepEqual(res.body, {
       entry: {

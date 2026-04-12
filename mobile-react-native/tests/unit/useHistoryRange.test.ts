@@ -1,63 +1,91 @@
 import assert from 'node:assert/strict';
-import { afterEach, describe, it, mock } from 'node:test';
-import * as entriesApi from '../../src/features/habits/entriesApi';
-import { useHistoryRange } from '../../src/features/progress/useHistoryRange';
-import { renderHook } from '../helpers/renderHook';
+import { describe, it } from 'node:test';
+import { loadHistoryRangeEntries } from '../../src/features/progress/historyRangeLoader';
 
-afterEach(() => {
-  mock.restoreAll();
-});
-
-describe('useHistoryRange', () => {
-  it('loads entries on mount and exposes a reload handler', async () => {
+describe('loadHistoryRangeEntries', () => {
+  it('loads entries for the selected range', async () => {
     let calls = 0;
+    let receivedRequest:
+      | {
+          from: string;
+          to: string;
+          typeId?: number;
+        }
+      | undefined;
 
-    mock.method(entriesApi, 'fetchHabitEntries', async () => {
-      calls += 1;
-      return [
-        {
-          id_registro_habito: calls,
-          id_usuario: 7,
-          id_tipo_habito: 1,
-          f_registro: '2026-03-02T08:00:00.000Z',
-          valor: 250,
-          unidad: 'ml',
-          notas: null,
+    const firstLoad = await loadHistoryRangeEntries(
+      {
+        fromISO: '2026-03-01T00:00:00.000Z',
+        toISO: '2026-03-07T23:59:59.999Z',
+        typeId: 1,
+      },
+      {
+        fetchHabitEntries: async (request) => {
+          calls += 1;
+          receivedRequest = request;
+          return [
+            {
+              id_registro_habito: calls,
+              id_usuario: 7,
+              id_tipo_habito: 1,
+              f_registro: '2026-03-02T08:00:00.000Z',
+              valor: 250,
+              unidad: 'ml',
+              notas: null,
+            },
+          ];
         },
-      ];
-    });
-
-    const hook = await renderHook(() =>
-      useHistoryRange('2026-03-01T00:00:00.000Z', '2026-03-07T23:59:59.999Z', 1)
+      }
     );
 
-    await hook.flush();
+    const secondLoad = await loadHistoryRangeEntries(
+      {
+        fromISO: '2026-03-01T00:00:00.000Z',
+        toISO: '2026-03-07T23:59:59.999Z',
+        typeId: 1,
+      },
+      {
+        fetchHabitEntries: async () => {
+          calls += 1;
+          return [
+            {
+              id_registro_habito: calls,
+              id_usuario: 7,
+              id_tipo_habito: 1,
+              f_registro: '2026-03-02T08:00:00.000Z',
+              valor: 250,
+              unidad: 'ml',
+              notas: null,
+            },
+          ];
+        },
+      }
+    );
 
-    assert.equal(hook.current.loading, false);
-    assert.equal(hook.current.error, null);
-    assert.equal(hook.current.entries[0]?.id_registro_habito, 1);
-
-    await hook.current.reload();
-    await hook.flush();
-
-    assert.equal(hook.current.entries[0]?.id_registro_habito, 2);
-    await hook.unmount();
+    assert.deepEqual(receivedRequest, {
+      from: '2026-03-01T00:00:00.000Z',
+      to: '2026-03-07T23:59:59.999Z',
+      typeId: 1,
+    });
+    assert.equal(firstLoad.error, null);
+    assert.equal(firstLoad.entries[0]?.id_registro_habito, 1);
+    assert.equal(secondLoad.entries[0]?.id_registro_habito, 2);
   });
 
-  it('stores an error message and clears entries when loading fails', async () => {
-    mock.method(entriesApi, 'fetchHabitEntries', async () => {
-      throw new Error('No se pudo cargar el historial.');
-    });
-
-    const hook = await renderHook(() =>
-      useHistoryRange('2026-03-01T00:00:00.000Z', '2026-03-07T23:59:59.999Z')
+  it('returns an empty list and the thrown message when loading fails', async () => {
+    const result = await loadHistoryRangeEntries(
+      {
+        fromISO: '2026-03-01T00:00:00.000Z',
+        toISO: '2026-03-07T23:59:59.999Z',
+      },
+      {
+        fetchHabitEntries: async () => {
+          throw new Error('No se pudo cargar el historial.');
+        },
+      }
     );
 
-    await hook.flush();
-
-    assert.equal(hook.current.loading, false);
-    assert.equal(hook.current.entries.length, 0);
-    assert.equal(hook.current.error, 'No se pudo cargar el historial.');
-    await hook.unmount();
+    assert.equal(result.entries.length, 0);
+    assert.equal(result.error, 'No se pudo cargar el historial.');
   });
 });

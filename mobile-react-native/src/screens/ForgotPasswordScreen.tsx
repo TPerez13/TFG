@@ -1,25 +1,24 @@
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type {
-  ForgotPasswordResponse,
-  ResetPasswordResponse,
-} from '@muchasvidas/shared';
 import type { AuthStackParamList } from '../navigation/types';
 import { Screen } from '../components/layout/Screen';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
-import { apiFetch } from '../services/api';
+import {
+  buildForgotPasswordRequestSuccess,
+  buildForgotPasswordResetSuccess,
+  getForgotPasswordFormMeta,
+  requestForgotPasswordCode,
+  resetForgotPassword,
+  sanitizeForgotPasswordCode,
+} from '../features/auth/forgotPasswordFlow';
 import { baseStyles } from '../theme/components';
 import { colors, fontSizes, spacing } from '../theme/tokens';
 
 type ForgotPasswordScreenProps = NativeStackScreenProps<AuthStackParamList, 'ForgotPassword'>;
 
 type Step = 'request' | 'reset';
-
-const DEFAULT_REQUEST_SUCCESS_MESSAGE =
-  'Si el correo existe, te enviaremos un código de 6 dígitos por correo. Revisa tu bandeja de entrada.';
-const DEFAULT_RESET_SUCCESS_MESSAGE = 'Contraseña restablecida correctamente.';
 
 export default function ForgotPasswordScreen({ navigation }: ForgotPasswordScreenProps) {
   const [step, setStep] = useState<Step>('request');
@@ -34,20 +33,22 @@ export default function ForgotPasswordScreen({ navigation }: ForgotPasswordScree
 
   const normalizedCorreo = correo.trim();
   const normalizedCode = code.trim();
-  const canRequestCode = normalizedCorreo.length > 0 && !loading;
-  const canReset =
-    normalizedCorreo.length > 0 &&
-    normalizedCode.length === 6 &&
-    newPassword.length > 0 &&
-    confirmPassword.length > 0 &&
-    !loading;
+  const formMeta = getForgotPasswordFormMeta({
+    step,
+    correo,
+    code,
+    newPassword,
+    confirmPassword,
+    loading,
+    resetDone,
+  });
 
   const handleCodeChange = (value: string) => {
-    setCode(value.replace(/\D/g, '').slice(0, 6));
+    setCode(sanitizeForgotPasswordCode(value));
   };
 
   const requestCode = async () => {
-    if (!canRequestCode) return;
+    if (!formMeta.canRequestCode) return;
 
     try {
       setLoading(true);
@@ -55,32 +56,22 @@ export default function ForgotPasswordScreen({ navigation }: ForgotPasswordScree
       setInfo(null);
       setResetDone(false);
 
-      const response = await apiFetch('/password/forgot', {
-        method: 'POST',
-        body: JSON.stringify({ correo: normalizedCorreo }),
-      });
-
-      const payload = (await response.json().catch(() => null)) as ForgotPasswordResponse | null;
-      if (!response.ok) {
-        throw new Error(payload?.message ?? 'No se pudo solicitar el código de recuperación.');
-      }
-
-      setStep('reset');
-      setCode('');
-      setNewPassword('');
-      setConfirmPassword('');
-      setInfo(payload?.message ?? DEFAULT_REQUEST_SUCCESS_MESSAGE);
+      const message = await requestForgotPasswordCode(normalizedCorreo);
+      const nextState = buildForgotPasswordRequestSuccess(message);
+      setStep(nextState.step);
+      setCode(nextState.code);
+      setNewPassword(nextState.newPassword);
+      setConfirmPassword(nextState.confirmPassword);
+      setInfo(nextState.info);
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'No se pudo solicitar el código de recuperación.'
-      );
+      setError(err instanceof Error ? err.message : 'No se pudo solicitar el código de recuperación.');
     } finally {
       setLoading(false);
     }
   };
 
   const resetPassword = async () => {
-    if (!canReset) return;
+    if (!formMeta.canReset) return;
 
     setError(null);
     setInfo(null);
@@ -97,25 +88,17 @@ export default function ForgotPasswordScreen({ navigation }: ForgotPasswordScree
 
     try {
       setLoading(true);
-      const response = await apiFetch('/password/reset', {
-        method: 'POST',
-        body: JSON.stringify({
-          correo: normalizedCorreo,
-          code: normalizedCode,
-          newPassword,
-        }),
+      const message = await resetForgotPassword({
+        correo: normalizedCorreo,
+        code: normalizedCode,
+        newPassword,
       });
-
-      const payload = (await response.json().catch(() => null)) as ResetPasswordResponse | null;
-      if (!response.ok) {
-        throw new Error(payload?.message ?? 'No se pudo restablecer la contraseña.');
-      }
-
-      setResetDone(true);
-      setInfo(payload?.message ?? DEFAULT_RESET_SUCCESS_MESSAGE);
-      setCode('');
-      setNewPassword('');
-      setConfirmPassword('');
+      const nextState = buildForgotPasswordResetSuccess(message);
+      setResetDone(nextState.resetDone);
+      setInfo(nextState.info);
+      setCode(nextState.code);
+      setNewPassword(nextState.newPassword);
+      setConfirmPassword(nextState.confirmPassword);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'No se pudo restablecer la contraseña.');
     } finally {
@@ -147,9 +130,9 @@ export default function ForgotPasswordScreen({ navigation }: ForgotPasswordScree
 
         {step === 'request' ? (
           <Button
-            title={loading ? 'Solicitando...' : 'Solicitar código'}
+            title={formMeta.primaryButtonTitle}
             onPress={requestCode}
-            disabled={!canRequestCode}
+            disabled={!formMeta.canRequestCode}
           />
         ) : (
           <>
@@ -185,9 +168,9 @@ export default function ForgotPasswordScreen({ navigation }: ForgotPasswordScree
             />
 
             <Button
-              title={loading ? 'Restableciendo...' : 'Restablecer contraseña'}
+              title={formMeta.primaryButtonTitle}
               onPress={resetPassword}
-              disabled={!canReset}
+              disabled={!formMeta.canReset}
             />
           </>
         )}
@@ -196,7 +179,7 @@ export default function ForgotPasswordScreen({ navigation }: ForgotPasswordScree
         {error ? <Text style={styles.error}>{error}</Text> : null}
 
         <Button
-          title={resetDone ? 'Ir a Iniciar sesión' : 'Volver a Iniciar sesión'}
+          title={formMeta.backButtonTitle}
           onPress={() => navigation.navigate('Login')}
           style={styles.backButton}
           variant="outline"

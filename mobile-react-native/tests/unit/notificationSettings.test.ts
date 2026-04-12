@@ -25,7 +25,6 @@ describe('notifications/settings', () => {
       quietTo: '07:00',
       habitEnabled: true,
       time: '13:00',
-      lastCompletedDate: null,
     });
   });
 
@@ -45,7 +44,6 @@ describe('notifications/settings', () => {
           hidratacion: {
             enabled: false,
             time: '11:00',
-            lastCompletedDate: '2026-03-18',
           },
         },
       },
@@ -61,7 +59,6 @@ describe('notifications/settings', () => {
     assert.deepEqual(normalized.habits.hidratacion, {
       enabled: false,
       time: '11:00',
-      lastCompletedDate: '2026-03-18',
     });
     assert.equal(normalized.habits.nutricion.enabled, false);
     assert.equal(normalized.habits.ejercicio.time, '20:00');

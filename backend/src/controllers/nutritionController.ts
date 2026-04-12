@@ -14,7 +14,6 @@ import {
   type NutritionEntryRecord,
 } from "../model/nutritionModel";
 import {
-  markHabitRecordedToday,
   normalizeNotificationSettingsFromPreferences,
 } from "../service/notificationSettingsService";
 
@@ -146,7 +145,6 @@ export async function nutritionToday(
         quietTo: notificationSettings.global.quietTo,
         habitEnabled: notificationSettings.habits.nutricion.enabled,
         time: notificationSettings.habits.nutricion.time,
-        lastCompletedDate: notificationSettings.habits.nutricion.lastCompletedDate ?? null,
       },
     });
   } catch (error) {
@@ -243,8 +241,6 @@ export async function createNutritionEntry(
           ? body.f_registro
           : undefined,
     });
-
-    await markHabitRecordedToday(userId, "nutricion", toIsoString(created.f_registro));
 
     res.status(201).json({ entry: toNutritionEntry(created) });
   } catch (error) {
