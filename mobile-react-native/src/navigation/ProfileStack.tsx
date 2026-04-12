@@ -1,17 +1,17 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import type { ProfileStackParamList } from './types';
-import ProfileScreen from '../screens/ProfileScreen';
-import EditProfileScreen from '../screens/EditProfileScreen';
-import HabitGoalsScreen from '../screens/HabitGoalsScreen';
-import FeedScreen from '../screens/FeedScreen';
-import NotificationSettingsScreen from '../screens/NotificationSettingsScreen';
-import PrivacyScreen from '../screens/PrivacyScreen';
-import SupportScreen from '../screens/SupportScreen';
-import AboutScreen from '../screens/AboutScreen';
-import AchievementsScreen from '../screens/AchievementsScreen';
-import PrivacyPolicyScreen from '../screens/settings/PrivacyPolicyScreen';
-import TermsOfUseScreen from '../screens/settings/TermsOfUseScreen';
+import ProfileScreen from '../features/profile/screens/ProfileScreen';
+import EditProfileScreen from '../features/profile/screens/EditProfileScreen';
+import HabitGoalsScreen from '../features/habits/screens/HabitGoalsScreen';
+import FeedScreen from '../features/profile/screens/FeedScreen';
+import NotificationSettingsScreen from '../features/notifications/screens/NotificationSettingsScreen';
+import PrivacyScreen from '../features/profile/screens/PrivacyScreen';
+import SupportScreen from '../features/profile/screens/SupportScreen';
+import AboutScreen from '../features/profile/screens/AboutScreen';
+import AchievementsScreen from '../features/achievements/screens/AchievementsScreen';
+import PrivacyPolicyScreen from '../features/profile/screens/PrivacyPolicyScreen';
+import TermsOfUseScreen from '../features/profile/screens/TermsOfUseScreen';
 
 const Stack = createNativeStackNavigator<ProfileStackParamList>();
 

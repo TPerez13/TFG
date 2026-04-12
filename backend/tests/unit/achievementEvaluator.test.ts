@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { evaluateAchievements } from "../../src/service/achievementEvaluator";
+import { evaluateAchievements } from "../../src/services/achievementEvaluator";
 
 const preferences = {
   goals: {

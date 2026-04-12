@@ -2,10 +2,10 @@ import type { AchievementId } from "@muchasvidas/shared";
 import { ACHIEVEMENT_DEFINITIONS } from "@muchasvidas/shared";
 import bcrypt from "bcryptjs";
 import { pool } from "../db";
-import { syncAchievementCatalog } from "../model/achievementModel";
-import { createNutritionEntryForUser } from "../model/nutritionModel";
-import { getAchievementsForUser } from "../service/achievementService";
-import { getDefaultNotificationSettings } from "../service/notificationSettingsService";
+import { syncAchievementCatalog } from "../models/achievementModel";
+import { createNutritionEntryForUser } from "../models/nutritionModel";
+import { getAchievementsForUser } from "../services/achievementService";
+import { getDefaultNotificationSettings } from "../services/notificationSettingsService";
 
 type SeedUserDefinition = {
   correo: string;

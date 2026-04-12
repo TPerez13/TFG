@@ -1,11 +1,11 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import type { ProgressStackParamList } from './types';
-import MonthlyProgressScreen from '../screens/MonthlyProgressScreen';
-import HistoryScreen from '../screens/HistoryScreen';
-import DayHistoryDetailScreen from '../screens/DayHistoryDetailScreen';
-import HabitHistoryScreen from '../screens/HabitHistoryScreen';
-import HabitDetailScreen from '../screens/progress/HabitDetailScreen';
+import MonthlyProgressScreen from '../features/progress/screens/MonthlyProgressScreen';
+import HistoryScreen from '../features/progress/screens/HistoryScreen';
+import DayHistoryDetailScreen from '../features/progress/screens/DayHistoryDetailScreen';
+import HabitHistoryScreen from '../features/progress/screens/HabitHistoryScreen';
+import HabitDetailScreen from '../features/progress/screens/HabitDetailScreen';
 
 const Stack = createNativeStackNavigator<ProgressStackParamList>();
 

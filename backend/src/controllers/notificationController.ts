@@ -9,13 +9,13 @@ import {
   updateReadStatus,
   markAllRead,
   getNotificationById,
-} from "../model/notificationModel";
-import type { NotificationType } from "../model/notificationModel";
-import { seedNotificationsForUser } from "../service/notificationService";
+} from "../models/notificationModel";
+import type { NotificationType } from "../models/notificationModel";
+import { seedNotificationsForUser } from "../services/notificationService";
 import {
   getNotificationSettingsForUser,
   patchNotificationSettingsForUser,
-} from "../service/notificationSettingsService";
+} from "../services/notificationSettingsService";
 
 const toIsoString = (value: unknown): string | null => {
   if (!value) return null;

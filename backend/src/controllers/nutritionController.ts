@@ -1,7 +1,7 @@
 import type { NextFunction, Response } from "express";
 import type { AuthRequest } from "../middleware/auth";
 import { AppError } from "../utils/errors";
-import { findById } from "../model/userModel";
+import { findById } from "../models/userModel";
 import {
   MEAL_TYPES,
   createNutritionEntryForUser,
@@ -12,10 +12,10 @@ import {
   listRecentFoodTemplatesForUser,
   type MealType,
   type NutritionEntryRecord,
-} from "../model/nutritionModel";
+} from "../models/nutritionModel";
 import {
   normalizeNotificationSettingsFromPreferences,
-} from "../service/notificationSettingsService";
+} from "../services/notificationSettingsService";
 
 type NutritionPreferences = {
   goals?: {

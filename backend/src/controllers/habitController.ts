@@ -5,8 +5,8 @@ import {
   createHabitEntryForUser,
   deleteHabitEntryForUser,
   listEntriesForUser,
-} from "../model/habitModel";
-import type { HabitEntryRecord } from "../model/habitModel";
+} from "../models/habitModel";
+import type { HabitEntryRecord } from "../models/habitModel";
 import type { AuthRequest } from "../middleware/auth";
 
 const toIsoString = (value: unknown): string => {

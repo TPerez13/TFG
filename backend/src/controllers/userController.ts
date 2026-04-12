@@ -9,10 +9,10 @@ import {
   deleteUserById,
   updateUserProfile,
   updatePasswordHash,
-} from "../model/userModel";
-import type { UserRecord } from "../model/userModel";
-import { listEntriesForUserExport } from "../model/habitModel";
-import { listNotifications } from "../model/notificationModel";
+} from "../models/userModel";
+import type { UserRecord } from "../models/userModel";
+import { listEntriesForUserExport } from "../models/habitModel";
+import { listNotifications } from "../models/notificationModel";
 
 const toIsoString = (value: unknown): string | undefined => {
   if (value instanceof Date) {

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { afterEach, beforeEach, describe, it, mock } from "node:test";
 import { createApp } from "../../src/app";
-import * as habitModel from "../../src/model/habitModel";
+import * as habitModel from "../../src/models/habitModel";
 import * as jwtUtils from "../../src/utils/jwt";
 import { requestJson, startTestServer } from "../helpers/http";
 

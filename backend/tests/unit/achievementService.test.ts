@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
 import { afterEach, describe, it, mock } from "node:test";
-import * as achievementModel from "../../src/model/achievementModel";
-import * as habitModel from "../../src/model/habitModel";
-import * as userModel from "../../src/model/userModel";
-import * as achievementService from "../../src/service/achievementService";
+import * as achievementModel from "../../src/models/achievementModel";
+import * as habitModel from "../../src/models/habitModel";
+import * as userModel from "../../src/models/userModel";
+import * as achievementService from "../../src/services/achievementService";
 
 const baseUser = {
   id_usuario: 7,

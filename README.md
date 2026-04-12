@@ -5,6 +5,18 @@ Repositorio unificado de TrackHabit Loop con:
 - App Expo/React Native (`mobile-react-native/`).
 - Paquete compartido de tipos/DTOs (`packages/shared/`).
 
+## Estructura del repositorio
+
+- `backend/`: API REST, middleware, persistencia y tests del servidor.
+- `mobile-react-native/src/features/`: organización principal de la app móvil por dominios funcionales.
+- `mobile-react-native/src/components/`: solo componentes transversales (`layout/` y `ui/`).
+- `packages/shared/`: contratos y lógica compartida entre backend y móvil.
+- `docs/diagrams/`: fuentes de diagramas y notas de documentación.
+
+La app móvil sigue un criterio híbrido pero explícito:
+- infraestructura común en `navigation/`, `services/`, `config/`, `theme/` y `components/{layout,ui}`;
+- pantallas, hooks y componentes específicos dentro de `features/<dominio>/`.
+
 ## Requisitos
 
 - Node.js 18+ y npm >= 8.

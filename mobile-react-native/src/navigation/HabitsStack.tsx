@@ -1,20 +1,20 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import type { HabitsStackParamList } from './types';
-import HabitsScreen from '../screens/HabitsScreen';
-import HabitDetailScreen from '../screens/HabitDetailScreen';
-import HabitGoalsScreen from '../screens/HabitGoalsScreen';
-import NutritionScreen from '../screens/NutritionScreen';
-import NutritionQuickAddScreen from '../screens/NutritionQuickAddScreen';
-import NutritionManualEntryScreen from '../screens/NutritionManualEntryScreen';
-import HidratacionScreen from '../screens/HidratacionScreen';
-import RegistrarAguaScreen from '../screens/RegistrarAguaScreen';
-import EjercicioScreen from '../screens/EjercicioScreen';
-import RegistrarEjercicioScreen from '../screens/RegistrarEjercicioScreen';
-import SuenoScreen from '../screens/SuenoScreen';
-import RegistrarSuenoScreen from '../screens/RegistrarSuenoScreen';
-import MeditacionScreen from '../screens/MeditacionScreen';
-import RegistrarMeditacionScreen from '../screens/RegistrarMeditacionScreen';
+import HabitsScreen from '../features/habits/screens/HabitsScreen';
+import HabitDetailScreen from '../features/habits/screens/HabitDetailScreen';
+import HabitGoalsScreen from '../features/habits/screens/HabitGoalsScreen';
+import NutritionScreen from '../features/nutrition/screens/NutritionScreen';
+import NutritionQuickAddScreen from '../features/nutrition/screens/NutritionQuickAddScreen';
+import NutritionManualEntryScreen from '../features/nutrition/screens/NutritionManualEntryScreen';
+import HidratacionScreen from '../features/hydration/screens/HidratacionScreen';
+import RegistrarAguaScreen from '../features/hydration/screens/RegistrarAguaScreen';
+import EjercicioScreen from '../features/exercise/screens/EjercicioScreen';
+import RegistrarEjercicioScreen from '../features/exercise/screens/RegistrarEjercicioScreen';
+import SuenoScreen from '../features/sleep/screens/SuenoScreen';
+import RegistrarSuenoScreen from '../features/sleep/screens/RegistrarSuenoScreen';
+import MeditacionScreen from '../features/meditation/screens/MeditacionScreen';
+import RegistrarMeditacionScreen from '../features/meditation/screens/RegistrarMeditacionScreen';
 
 const Stack = createNativeStackNavigator<HabitsStackParamList>();
 

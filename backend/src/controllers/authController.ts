@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
-import * as authService from "../service/authService";
+import * as authService from "../services/authService";
 
 /**
  * POST /api/login

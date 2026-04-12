@@ -1,6 +1,6 @@
 import type { NextFunction, Response } from "express";
 import type { AuthRequest } from "../middleware/auth";
-import { getAchievementsForUser } from "../service/achievementService";
+import { getAchievementsForUser } from "../services/achievementService";
 import { AppError } from "../utils/errors";
 
 export async function listAchievements(

@@ -2,9 +2,9 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { afterEach, describe, it, mock } from "node:test";
 import bcrypt from "bcryptjs";
-import * as passwordResetModel from "../../src/model/passwordResetModel";
-import * as userModel from "../../src/model/userModel";
-import * as authService from "../../src/service/authService";
+import * as passwordResetModel from "../../src/models/passwordResetModel";
+import * as userModel from "../../src/models/userModel";
+import * as authService from "../../src/services/authService";
 import * as jwtUtils from "../../src/utils/jwt";
 import { assertRejectsAppError } from "../helpers/assertions";
 

@@ -9,8 +9,8 @@ import type {
 import type { NextFunction, Response } from "express";
 import type { AuthRequest } from "../middleware/auth";
 import { AppError } from "../utils/errors";
-import { createSupportTicket, findSupportTicketById } from "../model/supportModel";
-import type { SupportTicketRecord } from "../model/supportModel";
+import { createSupportTicket, findSupportTicketById } from "../models/supportModel";
+import type { SupportTicketRecord } from "../models/supportModel";
 
 const FAQ_ITEMS: SupportFaqItem[] = [
   {

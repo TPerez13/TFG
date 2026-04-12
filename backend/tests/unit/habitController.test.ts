@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import type { Request, Response } from "express";
 import { afterEach, beforeEach, describe, it, mock } from "node:test";
 import * as habitController from "../../src/controllers/habitController";
-import * as habitModel from "../../src/model/habitModel";
+import * as habitModel from "../../src/models/habitModel";
 import { assertIsAppError } from "../helpers/assertions";
 import { createMockResponse, createNextSpy } from "../helpers/express";
 

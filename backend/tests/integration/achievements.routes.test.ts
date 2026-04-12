@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { afterEach, beforeEach, describe, it, mock } from "node:test";
 import { createApp } from "../../src/app";
-import * as achievementService from "../../src/service/achievementService";
+import * as achievementService from "../../src/services/achievementService";
 import * as jwtUtils from "../../src/utils/jwt";
 import { requestJson, startTestServer } from "../helpers/http";
 
