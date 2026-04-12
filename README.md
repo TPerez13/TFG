@@ -24,6 +24,13 @@ cp backend/.env.example backend/.env
 
 El backend usa `DATABASE_URL` para conectarse a PostgreSQL.
 
+Variables principales:
+
+- `HOST=0.0.0.0` para aceptar conexiones desde la red local en desarrollo.
+- `PORT=3000`
+- `DATABASE_URL=postgres://...`
+- `SESSION_SECRET=...`
+
 Variables opcionales para recuperación de contraseña por correo:
 
 - `MAIL_PROVIDER=disabled|resend`
@@ -91,10 +98,14 @@ Si `http://localhost:5050` no abre (connection refused):
 
 ## API
 
-- Desarrollo: `npm run dev:backend` -> `http://localhost:3000`
+- Desarrollo: `npm run dev:backend`
+- Acceso desde el propio ordenador: `http://localhost:3000`
+- Acceso desde un movil fisico en la misma Wi-Fi: `http://<IP-LAN-PC>:3000`
 - Build y arranque:
   - `npm run build --workspace backend`
   - `npm run start:backend`
+
+Con `HOST=0.0.0.0`, el backend queda accesible desde otros dispositivos de la red local. Al arrancar, el servidor imprime tambien las URLs LAN detectadas para que puedas copiar la IP correcta en el entorno de la app movil.
 
 Endpoints de referencia:
 - `GET /api/health`
@@ -113,6 +124,28 @@ Endpoints de referencia:
 ```bash
 npm run start:mobile
 ```
+
+Configuracion recomendada:
+
+```bash
+cp mobile-react-native/.env.example mobile-react-native/.env
+```
+
+La app usa `EXPO_PUBLIC_API_URL` como fuente de verdad para la URL del backend.
+
+Escenarios soportados:
+
+- Emulador Android: puedes dejar `EXPO_PUBLIC_API_URL` sin definir y la app usara `http://10.0.2.2:3000`.
+- Simulador iOS / entorno local equivalente: puedes dejar `EXPO_PUBLIC_API_URL` sin definir y la app usara `http://localhost:3000`.
+- Movil fisico en la misma red: define `EXPO_PUBLIC_API_URL=http://<IP-LAN-PC>:3000`.
+- Produccion o staging: define `EXPO_PUBLIC_API_URL=https://api.tu-dominio.com`.
+
+Operativa local recomendada:
+
+1. Crea `backend/.env` y `mobile-react-native/.env` a partir de sus ejemplos.
+2. Arranca la API con `npm run dev:backend`.
+3. Si pruebas en un movil fisico, usa la IP LAN que imprime el backend al arrancar.
+4. Arranca la app con `npm run start:mobile`.
 
 ## Paquete compartido
 

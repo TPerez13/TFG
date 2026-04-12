@@ -5,6 +5,7 @@ const envPath = path.resolve(__dirname, "..", ".env");
 dotenv.config({ path: envPath });
 
 const port = Number(process.env.PORT || 3000);
+const host = (process.env.HOST ?? "0.0.0.0").trim() || "0.0.0.0";
 const databaseUrl = process.env.DATABASE_URL;
 const sessionSecret = process.env.SESSION_SECRET || "change_me";
 
@@ -23,6 +24,7 @@ if (!databaseUrl) {
  * Centralized runtime configuration for the backend.
  */
 export const config = {
+  host,
   port,
   databaseUrl,
   sessionSecret,

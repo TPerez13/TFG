@@ -121,26 +121,6 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
     }
   };
 
-  /*
-  const checkHealth = useCallback(async () => {
-    setStatus('Checking /api/health...');
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 10000);
-    try {
-      const res = await fetch(`${getBaseUrl()}/api/health`, {
-        method: 'GET',
-        signal: controller.signal,
-      });
-      const text = await res.text();
-      setStatus(`${res.status} -> ${text}`);
-    } catch (e: any) {
-      setStatus(`Error: ${e?.message ?? String(e)}`);
-    } finally {
-      clearTimeout(timeout);
-    }
-  }, []);
-  */
-
   return (
     <Screen>
       <StatusBar barStyle="dark-content" />

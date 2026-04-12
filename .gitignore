@@ -16,6 +16,8 @@ android/
 # Environment files
 .env
 backend/.env
+mobile-react-native/.env
+mobile-react-native/.env.local
 
 # Local Expo state
 .expo/

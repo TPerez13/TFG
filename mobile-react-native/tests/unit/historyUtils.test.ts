@@ -46,7 +46,7 @@ describe('progress/historyUtils', () => {
   });
 
   it('formats aggregated values according to the habit type', () => {
-    assert.equal(formatHabitValue('agua', 2.2, 'vasos'), '2 vasos');
+    assert.equal(formatHabitValue('agua', 2.2, 'vasos'), '2.2 vasos');
     assert.equal(formatHabitValue('sueno', 7.5, 'h'), '7h 30min');
     assert.equal(formatHabitValue('sueno', 465, 'min'), '7h 45min');
     assert.equal(formatHabitValue('meditacion', 12.4, 'min'), '12 min');

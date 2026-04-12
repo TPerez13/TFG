@@ -1,17 +1,12 @@
-import { Platform } from 'react-native';
+import { buildApiUrl, getApiBaseUrl } from '../config/api';
 
 let authToken: string | null = null;
-
-export const getBaseUrl = () => {
-  if (Platform.OS === 'android') return 'http://10.0.2.2:3000';
-  return 'http://localhost:3000';
-};
 
 export const setAuthToken = (token?: string | null) => {
   authToken = token ?? null;
 };
 
-export const apiFetch = (path: string, options: RequestInit = {}) => {
+export const apiFetch = async (path: string, options: RequestInit = {}) => {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
   };
@@ -26,8 +21,15 @@ export const apiFetch = (path: string, options: RequestInit = {}) => {
     headers.Authorization = `Bearer ${authToken}`;
   }
 
-  return fetch(`${getBaseUrl()}/api${path}`, {
-    ...options,
-    headers,
-  });
+  try {
+    return await fetch(buildApiUrl(path), {
+      ...options,
+      headers,
+    });
+  } catch (error) {
+    const detail = error instanceof Error ? error.message : String(error);
+    throw new Error(
+      `No se pudo conectar con ${getApiBaseUrl()}. Revisa EXPO_PUBLIC_API_URL o usa la IP LAN de tu ordenador si pruebas desde un movil fisico. Detalle: ${detail}`
+    );
+  }
 };

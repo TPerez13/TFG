@@ -1,6 +1,22 @@
+import os from "os";
 import { config } from "./config";
 import { verifyConnection } from "./db";
 import { createApp } from "./app";
+
+const getLanUrls = (port: number) => {
+  const interfaces = os.networkInterfaces();
+  const urls = new Set<string>();
+
+  Object.values(interfaces).forEach((networkInterface) => {
+    (networkInterface ?? []).forEach((address) => {
+      if (address.family === "IPv4" && !address.internal) {
+        urls.add(`http://${address.address}:${port}`);
+      }
+    });
+  });
+
+  return [...urls];
+};
 
 /**
  * Bootstraps the HTTP server.
@@ -18,8 +34,15 @@ async function bootstrap() {
 
   const app = createApp();
 
-  app.listen(config.port, () => {
-    console.log(`Servidor escuchando en http://localhost:${config.port}`);
+  app.listen(config.port, config.host, () => {
+    console.log(`Servidor escuchando en http://${config.host}:${config.port}`);
+
+    if (config.host === "0.0.0.0") {
+      console.log(`Acceso local: http://localhost:${config.port}`);
+      getLanUrls(config.port).forEach((url) => {
+        console.log(`Acceso LAN: ${url}`);
+      });
+    }
   });
 }
 
