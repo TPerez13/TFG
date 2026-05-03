@@ -16,7 +16,7 @@ const CHANGELOG_ITEMS = [
   'v0.3 - Sistema de notificaciones y centro de avisos.',
   'v0.4 - Ajustes de privacidad, ayuda y soporte.',
 ];
-const APP_CONFIG = require('../../app.json');
+const APP_CONFIG = require('../../../../app.json');
 
 export default function AboutScreen({ navigation }: AboutScreenProps) {
   const [screenState, setScreenState] = useState<ScreenState>('loading');

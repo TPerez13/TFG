@@ -27,7 +27,7 @@ const isAuthResponse = (payload: unknown): payload is AuthResponse => {
   return typeof maybe.message === 'string' && typeof user?.id === 'number';
 };
 
-const logoSource: ImageSourcePropType = require('../../assets/logo.png');
+const logoSource: ImageSourcePropType = require('../../../../assets/logo.png');
 
 export default function LoginScreen({ navigation }: LoginScreenProps) {
   // const [status, setStatus] = useState<string>('Press the button to test');

@@ -35,7 +35,7 @@ const BUG_KIND_OPTIONS = [
   { id: 'rendimiento', label: 'Rendimiento' },
   { id: 'crash', label: 'Cierre inesperado' },
 ];
-const APP_CONFIG = require('../../app.json');
+const APP_CONFIG = require('../../../../app.json');
 
 export default function SupportScreen({ navigation }: SupportScreenProps) {
   const { signOut } = useAuth();
